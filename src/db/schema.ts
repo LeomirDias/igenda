@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import { boolean, integer, pgTable, text, time, timestamp, uuid } from "drizzle-orm/pg-core";
 
+//Users
 export const usersTable = pgTable("users", {
     id: text("id").primaryKey(),
     name: text('name').notNull(),
@@ -11,10 +12,7 @@ export const usersTable = pgTable("users", {
     updatedAt: timestamp('updated_at').notNull()
 });
 
-export const usersTableRelations = relations(usersTable, ({ many }) => ({
-    usersToEnterprises: many(usersToEnterprisesTable),
-}));
-
+//Table to store sessions 
 export const sessionsTable = pgTable("sessions", {
     id: text('id').primaryKey(),
     expiresAt: timestamp('expires_at').notNull(),
@@ -26,6 +24,7 @@ export const sessionsTable = pgTable("sessions", {
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' })
 });
 
+//table to store accounts
 export const accountsTable = pgTable("accounts", {
     id: text('id').primaryKey(),
     accountId: text('account_id').notNull(),
@@ -42,6 +41,7 @@ export const accountsTable = pgTable("accounts", {
     updatedAt: timestamp('updated_at').notNull()
 });
 
+//Table to store verifications
 export const verificationsTable = pgTable("verifications", {
     id: text('id').primaryKey(),
     identifier: text('identifier').notNull(),
@@ -51,6 +51,12 @@ export const verificationsTable = pgTable("verifications", {
     updatedAt: timestamp('updated_at')
 });
 
+//Users table relationships
+export const usersTableRelations = relations(usersTable, ({ many }) => ({
+    usersToEnterprises: many(usersToEnterprisesTable),
+}));
+
+//Mid Table for relation N-N Users & Enterprises
 export const usersToEnterprisesTable = pgTable("users_to_enterprises", {
     userId: text("user_id")
         .notNull()
@@ -62,6 +68,7 @@ export const usersToEnterprisesTable = pgTable("users_to_enterprises", {
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
 });
 
+//Mid table "usersToEnterprisesTable" relations table
 export const usersToEnterprisesTableRelations = relations(usersToEnterprisesTable, ({ one }) => ({
     user: one(usersTable, {
         fields: [usersToEnterprisesTable.userId],
@@ -73,6 +80,7 @@ export const usersToEnterprisesTableRelations = relations(usersToEnterprisesTabl
     }),
 }));
 
+//Enteprises table
 export const enterprisesTable = pgTable("enterprises", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
@@ -85,6 +93,7 @@ export const enterprisesTable = pgTable("enterprises", {
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
 });
 
+//Enteprises tables relationships whit professionals, clients, appointments and users
 export const enterpriseTablesRelations = relations(enterprisesTable, ({ many }) => ({
     professionals: many(professionalsTable),
     clients: many(clientsTable),
@@ -92,18 +101,18 @@ export const enterpriseTablesRelations = relations(enterprisesTable, ({ many }) 
     usersToEnterprises: many(usersToEnterprisesTable),
 }));
 
+//Professionals tables
 export const professionalsTable = pgTable("professionals", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
+    specialty: text("specialty").notNull(),
     avatarImageURL: text("avatar_image_url"),
-    description: text("description"),
     phoneNumber: text("phone_number").notNull(),
-    instagramURL: text("instagram_url"),
+    instagramURL: text("instagram_url").notNull(),
     availableFromWeekDay: integer("available_from_week_day").notNull(),
     availableToWeekDay: integer("available_to_week_day").notNull(),
     availableFromTime: time("available_from_time").notNull(),
     availableToTime: time("available_to_time").notNull(),
-    specialty: text("specialty").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
     //Relationships
@@ -112,6 +121,7 @@ export const professionalsTable = pgTable("professionals", {
         .references(() => enterprisesTable.id, { onDelete: "cascade" }),
 });
 
+//Professionals tables relationships whit relations whit enterprises and appointments
 export const professionalsTableRelations = relations(professionalsTable, ({ many, one }) => ({
     enterprise: one(enterprisesTable, {
         fields: [professionalsTable.enterpriseId],
@@ -120,6 +130,7 @@ export const professionalsTableRelations = relations(professionalsTable, ({ many
     appointmentsTable: many(appointmentsTable),
 }));
 
+//Mid Table for relation N-N professionals & services
 export const professionalsToServicesTable = pgTable("professionals_to_services", {
     professionalId: uuid("professional_id")
         .notNull()
@@ -131,6 +142,7 @@ export const professionalsToServicesTable = pgTable("professionals_to_services",
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
 });
 
+//Mid table "professionalsToServicesTable" relations table
 export const professionalsToServicesTableRelations = relations(professionalsToServicesTable, ({ one }) => ({
     professional: one(professionalsTable, {
         fields: [professionalsToServicesTable.professionalId],
@@ -142,10 +154,12 @@ export const professionalsToServicesTableRelations = relations(professionalsToSe
     }),
 }));
 
+//Services table
 export const servicesTable = pgTable("services", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     description: text("description"),
+    //Formato de uso no formSchema:     servicePriceInCents: z.number().trim().min(1, { message: "Preço do serviço é obrigatório" }),
     servicePriceInCents: integer("service_price_in_cents").notNull(),
     duration: integer("duration").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
@@ -158,6 +172,7 @@ export const servicesTable = pgTable("services", {
         .references(() => professionalsTable.id, { onDelete: "cascade" }),
 });
 
+//Clients table
 export const clientsTable = pgTable("clients", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
@@ -171,6 +186,7 @@ export const clientsTable = pgTable("clients", {
         .references(() => enterprisesTable.id, { onDelete: "cascade" }),
 });
 
+//Clients tables relationships whit relations whit enterprises
 export const clientsTableRelations = relations(clientsTable, ({ one }) => ({
     enterprise: one(enterprisesTable, {
         fields: [clientsTable.enterpriseId],
@@ -178,6 +194,7 @@ export const clientsTableRelations = relations(clientsTable, ({ one }) => ({
     }),
 }));
 
+//Appointments table
 export const appointmentsTable = pgTable("appointments", {
     id: uuid("id").defaultRandom().primaryKey(),
     date: timestamp("date").notNull(),
@@ -195,6 +212,7 @@ export const appointmentsTable = pgTable("appointments", {
         .references(() => professionalsTable.id, { onDelete: "cascade" }),
 });
 
+//Appointments relations whit enterprise, client and professional
 export const appointmentsTableRelations = relations(appointmentsTable, ({ one }) => ({
     enterprise: one(enterprisesTable, {
         fields: [appointmentsTable.enterpriseId],
@@ -207,5 +225,31 @@ export const appointmentsTableRelations = relations(appointmentsTable, ({ one })
     professional: one(professionalsTable, {
         fields: [appointmentsTable.professionalId],
         references: [professionalsTable.id],
+    }),
+}));
+
+//Products table
+export const productsTable = pgTable("products", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    description: text("description"),
+    category: text("category").notNull(),
+    brand: text("brand").notNull(),
+    quantity: integer("quantity").notNull(),
+    productPriceInCents: integer("product_price_in_cents").notNull(),
+    is_consumable: boolean("is_consumable").notNull().default(true),
+    createdAT: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
+    //Relationships
+    enterpriseId: uuid("enterprise_id")
+        .notNull()
+        .references(() => enterprisesTable.id, { onDelete: "cascade" }),
+})
+
+//Products tables relationships whit relations whit enterprises
+export const prductsTableRelations = relations(productsTable, ({ one }) => ({
+    enterprise: one(enterprisesTable, {
+        fields: [productsTable.enterpriseId],
+        references: [enterprisesTable.id],
     }),
 }));
