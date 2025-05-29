@@ -122,7 +122,7 @@ const EnterpriseForm = () => {
                             {form.formState.isSubmitting ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
-                                "Cadastrar Empresa")}
+                                "Cadastrar empresa")}
                         </Button>
                     </DialogFooter>
                 </form>

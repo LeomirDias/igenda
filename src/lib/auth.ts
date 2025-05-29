@@ -28,14 +28,14 @@ export const auth = betterAuth({
                 },
             });
             //Ao adaptar para múltiplas empresas, o usuário pode ter mais de uma empresa associada. Deve-se atualizar a lógica para lidar com isso.
-            const enterprise = enterprises[0];
+            const enterprise = enterprises?.[0];
             return {
                 user: {
                     ...user,
-                    enterprise: {
-                        id: enterprise.enterpriseId,
-                        name: enterprise.enterprise.name,
-                    }
+                    enterprise: enterprise?.enterpriseId ? {
+                        id: enterprise?.enterpriseId,
+                        name: enterprise?.enterprise?.name,
+                    } : undefined,
                 },
                 session,
             }
