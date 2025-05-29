@@ -54,10 +54,10 @@ export const verificationsTable = pgTable("verifications", {
 export const usersToEnterprisesTable = pgTable("users_to_enterprises", {
     userId: text("user_id")
         .notNull()
-        .references(() => usersTable.id),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
     enterpriseId: uuid("enterprise_id")
         .notNull()
-        .references(() => enterprisesTable.id),
+        .references(() => enterprisesTable.id, { onDelete: "cascade" }),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
 });
@@ -76,9 +76,10 @@ export const usersToEnterprisesTableRelations = relations(usersToEnterprisesTabl
 export const enterprisesTable = pgTable("enterprises", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
+    specialty: text("specialty").notNull(),
     avatarImageURL: text("avatar_image_url"),
     phoneNumber: text("phone_number").notNull(),
-    instagramURL: text("instagram_url"),
+    instagramURL: text("instagram_url").notNull(),
     register: text("register").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
