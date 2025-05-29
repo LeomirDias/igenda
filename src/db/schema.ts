@@ -159,7 +159,7 @@ export const enterpriseServicesTable = pgTable("enterprises_services", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     servicePriceInCents: integer("service_price_in_cents").notNull(),
-    durationInSeconds: integer("duration_in_seconds").notNull(),
+    durationInMinutes: integer("duration_in_minutes").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
     enterpriseId: uuid("enterprise_id")
