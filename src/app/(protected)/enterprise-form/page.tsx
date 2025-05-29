@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-import EnterpriseForm from "./components/enterprise-form";
+import EnterpriseForm from "./_components/enterprise-form";
 
 const EnterpriseFormPage = () => {
 
