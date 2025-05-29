@@ -3,7 +3,7 @@
 import { BookUser, BotMessageSquare, Box, Calendar, Headphones, LayoutDashboard, LinkIcon, LogOutIcon, PlaySquareIcon, Settings, Tag, Users } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -93,6 +93,8 @@ export function AppSidebar() {
 
     const session = authClient.useSession();
 
+    const pathname = usePathname();
+
     const handleSignOut = async () => {
         await authClient.signOut({
             fetchOptions: {
@@ -115,7 +117,7 @@ export function AppSidebar() {
                         <SidebarMenu>
                             {itemsEnterprise.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
+                                    <SidebarMenuButton asChild isActive={pathname === item.url}>
                                         <Link href={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
@@ -126,13 +128,14 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+
                 <SidebarGroup>
-                    <SidebarGroupLabel>Clientes</SidebarGroupLabel>
+                    <SidebarGroupLabel>Meus clientes</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {itemsClients.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
+                                    <SidebarMenuButton asChild isActive={pathname === item.url}>
                                         <Link href={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
@@ -143,13 +146,14 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+
                 <SidebarGroup>
                     <SidebarGroupLabel>Outros</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {othersItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
+                                    <SidebarMenuButton asChild isActive={pathname === item.url}>
                                         <Link href={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
@@ -161,6 +165,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+
             <SidebarFooter className="p-4 border-t">
                 <SidebarMenu>
                     <SidebarMenuItem>
