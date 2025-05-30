@@ -25,6 +25,7 @@ interface upsertServiceFormProps {
 const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
 
     const form = useForm<z.infer<typeof formSchema>>({
+        shouldUnregister: true,
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: service?.name || "",
