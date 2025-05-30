@@ -41,7 +41,7 @@ const itemsEnterprise = [
     },
     {
         title: "Serviços",
-        url: "/services",
+        url: "/enterprise-services",
         icon: Tag,
     },
     {

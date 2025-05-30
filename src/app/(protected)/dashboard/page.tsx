@@ -16,7 +16,7 @@ const DashboardPage = async () => {
         redirect("/authentication");
     }
 
-    if (session?.user.enterprise) {
+    if (!session?.user.enterprise) {
         redirect("/enterprise-form");
     }
 

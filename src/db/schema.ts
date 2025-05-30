@@ -137,7 +137,7 @@ export const professionalsToServicesTable = pgTable("professionals_to_services",
         .references(() => professionalsTable.id, { onDelete: "cascade" }),
     serviceId: uuid("service_id")
         .notNull()
-        .references(() => enterpriseServicesTable.id, { onDelete: "cascade" }),
+        .references(() => servicesTable.id, { onDelete: "cascade" }),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
 });
@@ -148,14 +148,14 @@ export const professionalsToServicesTableRelations = relations(professionalsToSe
         fields: [professionalsToServicesTable.professionalId],
         references: [professionalsTable.id],
     }),
-    service: one(enterpriseServicesTable, {
+    service: one(servicesTable, {
         fields: [professionalsToServicesTable.serviceId],
-        references: [enterpriseServicesTable.id],
+        references: [servicesTable.id],
     }),
 }));
 
 //Catalog table
-export const enterpriseServicesTable = pgTable("enterprises_services", {
+export const servicesTable = pgTable("services", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     servicePriceInCents: integer("service_price_in_cents").notNull(),
@@ -210,7 +210,7 @@ export const appointmentsTable = pgTable("appointments", {
         .references(() => professionalsTable.id, { onDelete: "cascade" }),
     serviceId: uuid("service_id")
         .notNull()
-        .references(() => enterpriseServicesTable.id, { onDelete: "cascade" }),
+        .references(() => servicesTable.id, { onDelete: "cascade" }),
 });
 
 //Appointments relations whit enterprise, client and professional
@@ -227,9 +227,9 @@ export const appointmentsTableRelations = relations(appointmentsTable, ({ one })
         fields: [appointmentsTable.professionalId],
         references: [professionalsTable.id],
     }),
-    service: one(enterpriseServicesTable, {
+    service: one(servicesTable, {
         fields: [appointmentsTable.serviceId],
-        references: [enterpriseServicesTable.id],
+        references: [servicesTable.id],
     }),
 }));
 

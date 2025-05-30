@@ -12,10 +12,13 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { enterpriseSpecialty } from "../_constants";
 
 const enterpriseFormSchema = z.object({
     name: z.string().trim().min(1, { message: "Nome da empresa é obrigatório." }),
-    specialty: z.string().trim().min(1, { message: "Especialidade da empresa é obrigatória." }),
+    specialty: z.string().trim().min(1, { message: "Área de atuação da empresa é obrigatória." }),
     phoneNumber: z.string().trim().min(1, { message: "Telefone da empresa é obrigatório." }),
     register: z.string().trim().min(1, { message: "CPF do responsável ou CNPJ da empresa é obrigatório." }),
     instagramURL: z.string().trim().url({ message: "URL do Instagram inválida." }),
@@ -37,8 +40,6 @@ const EnterpriseForm = () => {
     const onSubmit = async (data: z.infer<typeof enterpriseFormSchema>) => {
         try {
             await createEnterprise(data.name, data.specialty, data.phoneNumber, data.register, data.instagramURL);
-            toast.success("Empresa cadastrada com sucesso!");
-            form.reset();
         } catch (error) {
             if (isRedirectError(error)) {
                 return
@@ -71,9 +72,20 @@ const EnterpriseForm = () => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Área de atuação</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Digite o ramo de atuação da sua empresa" {...field} />
-                                </FormControl>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Selecione sua área de atuação..." />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {enterpriseSpecialty.map((specialty) =>
+                                            <SelectItem key={specialty.value} value={specialty.value}>
+                                                {specialty.label}
+                                            </SelectItem>
+                                        )}
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}
