@@ -1,10 +1,10 @@
-import { Plus } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
 import { auth } from "@/lib/auth";
+
+import AddProfessionalButton from "./_components/add-professional-button";
 
 const ProfessionalsPage = async () => {
 
@@ -26,10 +26,7 @@ const ProfessionalsPage = async () => {
                     <PageDescription>Gerencie os profissionais da sua empresa.</PageDescription>
                 </PageHeaderContent>
                 <PageActions>
-                    <Button>
-                        <Plus />
-                        Adicionar profissional
-                    </Button>
+                    <AddProfessionalButton />
                 </PageActions>
             </PageHeader>
             <PageContent>
