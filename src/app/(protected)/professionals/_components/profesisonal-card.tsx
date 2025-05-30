@@ -1,5 +1,6 @@
 "use client";
 import { Calendar1Icon, Clock10Icon } from "lucide-react";
+import { useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,8 @@ interface ProfessionalCardProps {
 }
 
 const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
+
+    const [isUpsertPRofessionalFormOpen, setIsUpsertProfessionalFormOpen] = useState(false);
 
     const professionalInitials = professional.name
         .split(" ")
@@ -53,11 +56,19 @@ const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
             </CardContent>
             <Separator />
             <CardFooter>
-                <Dialog>
+                <Dialog
+                    open={isUpsertPRofessionalFormOpen}
+                    onOpenChange={setIsUpsertProfessionalFormOpen}>
                     <DialogTrigger asChild>
                         <Button className="w-full">Ver detalhes</Button>
                     </DialogTrigger>
-                    <UpsertProfessionalForm />
+                    <UpsertProfessionalForm professional={{
+                        ...professional,
+                        availableToTime: availability.to.format("HH:mm:ss"),
+                        availableFromTime: availability.from.format("HH:mm:ss"),
+                    }}
+                        onSuccess={() => setIsUpsertProfessionalFormOpen(false)}
+                    />
                 </Dialog>
 
             </CardFooter>

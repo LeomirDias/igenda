@@ -10,6 +10,7 @@ import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/c
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { professionalsTable } from "@/db/schema";
 
 const formSchema = z.object({
     name: z.string().trim().min(1, { message: "Nome do profissional é obrigatório." }),
@@ -32,22 +33,23 @@ const formSchema = z.object({
 );
 
 interface UpsertProfessionalFormProps {
+    professional?: typeof professionalsTable.$inferSelect;
     onSuccess?: () => void;
 }
 
-const UpsertProfessionalForm = ({ onSuccess }: UpsertProfessionalFormProps) => {
+const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalFormProps) => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            specialty: "",
-            phoneNumber: "",
-            instagramURL: "",
-            availableFromWeekDay: "1",
-            availableToWeekDay: "6",
-            availableFromTime: "",
-            availableToTime: "",
+            name: professional?.name || "",
+            specialty: professional?.specialty || "",
+            phoneNumber: professional?.phoneNumber || "",
+            instagramURL: professional?.instagramURL || "",
+            availableFromWeekDay: professional?.availableFromWeekDay?.toString() || "1",
+            availableToWeekDay: professional?.availableToWeekDay?.toString() || "6",
+            availableFromTime: professional?.availableFromTime || "",
+            availableToTime: professional?.availableToTime || "",
         }
     })
 
@@ -65,6 +67,7 @@ const UpsertProfessionalForm = ({ onSuccess }: UpsertProfessionalFormProps) => {
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         upsertProfessionalAction.execute({
             ...values,
+            id: professional?.id,
             availableFromWeekDay: parseInt(values.availableFromWeekDay),
             availableToWeekDay: parseInt(values.availableToWeekDay),
         })
@@ -72,8 +75,8 @@ const UpsertProfessionalForm = ({ onSuccess }: UpsertProfessionalFormProps) => {
 
     return (
         <DialogContent>
-            <DialogTitle>Adicionar profissional</DialogTitle>
-            <DialogDescription>Adicione um novo profissional para sua empresa!</DialogDescription>
+            <DialogTitle>{professional ? professional.name : "Adicionar profissional"}</DialogTitle>
+            <DialogDescription>{professional ? "Edite as informações desse profissional." : "Adicione um novo profissional à sua empresa!"}</DialogDescription>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
@@ -334,7 +337,8 @@ const UpsertProfessionalForm = ({ onSuccess }: UpsertProfessionalFormProps) => {
                         <Button type="submit" disabled={upsertProfessionalAction.isPending}>
                             {upsertProfessionalAction.isPending
                                 ? "Salvando..."
-                                : "Adicionar"}
+                                : professional ? "Salvar"
+                                    : "Editar"}
                         </Button>
                     </DialogFooter>
                 </form>
