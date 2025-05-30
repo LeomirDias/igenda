@@ -12,6 +12,7 @@ export const auth = betterAuth({
         provider: "pg",
         usePlural: true,
         schema,
+
     }),
     socialProviders: {
         google: {
