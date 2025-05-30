@@ -38,7 +38,7 @@ const EnterpriseServicesPage = async () => {
                 </PageActions>
             </PageHeader>
             <PageContent>
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-6 gap-6">
                     {services.map(service => <ServiceCard key={service.id} service={service} />)}
                 </div>
             </PageContent>

@@ -38,7 +38,7 @@ const ProfessionalsPage = async () => {
                 </PageActions>
             </PageHeader>
             <PageContent>
-                <div className="grid grid-cols-3 gap-6">
+                <div className="grid grid-cols-5 gap-6">
                     {professionals.map(professional => <ProfessionalCard key={professional.id} professional={professional} />)}
                 </div>
             </PageContent>

@@ -1,7 +1,21 @@
 "use client";
-import { DollarSign } from "lucide-react";
+import { DollarSign, Trash2 } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import { toast } from "sonner";
 
+import { deleteService } from "@/actions/delete-service";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
@@ -21,6 +35,23 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
 
     const [isUpsertPRofessionalFormOpen, setIsUpsertProfessionalFormOpen] = useState(false);
 
+    const deleteServiceAction = useAction(deleteService, {
+        onSuccess: () => {
+            toast.success("Serviço deletado com sucesso!");
+        },
+        onError: () => {
+            toast.error(`Erro ao deletar serviço.`);
+        },
+    });
+
+    const handleDeleteService = () => {
+        if (!service?.id) {
+            toast.error("Serviço não encontrado.");
+            return;
+        }
+        deleteServiceAction.execute({ id: service?.id || "" });
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -36,7 +67,8 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
                 </Badge>
             </CardContent>
             <Separator />
-            <CardFooter>
+            <CardFooter className="flex flex-col gap-2">
+
                 <Dialog
                     open={isUpsertPRofessionalFormOpen}
                     onOpenChange={setIsUpsertProfessionalFormOpen}>
@@ -46,6 +78,29 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
                     <UpsertServiceForm service={service}
                         onSuccess={() => setIsUpsertProfessionalFormOpen(false)}
                     />
+
+                    {service && (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="outline" className=" w-full hover:bg-red-500 hover:text-white">
+                                    <Trash2 />
+                                    Deletar serviço
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Tem certeza que deseja deletar esse serviço?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Essa ação não pode ser desfeita. Todos os dados relacionados a esse serviço serão perdidos permanentemente.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleDeleteService}>Deletar</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
                 </Dialog>
             </CardFooter>
         </Card>

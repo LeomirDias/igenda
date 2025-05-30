@@ -338,8 +338,8 @@ const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalF
                         <Button type="submit" disabled={upsertProfessionalAction.isPending}>
                             {upsertProfessionalAction.isPending
                                 ? "Salvando..."
-                                : professional ? "Editar"
-                                    : "Cadastrar"}
+                                : professional ? "Editar profissional"
+                                    : "Cadastrar profissional"}
                         </Button>
                     </DialogFooter>
                 </form>

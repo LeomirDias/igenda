@@ -105,8 +105,8 @@ const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
                         <Button type="submit" disabled={upsertServiceAction.isPending}>
                             {upsertServiceAction.isPending
                                 ? "Salvando..."
-                                : service ? "Editar"
-                                    : "Cadastrar"}
+                                : service ? "Editar serviço"
+                                    : "Cadastrar serviço"}
                         </Button>
                     </DialogFooter>
                 </form>
