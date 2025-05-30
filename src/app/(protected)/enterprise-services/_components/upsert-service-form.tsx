@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { servicesTable } from "@/db/schema";
 
 const formSchema = z.object({
     name: z.string().trim().min(1, { message: "Nome do serviço é obrigatório." }),
@@ -17,16 +18,17 @@ const formSchema = z.object({
 })
 
 interface upsertServiceFormProps {
+    service?: typeof servicesTable.$inferSelect;
     onSuccess?: () => void;
 }
 
-const UpsertServiceForm = ({ onSuccess }: upsertServiceFormProps) => {
+const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            servicePrice: 0,
+            name: service?.name || "",
+            servicePrice: service ? service.servicePriceInCents / 100 : 0, // Convert cents to float
         }
     })
 
@@ -44,14 +46,15 @@ const UpsertServiceForm = ({ onSuccess }: upsertServiceFormProps) => {
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         upsertServiceAction.execute({
             ...values,
+            id: service?.id,
             servicePriceInCents: Math.round(values.servicePrice * 100),
         });
     };
 
     return (
         <DialogContent>
-            <DialogTitle>Adicionar serviço</DialogTitle>
-            <DialogDescription>Adicione um novo serviço ao seu catálogo!</DialogDescription>
+            <DialogTitle>{service ? service.name : "Adicionar serviço"}</DialogTitle>
+            <DialogDescription>{service ? "Edite as informações desse serviço." : "Adicione um novo serviço à sua empresa!"}</DialogDescription>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
@@ -101,7 +104,8 @@ const UpsertServiceForm = ({ onSuccess }: upsertServiceFormProps) => {
                         <Button type="submit" disabled={upsertServiceAction.isPending}>
                             {upsertServiceAction.isPending
                                 ? "Salvando..."
-                                : "Adicionar"}
+                                : service ? "Salvar"
+                                    : "Editar"}
                         </Button>
                     </DialogFooter>
                 </form>

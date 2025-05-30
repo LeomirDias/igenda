@@ -1,5 +1,6 @@
 "use client";
 import { DollarSign } from "lucide-react";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,9 @@ interface ServiceCardProps {
 
 
 const ServiceCard = ({ service }: ServiceCardProps) => {
+
+    const [isUpsertPRofessionalFormOpen, setIsUpsertProfessionalFormOpen] = useState(false);
+
     return (
         <Card>
             <CardHeader>
@@ -33,11 +37,15 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             </CardContent>
             <Separator />
             <CardFooter>
-                <Dialog>
+                <Dialog
+                    open={isUpsertPRofessionalFormOpen}
+                    onOpenChange={setIsUpsertProfessionalFormOpen}>
                     <DialogTrigger asChild>
                         <Button className="w-full">Ver detalhes</Button>
                     </DialogTrigger>
-                    <UpsertServiceForm />
+                    <UpsertServiceForm service={service}
+                        onSuccess={() => setIsUpsertProfessionalFormOpen(false)}
+                    />
                 </Dialog>
             </CardFooter>
         </Card>
