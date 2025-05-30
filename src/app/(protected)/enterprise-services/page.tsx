@@ -1,10 +1,14 @@
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
+import { db } from "@/db";
+import { servicesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import AddServiceButton from "./_components/add-service-button";
+import ServiceCard from "./_components/service-card";
 
 const EnterpriseServicesPage = async () => {
 
@@ -18,6 +22,10 @@ const EnterpriseServicesPage = async () => {
         redirect("/enterprise-form");
     }
 
+    const services = await db.query.servicesTable.findMany({
+        where: eq(servicesTable.enterpriseId, session.user.enterprise.id),
+    })
+
     return (
         <PageContainer>
             <PageHeader>
@@ -30,7 +38,9 @@ const EnterpriseServicesPage = async () => {
                 </PageActions>
             </PageHeader>
             <PageContent>
-                <p>Em breve, você poderá gerenciar os serviços da sua empresa.</p>
+                <div className="grid grid-cols-3 gap-6">
+                    {services.map(service => <ServiceCard key={service.id} service={service} />)}
+                </div>
             </PageContent>
         </PageContainer>
     );
