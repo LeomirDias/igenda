@@ -1,8 +1,10 @@
-"use client"
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
+import { upsertProfessional } from "@/actions/upsert-professionals";
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -29,7 +31,11 @@ const formSchema = z.object({
     },
 );
 
-const UpsertProfessionalForm = () => {
+interface UpsertProfessionalFormProps {
+    onSuccess?: () => void;
+}
+
+const UpsertProfessionalForm = ({ onSuccess }: UpsertProfessionalFormProps) => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -45,8 +51,23 @@ const UpsertProfessionalForm = () => {
         }
     })
 
+    const upsertProfessionalAction = useAction(upsertProfessional, {
+        onSuccess: () => {
+            toast.success("Profissional adicionado com sucesso!");
+            onSuccess?.();
+            form.reset();
+        },
+        onError: () => {
+            toast.error(`Erro ao adicionar profissional.`);
+        },
+    });
+
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+        upsertProfessionalAction.execute({
+            ...values,
+            availableFromWeekDay: parseInt(values.availableFromWeekDay),
+            availableToWeekDay: parseInt(values.availableToWeekDay),
+        })
     };
 
     return (
@@ -310,7 +331,11 @@ const UpsertProfessionalForm = () => {
                         )}
                     />
                     <DialogFooter>
-                        <Button type="submit">Adicionar</Button>
+                        <Button type="submit" disabled={upsertProfessionalAction.isPending}>
+                            {upsertProfessionalAction.isPending
+                                ? "Salvando..."
+                                : "Adicionar"}
+                        </Button>
                     </DialogFooter>
                 </form>
             </Form>
