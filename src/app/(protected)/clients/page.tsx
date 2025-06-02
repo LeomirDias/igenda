@@ -28,7 +28,7 @@ const ClientsPage = async () => {
         <PageContainer>
             <PageHeader>
                 <PageHeaderContent>
-                    <PageTitle>Serviços</PageTitle>
+                    <PageTitle>Clientes</PageTitle>
                     <PageDescription>Visualize e gerencie os clientes cadastrados na sua empresa.</PageDescription>
                 </PageHeaderContent>
                 <PageActions>
