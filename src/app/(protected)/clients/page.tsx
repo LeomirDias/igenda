@@ -7,6 +7,8 @@ import { db } from "@/db";
 import { clientsTable, servicesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import AddClientButton from "./_components/add-client-button";
+import { DataTable } from "@/components/ui/data-table";
+import { clientsTableColumns } from "./_components/table-columns";
 
 const ClientsPage = async () => {
 
@@ -36,9 +38,7 @@ const ClientsPage = async () => {
                 </PageActions>
             </PageHeader>
             <PageContent>
-                <div className="grid grid-cols-6 gap-6">
-                    {/*{clients.map(service => <ServiceCard key={service.id} service={service} />)}*/}
-                </div>
+                <DataTable data={clients} columns={clientsTableColumns} />
             </PageContent>
         </PageContainer>
     );

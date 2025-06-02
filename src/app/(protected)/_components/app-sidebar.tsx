@@ -105,12 +105,18 @@ export function AppSidebar() {
         });
     };
 
+    const enterpriseInitials = session.data?.user?.enterprise?.name
+        .split(" ")
+        .map((name) => name[0])
+        .join("");
+
     return (
         <Sidebar>
-            <SidebarHeader className="p-4 border-b flex items-center justify-center">
-                <Image src="/Logo.svg" alt="iGenda" width={128} height={28} />
+            <SidebarHeader className="p-4 border-b flex items-center justify-center bg-background">
+                <Image src="/Logo.svg" alt="iGenda" width={90} height={28} />
             </SidebarHeader>
-            <SidebarContent>
+
+            <SidebarContent className="bg-background">
                 <SidebarGroup>
                     <SidebarGroupLabel>Minha empresa</SidebarGroupLabel>
                     <SidebarGroupContent>
@@ -166,15 +172,15 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="p-4 border-t">
+            <SidebarFooter className="p-4 border-t bg-background">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton size="lg">
-                                    <Avatar>
+                                    <Avatar className="h-10 w-10">
                                         <AvatarFallback>
-                                            F
+                                            {enterpriseInitials}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
