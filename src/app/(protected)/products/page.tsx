@@ -7,6 +7,8 @@ import { db } from "@/db";
 import { clientsTable, productsTable, servicesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import AddProductButton from "./_components/add-product-button";
+import { productsTableColumns } from "./_components/table-columns";
+import { DataTable } from "@/components/ui/data-table";
 
 const ProductsPage = async () => {
 
@@ -36,9 +38,7 @@ const ProductsPage = async () => {
                 </PageActions>
             </PageHeader>
             <PageContent>
-                <div className="grid grid-cols-6 gap-6">
-                    {/*{products.map(service => <ServiceCard key={service.id} service={service} />)}*/}
-                </div>
+                <DataTable data={products} columns={productsTableColumns} />
             </PageContent>
         </PageContainer>
     );
