@@ -46,7 +46,7 @@ const itemsEnterprise = [
     },
     {
         title: "Estoque",
-        url: "/inventory",
+        url: "/products",
         icon: Box,
     },
 ]
