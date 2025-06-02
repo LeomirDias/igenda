@@ -1,18 +1,10 @@
 "use client"
 
-import { clientsTable, productsTable } from "@/db/schema"
+import { productsTable } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
+import TableProductActions from "./table-actions";
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button";
-import { EditIcon, MoreVerticalIcon, Trash2 } from "lucide-react";
+
 
 type Product = typeof productsTable.$inferSelect;
 
@@ -61,23 +53,7 @@ export const productsTableColumns: ColumnDef<Product>[] = [
         cell: (params) => {
             const product = params.row.original;
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <MoreVerticalIcon className="w-4 h-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>Ações para {product.name}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <EditIcon className="w-4 h-4" />
-                            Editar</DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Trash2 className="w-4 h-4" />
-                            Excluir</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <TableProductActions product={product} />
             )
         }
     }
