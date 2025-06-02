@@ -239,6 +239,8 @@ export const productsTable = pgTable("products", {
     quantity: integer("quantity").notNull(),
     productPriceInCents: integer("product_price_in_cents").notNull(),
     is_consumable: boolean("is_consumable").notNull().default(true),
+    quantity_in_stock: integer("quantity_in_stock").default(0),
+    stock_status: text("stock_status").default("Em estoque"),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
     //Relationships
