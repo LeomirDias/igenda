@@ -6,12 +6,26 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { EditIcon, MoreVerticalIcon, Trash2 } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import UpsertClientForm from "./upsert-client-form";
 import { clientsTable } from "@/db/schema";
 import { useState } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { toast } from "sonner";
+import { deleteClient } from "@/actions/delete-clients";
 
 interface ClientTableActionsProps {
     client: typeof clientsTable.$inferSelect;
@@ -19,31 +33,70 @@ interface ClientTableActionsProps {
 
 const TableClientActions = ({ client }: ClientTableActionsProps) => {
     const [upsertDialgoIsOpen, setUpsertDialgoIsOpen] = useState(false);
+    const [deleteAlertDialogIsOpen, setDeleteAlertDialogIsOpen] = useState(false);
+
+    const { execute: executeDeleteClient, status: deleteClientStatus } = useAction(deleteClient, {
+        onSuccess: () => {
+            toast.success("Cliente excluído com sucesso!");
+            setDeleteAlertDialogIsOpen(false);
+        },
+        onError: (error) => {
+            console.error("Erro ao excluir cliente:", error);
+            toast.error("Erro ao excluir cliente. Tente novamente.");
+        },
+    });
+
+    const handleDeleteClient = () => {
+        executeDeleteClient({ id: client.id });
+    };
 
     return (
-        <Dialog open={upsertDialgoIsOpen} onOpenChange={setUpsertDialgoIsOpen}>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <MoreVerticalIcon className="w-4 h-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuLabel>Ações para {client.name}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setUpsertDialgoIsOpen(true)}>
-                        <EditIcon className="w-4 h-4" />
-                        Editar</DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Trash2 className="w-4 h-4" />
-                        Excluir</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            <UpsertClientForm
-                client={client}
-                onSuccess={() => setUpsertDialgoIsOpen(false)}
-            />
-        </Dialog>
+        <>
+            <Dialog open={upsertDialgoIsOpen} onOpenChange={setUpsertDialgoIsOpen}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <MoreVerticalIcon className="w-4 h-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>Ações para {client.name}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setUpsertDialgoIsOpen(true)}>
+                            <EditIcon className="w-4 h-4" />
+                            Editar</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setDeleteAlertDialogIsOpen(true)}>
+                            <Trash2 className="w-4 h-4" />
+                            Excluir</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <UpsertClientForm
+                    client={client}
+                    onSuccess={() => setUpsertDialgoIsOpen(false)}
+                />
+            </Dialog>
+            <AlertDialog open={deleteAlertDialogIsOpen} onOpenChange={setDeleteAlertDialogIsOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Essa ação não pode ser desfeita. Isso excluirá permanentemente o cliente
+                            <span className="font-semibold"> {client.name} </span>
+                            e removerá seus dados de nossos servidores.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deleteClientStatus === "executing"}>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDeleteClient}
+                            disabled={deleteClientStatus === "executing"}
+                        >
+                            {deleteClientStatus === "executing" ? "Excluindo..." : "Excluir"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 }
 
