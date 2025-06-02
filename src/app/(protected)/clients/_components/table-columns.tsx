@@ -2,17 +2,7 @@
 
 import { clientsTable } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
-
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button";
-import { EditIcon, MoreVerticalIcon, Trash2 } from "lucide-react";
+import TableClientActions from "./table-actions";
 
 type Client = typeof clientsTable.$inferSelect;
 
@@ -48,23 +38,7 @@ export const clientsTableColumns: ColumnDef<Client>[] = [
         cell: (params) => {
             const client = params.row.original;
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <MoreVerticalIcon className="w-4 h-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>Ações para {client.name}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <EditIcon className="w-4 h-4" />
-                            Editar</DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <Trash2 className="w-4 h-4" />
-                            Excluir</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <TableClientActions client={client} />
             )
         }
     }
