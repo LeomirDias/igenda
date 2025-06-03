@@ -18,8 +18,6 @@ export default async function EnterpriseLayout({ children, params: routeParams }
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 
-    const slogan = "Conectando você aos melhores serviços!";
-
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
             <header className="sticky top-0 z-50 w-full px-2">
@@ -28,12 +26,12 @@ export default async function EnterpriseLayout({ children, params: routeParams }
                         {enterpriseName}
                     </h1>
                     <p className="text-muted-foreground">
-                        {slogan}
+                        Seja bem-vindo(a) à {enterpriseName}!
                     </p>
                 </div>
             </header>
 
-            <main className="flex-1 px-2">{children}</main>
+            <main className="flex-1">{children}</main>
 
             <footer className="sticky bottom-0 z-40 mt-auto w-full border-t bg-background">
                 <div className="container flex h-16 items-center justify-around p-4">
