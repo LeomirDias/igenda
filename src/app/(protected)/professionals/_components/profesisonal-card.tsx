@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks"
 import { useState } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 import { deleteProfessional } from "@/actions/delete-professional";
 import {
@@ -64,8 +65,18 @@ const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
         <Card>
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Avatar className="h-10 w-10">
-                        <AvatarFallback>{professionalInitials}</AvatarFallback>
+                    <Avatar className="h-10 w-10 relative">
+                        {professional.avatarImageURL ? (
+                            <Image
+                                src={professional.avatarImageURL}
+                                alt={professional.name}
+                                fill
+                                style={{ objectFit: "cover" }}
+                                className="rounded-full"
+                            />
+                        ) : (
+                            <AvatarFallback>{professionalInitials}</AvatarFallback>
+                        )}
                     </Avatar>
                     <div>
                         <h3 className="text-sm font-medium">{professional.name}</h3>
