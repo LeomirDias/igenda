@@ -199,6 +199,7 @@ export const clientsTableRelations = relations(clientsTable, ({ one }) => ({
 export const appointmentsTable = pgTable("appointments", {
     id: uuid("id").defaultRandom().primaryKey(),
     date: timestamp("date").notNull(),
+    time: time("time").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
     //Relationships
