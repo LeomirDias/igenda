@@ -1,8 +1,27 @@
-import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
+const HomePage = async () => {
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/authentication");
+  }
+
+  if (!session?.user.enterprise) {
+    redirect("/enterprise-form");
+  }
+  else {
+    redirect("/dashboard");
+  }
 
   return (
-    <Button>Bootcamp</Button>
+    <h1>Página Inicial</h1>
   );
 }
+
+export default HomePage;

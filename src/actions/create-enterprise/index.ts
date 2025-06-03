@@ -7,8 +7,37 @@ import { db } from "@/db";
 import { enterprisesTable, usersToEnterprisesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
+// Função para gerar slug corrigida e mais robusta
+const generateSlug = (name: string) => {
+    if (!name) return "";
+    let slug = name.toLowerCase();
+    // Substitui caracteres acentuados e especiais por seus equivalentes sem acento
+    slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // Substitui espaços e múltiplos hífens por um único hífen
+    slug = slug.replace(/\s+/g, "-");
+    // Remove todos os caracteres que não sejam letras, números ou hífens
+    slug = slug.replace(/[^a-z0-9-]/g, "");
+    // Substitui múltiplos hífens consecutivos por um único hífen
+    slug = slug.replace(/-+/g, "-");
+    // Remove hífens no início ou no fim
+    slug = slug.replace(/^-+|-+$/g, "");
+    return slug;
+};
 
-export const createEnterprise = async (name: string, specialty: string, phoneNumber: string, register: string, instagramURL: string) => {
+export const createEnterprise = async (
+    name: string,
+    specialty: string,
+    phoneNumber: string,
+    register: string,
+    instagramURL: string,
+    cep: string,
+    address: string,
+    number: string,
+    complement: string | undefined,
+    city: string,
+    state: string,
+) => {
+    console.log("[Action: createEnterprise] Recebido:", { name, specialty, phoneNumber, register, instagramURL, cep, address, number, complement, city, state });
 
     // Ensure the user is authenticated
     const session = await auth.api.getSession({
@@ -18,7 +47,24 @@ export const createEnterprise = async (name: string, specialty: string, phoneNum
         throw new Error("Unauthorized");
     }
 
-    const [enterprise] = await db.insert(enterprisesTable).values({ name, specialty, phoneNumber, register, instagramURL }).returning();
+    const slug = generateSlug(name);
+    console.log("[Action: createEnterprise] Slug Gerado:", slug);
+
+    const [enterprise] = await db.insert(enterprisesTable).values({
+        name,
+        specialty,
+        phoneNumber,
+        register,
+        instagramURL,
+        slug,
+        cep,
+        address,
+        number,
+        complement,
+        city,
+        state,
+    }).returning();
+    console.log("[Action: createEnterprise] Empresa Inserida:", enterprise);
 
     await db.insert(usersToEnterprisesTable).values({
         userId: session.user.id,
