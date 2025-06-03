@@ -45,6 +45,7 @@ export const upsertProfessional = actionClient
             .values({
                 ...parsedInput,
                 id: parsedInput.id,
+                avatarImageURL: parsedInput.avatarImageURL,
                 enterpriseId: session?.user.enterprise?.id,
                 availableFromTime: availableFromTimeUTC.format("HH:mm:ss"),
                 availableToTime: availableToTimeUTC.format("HH:mm:ss"),
@@ -53,6 +54,7 @@ export const upsertProfessional = actionClient
                 target: [professionalsTable.id],
                 set: {
                     ...parsedInput,
+                    avatarImageURL: parsedInput.avatarImageURL,
                     availableFromTime: availableFromTimeUTC.format("HH:mm:ss"),
                     availableToTime: availableToTimeUTC.format("HH:mm:ss"),
                 },
