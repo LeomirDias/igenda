@@ -43,6 +43,15 @@ export const appointmentsTableColumns: ColumnDef<AppointmentWithRelations>[] = [
         },
     },
     {
+        id: "service",
+        accessorKey: "service.name",
+        header: "Serviço",
+        cell: (params) => {
+            const appointment = params.row.original;
+            return `${appointment.service.name}`;
+        },
+    },
+    {
         id: "date",
         accessorKey: "date",
         header: "Data e Hora",

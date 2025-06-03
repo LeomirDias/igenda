@@ -51,10 +51,10 @@ import { clientsTable, professionalsTable, servicesTable } from "@/db/schema";
 
 const formSchema = z.object({
     clientId: z.string().min(1, {
-        message: "Paciente é obrigatório.",
+        message: "Cliente é obrigatório.",
     }),
     professionalId: z.string().min(1, {
-        message: "Médico é obrigatório.",
+        message: "Profissional é obrigatório.",
     }),
     serviceId: z.string().min(1, {
         message: "Serviço é obrigatório.",
@@ -175,7 +175,7 @@ const AddAppointmentForm = ({
                                 >
                                     <FormControl>
                                         <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Selecione um paciente" />
+                                            <SelectValue placeholder="Selecione um cliente" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
