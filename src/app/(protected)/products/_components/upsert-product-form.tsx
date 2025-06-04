@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import z from "zod";
 import React from "react";
 
-import { Button } from "@/components/ui/button";
+
 import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -13,11 +13,13 @@ import { productsTable } from "@/db/schema";
 import { upsertProduct } from "@/actions/upsert-product";
 import { getProductCategories } from "@/actions/get-product-categories";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import { NumericFormat } from "react-number-format";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 
 
@@ -159,7 +161,7 @@ const UpsertProductForm = ({ product, onSuccess }: upsertProductoForm) => {
                                         <Command shouldFilter={false}>
                                             <CommandInput
                                                 placeholder="Buscar categoria ou criar nova..."
-                                                onInput={(e) => {
+                                                onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     const value = (e.target as HTMLInputElement).value;
                                                     field.onChange(value);
                                                 }}
