@@ -2,11 +2,23 @@
 
 import { productsTable } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
-import TableProductActions from "./table-actions";
-
-
+import TableProductActions from "./table-actions"
+import { Badge } from "@/components/ui/badge"
 
 type Product = typeof productsTable.$inferSelect;
+
+const getStatusBadgeVariant = (status: string): "default" | "destructive" | "secondary" | "outline" => {
+    switch (status.toLowerCase()) {
+        case "em estoque":
+            return "default"
+        case "em falta":
+            return "destructive"
+        case "estoque baixo":
+            return "secondary"
+        default:
+            return "outline"
+    }
+}
 
 export const productsTableColumns: ColumnDef<Product>[] = [
     {
@@ -47,6 +59,14 @@ export const productsTableColumns: ColumnDef<Product>[] = [
         id: "stock_status",
         accessorKey: "stock_status",
         header: "Status do estoque",
+        cell: ({ row }) => {
+            const status = row.original.stock_status;
+            return status ? (
+                <Badge variant={getStatusBadgeVariant(status)}>
+                    {status}
+                </Badge>
+            ) : null;
+        }
     },
     {
         id: "actions",
