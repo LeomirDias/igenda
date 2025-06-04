@@ -6,11 +6,12 @@ import { auth } from "@/lib/auth";
 
 import { DatePicker } from "./_components/date-picker";
 import { appointmentsTable, professionalsTable, clientsTable } from "@/db/schema";
-import { and, count, eq, gte, lte, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, lte, sql, sum } from "drizzle-orm";
 import { db } from "@/db";
 import StatsCards from "./_components/stats-cards";
 import dayjs from "dayjs";
 import { AppointmentsChart } from "./_components/appoitments-chart";
+import TopProfessionals from "./_components/top-professionals";
 
 interface DashboardPageProps {
     searchParams: Promise<{
@@ -45,7 +46,8 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
         [totalRevenue],
         [totalAppointments],
         [totalClients],
-        [totalProfessionals]
+        [totalProfessionals],
+        topProfessionals
     ] = await Promise.all([
         db.select({
             total: sum(appointmentsTable.appointmentPriceInCents),
@@ -89,7 +91,27 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
                 and(
                     eq(professionalsTable.enterpriseId, session.user.enterprise.id),
                 )
+            ),
+
+        db.select({
+            id: professionalsTable.id,
+            name: professionalsTable.name,
+            avatarImageUrl: professionalsTable.avatarImageURL,
+            specialty: professionalsTable.specialty,
+            appointments: count(appointmentsTable.id),
+        })
+            .from(professionalsTable)
+            .leftJoin(appointmentsTable,
+                and(
+                    eq(appointmentsTable.professionalId, professionalsTable.id),
+                    gte(appointmentsTable.date, new Date(from)),
+                    lte(appointmentsTable.date, new Date(to)),
+                )
             )
+            .where(eq(professionalsTable.enterpriseId, session.user.enterprise.id))
+            .groupBy(professionalsTable.id)
+            .orderBy(desc(count(professionalsTable.name)))
+            .limit(10)
     ]);
 
     const chartStartDate = dayjs().subtract(10, 'days').startOf('day').toDate();
@@ -131,8 +153,9 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
                     totalProfessionals={totalProfessionals.total}
                 />
             </PageContent>
-            <div className="grid grid-cols-[2.25fr_1fr]">
+            <div className="grid grid-cols-[2.25fr_1fr] gap-4">
                 <AppointmentsChart dailyAppointmentsData={dailyAppointmentsData} />
+                <TopProfessionals professionals={topProfessionals} />
             </div>
         </PageContainer>
     );

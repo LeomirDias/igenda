@@ -60,7 +60,7 @@ export function AppointmentsChart({ dailyAppointmentsData }: AppointmentsChartPr
     return (
         <Card>
             <CardHeader className="flex flex-row items-center gap-2">
-                <DollarSign />
+                <DollarSign className="text-muted-foreground" />
                 <CardTitle>Agendamentos e faturamento</CardTitle>
                 <CardDescription>
                     Total de agendamentos e faturamento para os últimos 21 dias
