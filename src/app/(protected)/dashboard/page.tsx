@@ -18,6 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { appointmentsTableColumns } from "../appointments/_components/table-columns";
+import getDashboard from "@/data/get-dashboard";
 
 interface DashboardPageProps {
     searchParams: Promise<{
@@ -48,131 +49,12 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
         );
     }
 
-    const [
-        [totalRevenue],
-        [totalAppointments],
-        [totalClients],
-        [totalProfessionals],
-        topProfessionals,
-        topServices,
-        todayAppointments,
-    ] = await Promise.all([
-        db.select({
-            total: sum(appointmentsTable.appointmentPriceInCents),
-        })
-            .from(appointmentsTable)
-            .where(
-                and(
-                    eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-                    gte(appointmentsTable.date, new Date(from)),
-                    lte(appointmentsTable.date, new Date(to)),
-                )
-            ),
-
-        db.select({
-            total: count(appointmentsTable.id),
-        })
-            .from(appointmentsTable)
-            .where(
-                and(
-                    eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-                    gte(appointmentsTable.date, new Date(from)),
-                    lte(appointmentsTable.date, new Date(to)),
-                )
-            ),
-
-        db.select({
-            total: count(),
-        })
-            .from(clientsTable)
-            .where(
-                and(
-                    eq(clientsTable.enterpriseId, session.user.enterprise.id),
-                )
-            ),
-
-        db.select({
-            total: count(),
-        })
-            .from(professionalsTable)
-            .where(
-                and(
-                    eq(professionalsTable.enterpriseId, session.user.enterprise.id),
-                )
-            ),
-
-        db.select({
-            id: professionalsTable.id,
-            name: professionalsTable.name,
-            avatarImageUrl: professionalsTable.avatarImageURL,
-            specialty: professionalsTable.specialty,
-            appointments: count(appointmentsTable.id),
-        })
-            .from(professionalsTable)
-            .leftJoin(appointmentsTable,
-                and(
-                    eq(appointmentsTable.professionalId, professionalsTable.id),
-                    gte(appointmentsTable.date, new Date(from)),
-                    lte(appointmentsTable.date, new Date(to)),
-                )
-            )
-            .where(eq(professionalsTable.enterpriseId, session.user.enterprise.id))
-            .groupBy(professionalsTable.id)
-            .orderBy(desc(count(professionalsTable.name)))
-            .limit(10),
-
-        db.select({
-            id: servicesTable.id,
-            name: servicesTable.name,
-            appointments: count(appointmentsTable.id),
-        })
-            .from(servicesTable)
-            .leftJoin(appointmentsTable,
-                and(
-                    eq(appointmentsTable.serviceId, servicesTable.id),
-                    gte(appointmentsTable.date, new Date(from)),
-                    lte(appointmentsTable.date, new Date(to)),
-                )
-            )
-            .where(eq(servicesTable.enterpriseId, session.user.enterprise.id))
-            .groupBy(servicesTable.id)
-            .orderBy(desc(count(servicesTable.name)))
-            .limit(5),
-
-        db.query.appointmentsTable.findMany({
-            where: and(
-                eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-                gte(appointmentsTable.date, new Date(from)),
-                lte(appointmentsTable.date, new Date(to)),
-            ),
-            with: {
-                client: true,
-                professional: true,
-                service: true,
-            }
-        })
-
-    ]);
-
-    const chartStartDate = dayjs().subtract(10, 'days').startOf('day').toDate();
-    const chartEndDate = dayjs().add(10, 'days').endOf('day').toDate();
-
-    const dailyAppointmentsData = await db
-        .select({
-            date: sql<string>`DATE(${appointmentsTable.date})`.as("date"),
-            appointments: count(appointmentsTable.id),
-            revenue: sql<number>`COALESCE(SUM(${appointmentsTable.appointmentPriceInCents}), 0)`.as("revenue"),
-        })
-        .from(appointmentsTable)
-        .where(
-            and(
-                eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-                gte(appointmentsTable.date, chartStartDate),
-                lte(appointmentsTable.date, chartEndDate),
-            ),
-        )
-        .groupBy(sql`DATE(${appointmentsTable.date})`)
-        .orderBy(sql`DATE(${appointmentsTable.date})`);
+    const { totalRevenue, totalAppointments, totalClients, totalProfessionals, topProfessionals, topServices, todayAppointments, dailyAppointmentsData } =
+        await getDashboard({
+            from,
+            to,
+            session: { user: { enterprise: { id: session.user.enterprise.id } } },
+        });
 
     return (
         <PageContainer>
