@@ -1,9 +1,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
 import { auth } from "@/lib/auth";
 
-import SignOutButton from "./_components/sign-out-button";
+import { DatePicker } from "./_components/date-picker";
 
 
 const DashboardPage = async () => {
@@ -21,11 +22,20 @@ const DashboardPage = async () => {
     }
 
     return (
-        <div>
-            <h1>{session?.user?.name}</h1>
-            <h1>{session?.user?.email}</h1>
-            <SignOutButton />
-        </div>
+        <PageContainer>
+            <PageHeader>
+                <PageHeaderContent>
+                    <PageTitle>Clientes</PageTitle>
+                    <PageDescription>Visualize e gerencie os clientes cadastrados na sua empresa.</PageDescription>
+                </PageHeaderContent>
+                <PageActions>
+                    <DatePicker />
+                </PageActions>
+            </PageHeader>
+            <PageContent>
+                <></>
+            </PageContent>
+        </PageContainer>
     );
 }
 
