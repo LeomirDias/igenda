@@ -3,9 +3,10 @@
 import dayjs from "dayjs";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { appointmentsTable } from "@/db/schema";
+import { appointmentsTable, servicesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
@@ -38,6 +39,16 @@ export const addAppointment = actionClient
         if (!isTimeAvailable) {
             throw new Error("Time not available");
         }
+
+        // Busca o preço do serviço selecionado
+        const service = await db.query.servicesTable.findFirst({
+            where: eq(servicesTable.id, parsedInput.serviceId),
+        });
+
+        if (!service) {
+            throw new Error("Service not found");
+        }
+
         const appointmentDateTime = dayjs(parsedInput.date)
             .set("hour", parseInt(parsedInput.time.split(":")[0]))
             .set("minute", parseInt(parsedInput.time.split(":")[1]))
@@ -51,6 +62,7 @@ export const addAppointment = actionClient
             date: appointmentDateTime,
             enterpriseId: session.user.enterprise.id,
             id: parsedInput.id,
+            appointmentPriceInCents: service.servicePriceInCents, // Define o preço do agendamento igual ao preço do serviço
         });
 
         revalidatePath("/appointments");

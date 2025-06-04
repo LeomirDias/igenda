@@ -31,7 +31,7 @@ export const appointmentsTableColumns: ColumnDef<AppointmentWithRelations>[] = [
     {
         id: "client",
         accessorKey: "client.name",
-        header: "Cleinte",
+        header: "Cliente",
     },
     {
         id: "professional",
@@ -69,11 +69,11 @@ export const appointmentsTableColumns: ColumnDef<AppointmentWithRelations>[] = [
     },
     {
         id: "price",
-        accessorKey: "service.servicePriceInCents",
+        accessorKey: "appointmentPriceInCents",
         header: "Valor",
         cell: (params) => {
             const appointment = params.row.original;
-            const price = appointment.service.servicePriceInCents / 100;
+            const price = appointment.appointmentPriceInCents / 100;
             return new Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",

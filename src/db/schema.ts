@@ -200,6 +200,7 @@ export const appointmentsTable = pgTable("appointments", {
     id: uuid("id").defaultRandom().primaryKey(),
     date: timestamp("date").notNull(),
     time: time("time").notNull(),
+    appointmentPriceInCents: integer("appointment_price_in_cents").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
     //Relationships
