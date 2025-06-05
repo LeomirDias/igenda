@@ -1,6 +1,6 @@
 "use client";
 
-import { BookUser, BotMessageSquare, Box, Calendar, Headphones, LayoutDashboard, LinkIcon, LogOutIcon, PlaySquareIcon, Settings, Tag, Users } from "lucide-react"
+import { BookUser, BotMessageSquare, Box, Calendar, CircleHelp, CreditCard, LayoutDashboard, LinkIcon, LogOutIcon, PlaySquareIcon, Settings, Tag, Users } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation";
@@ -49,6 +49,11 @@ const itemsEnterprise = [
         url: "/products",
         icon: Box,
     },
+    {
+        title: "Ajustes",
+        url: "/settings",
+        icon: Settings,
+    },
 ]
 
 const itemsClients = [
@@ -71,9 +76,9 @@ const itemsClients = [
 
 const othersItems = [
     {
-        title: "Suporte iGenda",
-        url: "/support",
-        icon: Headphones,
+        title: "Planos",
+        url: "/subscription",
+        icon: CreditCard,
     },
     {
         title: "Tutoriais",
@@ -81,9 +86,9 @@ const othersItems = [
         icon: PlaySquareIcon,
     },
     {
-        title: "Ajustes",
-        url: "/settings",
-        icon: Settings,
+        title: "Suporte iGenda",
+        url: "/support",
+        icon: CircleHelp,
     },
 ]
 
@@ -154,7 +159,7 @@ export function AppSidebar() {
                 </SidebarGroup>
 
                 <SidebarGroup>
-                    <SidebarGroupLabel>Outros</SidebarGroupLabel>
+                    <SidebarGroupLabel>Minha iGenda</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {othersItems.map((item) => (

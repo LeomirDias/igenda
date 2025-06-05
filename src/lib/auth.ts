@@ -26,6 +26,7 @@ export const auth = betterAuth({
                 where: eq(schema.usersToEnterprisesTable.userId, user.id),
                 with: {
                     enterprise: true,
+                    user: true,
                 },
             });
             //Ao adaptar para múltiplas empresas, o usuário pode ter mais de uma empresa associada. Deve-se atualizar a lógica para lidar com isso.
@@ -33,6 +34,7 @@ export const auth = betterAuth({
             return {
                 user: {
                     ...user,
+                    plan: enterprise?.user.plan,
                     enterprise: enterprise?.enterpriseId ? {
                         id: enterprise?.enterpriseId,
                         name: enterprise?.enterprise?.name,
@@ -43,7 +45,24 @@ export const auth = betterAuth({
         })
     ],
     user: {
-        modelName: "usersTable"
+        modelName: "usersTable",
+        additionalFields: {
+            stripeCustomerId: {
+                type: "string",
+                fieldName: "stripeCustomerId",
+                required: false,
+            },
+            stripeSubscriptionId: {
+                type: "string",
+                fieldName: "stripeSubscriptionId",
+                required: false,
+            },
+            plan: {
+                type: "string",
+                fieldName: "plan",
+                required: false,
+            },
+        },
     },
     session: {
         modelName: "sessionsTable"
