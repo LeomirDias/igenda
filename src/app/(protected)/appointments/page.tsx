@@ -31,6 +31,9 @@ const AppointmentsPage = async () => {
     if (!session.user.enterprise) {
         redirect("/enterprise-form");
     }
+    if (!session.user.plan) {
+        redirect("/subscription-plans");
+    }
 
     const [clients, professionals, appointments, services] = await Promise.all([
         db.query.clientsTable.findMany({

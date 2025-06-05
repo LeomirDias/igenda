@@ -18,8 +18,11 @@ const ClientsPage = async () => {
     if (!session?.user) {
         redirect("/authentication");
     }
-    if (!session?.user.enterprise) {
+    if (!session.user.enterprise) {
         redirect("/enterprise-form");
+    }
+    if (!session.user.plan) {
+        redirect("/subscription-plans");
     }
 
     const clients = await db.query.clientsTable.findMany({

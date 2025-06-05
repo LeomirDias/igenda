@@ -12,14 +12,18 @@ import ProfessionalCard from "./_components/profesisonal-card";
 
 const ProfessionalsPage = async () => {
 
+
     const session = await auth.api.getSession({
         headers: await headers(),
     });
     if (!session?.user) {
         redirect("/authentication");
     }
-    if (!session?.user.enterprise) {
+    if (!session.user.enterprise) {
         redirect("/enterprise-form");
+    }
+    if (!session.user.plan) {
+        redirect("/subscription-plans");
     }
 
     const professionals = await db.query.professionalsTable.findMany({

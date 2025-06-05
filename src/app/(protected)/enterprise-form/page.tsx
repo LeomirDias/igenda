@@ -1,8 +1,25 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+import { auth } from "@/lib/auth";
 
 import EnterpriseForm from "./_components/enterprise-form";
 
-const EnterpriseFormPage = () => {
+const EnterpriseFormPage = async () => {
+
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+    if (!session?.user) {
+        redirect("/authentication");
+    }
+    if (session.user.enterprise) {
+        redirect("/dashboard");
+    }
+    // if (!session.user.plan) {
+    //     redirect("/subscription-plans");
+    // }
 
 
     return (

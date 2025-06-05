@@ -13,9 +13,6 @@ export const createStripeCheckout = actionClient.action(async () => {
     if (!session) {
         throw new Error("Unauthorized")
     }
-    if (!session.user.enterprise) {
-        throw new Error("Enterprise not found")
-    }
     if (!process.env.STRIPE_SECRET_KEY) {
         throw new Error("Stripe secret key not found")
     }

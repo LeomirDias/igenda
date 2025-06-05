@@ -12,14 +12,18 @@ import ServiceCard from "./_components/service-card";
 
 const EnterpriseServicesPage = async () => {
 
+
     const session = await auth.api.getSession({
         headers: await headers(),
     });
     if (!session?.user) {
         redirect("/authentication");
     }
-    if (!session?.user.enterprise) {
+    if (!session.user.enterprise) {
         redirect("/enterprise-form");
+    }
+    if (!session.user.plan) {
+        redirect("/subscription-plans");
     }
 
     const services = await db.query.servicesTable.findMany({

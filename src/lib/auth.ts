@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import * as schema from '@/db/schema';
+import { usersTable } from "@/db/schema";
 
 
 export const auth = betterAuth({
@@ -22,19 +23,24 @@ export const auth = betterAuth({
     },
     plugins: [
         customSession(async ({ user, session }) => {
-            const enterprises = await db.query.usersToEnterprisesTable.findMany({
-                where: eq(schema.usersToEnterprisesTable.userId, user.id),
-                with: {
-                    enterprise: true,
-                    user: true,
-                },
-            });
+            const [userData, enterprises] = await Promise.all([
+                db.query.usersTable.findFirst({
+                    where: eq(usersTable.id, user.id),
+                }),
+                db.query.usersToEnterprisesTable.findMany({
+                    where: eq(schema.usersToEnterprisesTable.userId, user.id),
+                    with: {
+                        enterprise: true,
+                        user: true,
+                    },
+                })
+            ]);
             //Ao adaptar para múltiplas empresas, o usuário pode ter mais de uma empresa associada. Deve-se atualizar a lógica para lidar com isso.
             const enterprise = enterprises?.[0];
             return {
                 user: {
                     ...user,
-                    plan: enterprise?.user.plan,
+                    plan: userData?.plan,
                     enterprise: enterprise?.enterpriseId ? {
                         id: enterprise?.enterpriseId,
                         name: enterprise?.enterprise?.name,
