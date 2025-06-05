@@ -1,6 +1,6 @@
 "use client";
 
-import { BookUser, BotMessageSquare, Box, Calendar, CircleHelp, CreditCard, LayoutDashboard, LinkIcon, LogOutIcon, PlaySquareIcon, Settings, Tag, Users } from "lucide-react"
+import { BookUser, BotMessageSquare, Box, Calendar, CircleHelp, CreditCard, LayoutDashboard, LinkIcon, LogOutIcon, PlaySquareIcon, Settings, SettingsIcon, Tag, Users } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation";
@@ -48,11 +48,6 @@ const itemsEnterprise = [
         title: "Estoque",
         url: "/products",
         icon: Box,
-    },
-    {
-        title: "Ajustes",
-        url: "/settings",
-        icon: Settings,
     },
 ]
 
@@ -195,6 +190,11 @@ export function AppSidebar() {
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/settings">
+                                        <SettingsIcon />Configurações
+                                    </Link>
+                                </DropdownMenuItem>
                                 <DropdownMenuItem onClick={handleSignOut}>
                                     <LogOutIcon />Sair
                                 </DropdownMenuItem>
