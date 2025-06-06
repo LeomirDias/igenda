@@ -15,6 +15,7 @@ import { servicesTable } from "@/db/schema";
 const formSchema = z.object({
     name: z.string().trim().min(1, { message: "Nome do serviço é obrigatório." }),
     servicePrice: z.number().min(1, { message: "Preço do serviço é obrigatório" }),
+    durationInMinutes: z.number().min(1, { message: "Duração do serviço é obrigatória" }),
 })
 
 interface upsertServiceFormProps {
@@ -30,6 +31,7 @@ const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
         defaultValues: {
             name: service?.name || "",
             servicePrice: service ? service.servicePriceInCents / 100 : 0, // Convert cents to float
+            durationInMinutes: service ? service.durationInMinutes : 0,
         }
     })
 
@@ -49,6 +51,7 @@ const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
             ...values,
             id: service?.id,
             servicePriceInCents: Math.round(values.servicePrice * 100),
+            durationInMinutes: values.durationInMinutes,
         });
     };
 
@@ -68,6 +71,26 @@ const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Input placeholder="Digite o nome do serviço" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="durationInMinutes"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>
+                                    Duração do serviço
+                                </FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        placeholder="Digite a duração do serviço"
+                                        {...field}
+                                        onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

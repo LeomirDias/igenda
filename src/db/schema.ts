@@ -168,6 +168,7 @@ export const professionalsToServicesTableRelations = relations(professionalsToSe
 export const servicesTable = pgTable("services", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
+    durationInMinutes: integer("duration_in_minutes").notNull(),
     servicePriceInCents: integer("service_price_in_cents").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),

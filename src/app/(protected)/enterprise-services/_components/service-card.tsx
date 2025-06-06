@@ -1,5 +1,5 @@
 "use client";
-import { DollarSign, Trash2 } from "lucide-react";
+import { Clock, DollarSign, Trash2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -61,6 +61,10 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
             </CardHeader>
             <Separator />
             <CardContent className="flex flex-col gap-2">
+                <Badge variant="outline">
+                    <Clock className="mr-1" />
+                    {service.durationInMinutes} minutos
+                </Badge>
                 <Badge variant="outline">
                     <DollarSign className="mr-1" />
                     {formatCurrencyInCents(service.servicePriceInCents)}
