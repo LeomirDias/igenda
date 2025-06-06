@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { verifyAndCreateClient } from "@/actions/public-create-client";
+import { verifyCode } from "@/actions/client-verifications";
 
 const verificationSchema = z.object({
     code: z.string().length(6, { message: "O código deve ter 6 dígitos" }),
@@ -38,7 +38,7 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
         },
     });
 
-    const verifyAndCreateAction = useAction(verifyAndCreateClient, {
+    const verifyCodeAction = useAction(verifyCode, {
         onSuccess: ({ data }) => {
             if (data?.success) {
                 toast.success("Conta criada com sucesso!");
@@ -54,7 +54,7 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
     });
 
     const onSubmit = (values: z.infer<typeof verificationSchema>) => {
-        verifyAndCreateAction.execute({
+        verifyCodeAction.execute({
             email: clientData.email,
             code: values.code,
             enterpriseSlug,
@@ -64,11 +64,11 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
     return (
         <Card>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" autoComplete="off">
                     <CardHeader>
                         <CardTitle>Verificação</CardTitle>
                         <CardDescription>
-                            Digite o código de 6 dígitos enviado para o seu console.
+                            Digite o código de 6 dígitos enviado para o seu e-mail.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -82,7 +82,17 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
                                         <Input
                                             placeholder="Digite o código..."
                                             maxLength={6}
-                                            {...field}
+                                            autoComplete="off"
+                                            type="text"
+                                            inputMode="numeric"
+                                            value={field.value}
+                                            onChange={(e) => {
+                                                // Permite apenas números
+                                                const value = e.target.value.replace(/\D/g, '');
+                                                if (value.length <= 6) {
+                                                    field.onChange(value);
+                                                }
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -91,8 +101,8 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
                         />
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" className="w-full" disabled={verifyAndCreateAction.isPending}>
-                            {verifyAndCreateAction.isPending ? (
+                        <Button type="submit" className="w-full" disabled={verifyCodeAction.isPending}>
+                            {verifyCodeAction.isPending ? (
                                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verificando...</>
                             ) : (
                                 "Verificar"

@@ -199,6 +199,21 @@ export const clientsTableRelations = relations(clientsTable, ({ one }) => ({
     }),
 }));
 
+//Client verifications table
+export const clientSessionsTable = pgTable("client_sessions", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    token: text("token").notNull(),
+    clientId: uuid("client_id")
+        .notNull()
+        .references(() => clientsTable.id, { onDelete: "cascade" }),
+    enterpriseId: uuid("enterprise_id")
+        .notNull()
+        .references(() => enterprisesTable.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
+});
+
 //Appointments table
 export const appointmentsTable = pgTable("appointments", {
     id: uuid("id").defaultRandom().primaryKey(),

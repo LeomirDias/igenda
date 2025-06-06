@@ -7,13 +7,15 @@ import { toast } from "sonner";
 import z from "zod";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { initiateVerification } from "@/actions/public-create-client";
+import { generateCode } from "@/actions/client-verifications";
 import VerificationForm from "./verification-form";
+import { upsertClient } from "@/actions/upsert-client";
 
 const clientRegisterSchema = z.object({
     name: z.string().trim().min(1, { message: "O nome é obrigatório" }),
@@ -24,6 +26,7 @@ const clientRegisterSchema = z.object({
 type ClientFormData = z.infer<typeof clientRegisterSchema>;
 
 const ClientSignUpForm = () => {
+    const params = useParams();
     const [showVerification, setShowVerification] = useState(false);
     const [clientData, setClientData] = useState<ClientFormData | null>(null);
 
@@ -36,11 +39,11 @@ const ClientSignUpForm = () => {
         },
     });
 
-    const initiateVerificationAction = useAction(initiateVerification, {
+    const generateCodeAction = useAction(generateCode, {
         onSuccess: ({ data }) => {
             if (data?.success) {
                 setShowVerification(true);
-                toast.success("Código de verificação enviado! Verifique o console.");
+                toast.success("Código de verificação enviado! Verifique seu WhatsApp.");
             } else {
                 toast.error(data?.message || "Erro ao enviar código de verificação");
             }
@@ -51,9 +54,19 @@ const ClientSignUpForm = () => {
         },
     });
 
+    const upsertClientAction = useAction(upsertClient, {
+        onError: (error) => {
+            console.error("Erro ao criar cliente:", error);
+            toast.error("Erro ao criar sua conta");
+        },
+    });
+
     const onSubmit = (values: ClientFormData) => {
         setClientData(values);
-        initiateVerificationAction.execute(values);
+        generateCodeAction.execute({
+            email: values.email,
+            clientData: values,
+        });
     };
 
     if (showVerification && clientData) {
@@ -114,8 +127,8 @@ const ClientSignUpForm = () => {
                         />
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" className="w-full" disabled={initiateVerificationAction.isPending}>
-                            {initiateVerificationAction.isPending ? (
+                        <Button type="submit" className="w-full" disabled={generateCodeAction.isPending}>
+                            {generateCodeAction.isPending ? (
                                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando código...</>
                             ) : (
                                 "Criar conta"
