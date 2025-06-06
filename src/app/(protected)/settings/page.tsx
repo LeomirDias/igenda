@@ -1,11 +1,13 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { eq } from "drizzle-orm";
 
 import { PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
 import { auth } from "@/lib/auth";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { db } from "@/db";
+import { enterprisesTable } from "@/db/schema";
 import UserCard from "./_components/user-card";
+import EnterpriseCard from "./_components/enterprise-card";
 
 const SettingsPage = async () => {
 
@@ -22,6 +24,14 @@ const SettingsPage = async () => {
         redirect("/subscription-plans");
     }
 
+    const enterprise = await db.query.enterprisesTable.findFirst({
+        where: eq(enterprisesTable.id, session.user.enterprise.id),
+    });
+
+    if (!enterprise) {
+        throw new Error("Empresa não encontrada");
+    }
+
     return (
         <PageContainer>
             <PageHeader>
@@ -31,9 +41,9 @@ const SettingsPage = async () => {
                 </PageHeaderContent>
             </PageHeader>
             <PageContent>
-                <div className="grid grid-cols-[2.25fr_1fr] gap-4">
+                <div className="flex flex-col gap-4">
                     <UserCard user={session.user} />
-                    <></>
+                    <EnterpriseCard enterprise={enterprise} />
                 </div>
             </PageContent>
         </PageContainer>
