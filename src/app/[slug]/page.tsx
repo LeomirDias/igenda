@@ -1,20 +1,27 @@
-import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import { enterprisesTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-const BookingPage = async ({ params }: { params: { slug: string } }) => {
-    const enterprise = await db.query.enterprisesTable.findFirst({
-        where: eq(enterprisesTable.slug, params.slug),
-    });
-    if (!enterprise) {
-        return <div>Enterprise not found</div>;
-    }
+const ClientHomePage = async () => {
+
+    // const session = await auth.api.getSession({
+    //     headers: await headers(),
+    // });
+
+    // if (!session?.client) {
+    //     redirect("/authentication");
+    // }
+
+    // if (!session?.user.enterprise) {
+    //     redirect("/enterprise-form");
+    // }
+    // else {
+    //     redirect("/dashboard");
+    // }
 
     return (
-        <div>
-            <h1>Acesso feito via link de agendamento</h1>
-        </div>
+        <h1>Página Inicial</h1>
     );
 }
 
-export default BookingPage;
+export default ClientHomePage;

@@ -1,4 +1,4 @@
-export const PageContainer = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageContainer = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="w-full p-6 space-y-6 pb-24">
             {children}
@@ -6,7 +6,7 @@ export const PageContainer = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export const PageHeader = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageHeader = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex w-full items-center justify-between ">
             {children}
@@ -14,7 +14,7 @@ export const PageHeader = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export const PageHeaderContent = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageHeaderContent = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="w-full space-y-1">
             {children}
@@ -22,7 +22,7 @@ export const PageHeaderContent = ({ children }: { children: React.ReactNode }) =
     );
 }
 
-export const PageTitle = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageTitle = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="text-2xl font-bold">
             {children}
@@ -30,7 +30,7 @@ export const PageTitle = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export const PageDescription = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageDescription = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="text-sm text-muted-foreground">
             {children}
@@ -38,7 +38,7 @@ export const PageDescription = ({ children }: { children: React.ReactNode }) => 
     );
 }
 
-export const EnterpriseProfileImage = ({ children }: { children: React.ReactNode }) => {
+export const SlugEnterpriseProfileImage = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex justify-center py-6">
             {children}
@@ -46,7 +46,7 @@ export const EnterpriseProfileImage = ({ children }: { children: React.ReactNode
     );
 };
 
-export const PagePrimaryActions = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageActions = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 py-4">
             {children}
@@ -54,7 +54,7 @@ export const PagePrimaryActions = ({ children }: { children: React.ReactNode }) 
     );
 };
 
-export const PageContent = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageContent = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="space-y-6">
             {children}
@@ -62,7 +62,7 @@ export const PageContent = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export const PageFooter = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageFooter = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="fixed inset-x-0 bottom-0 bg-background border-t shadow-t-lg z-50">
             <div className="container mx-auto px-4 py-3">
@@ -72,7 +72,7 @@ export const PageFooter = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export const PageFooterContent = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageFooterContent = ({ children }: { children: React.ReactNode }) => {
     return (
         <div>
             {children}
@@ -80,7 +80,7 @@ export const PageFooterContent = ({ children }: { children: React.ReactNode }) =
     );
 }
 
-export const PageFooterActions = ({ children }: { children: React.ReactNode }) => {
+export const SlugPageFooterActions = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex items-center justify-around gap-2">
             {children}
