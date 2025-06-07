@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cookies } from "next/headers";
 import { getClientFromToken } from "@/middleware/client-auth";
+import { redirect } from "next/navigation";
 
 interface PageProps {
     params: Promise<{
@@ -18,23 +19,34 @@ interface PageProps {
 }
 
 const ClientHomePage = async ({ params }: PageProps) => {
-
     const { slug } = await params;
-
     const cookieStore = await cookies();
     const token = cookieStore.get("client_token")?.value;
-    const client = await getClientFromToken(token || "");
+
+    if (!token) {
+        redirect(`/${slug}/client-authentication`);
+    }
+
+    const client = await getClientFromToken(token);
+
+    if (!client) {
+        redirect(`/${slug}/client-authentication`);
+    }
 
     const enterprise = await db.query.enterprisesTable.findFirst({
         where: eq(enterprisesTable.slug, slug),
     });
 
+    if (!enterprise) {
+        redirect("/");
+    }
+
     return (
         <SlugPageContainer>
             <SlugPageHeader>
                 <SlugPageHeaderContent>
-                    <SlugPageTitle>Olá, {client?.name}!</SlugPageTitle>
-                    <SlugPageDescription>Seja bem vindo à iGenda de {enterprise?.name}</SlugPageDescription>
+                    <SlugPageTitle>Olá, {client.name}!</SlugPageTitle>
+                    <SlugPageDescription>Seja bem vindo à iGenda de {enterprise.name}</SlugPageDescription>
                 </SlugPageHeaderContent>
             </SlugPageHeader>
             <SlugPageContent>

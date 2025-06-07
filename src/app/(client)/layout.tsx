@@ -1,11 +1,6 @@
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getClientFromToken } from "@/middleware/client-auth";
 import { ClientAuthProvider } from "@/contexts/client-auth-context";
-import { db } from "@/db";
-import { enterprisesTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { toast } from "sonner";
 
 interface ClientLayoutProps {
     children: React.ReactNode;
@@ -14,20 +9,10 @@ interface ClientLayoutProps {
     }>;
 }
 
-export default async function ClientLayout({ children, params }: ClientLayoutProps) {
-    const { slug } = await params;
+export default async function ClientLayout({ children }: ClientLayoutProps) {
     const cookieStore = await cookies();
     const token = cookieStore.get("client_token")?.value;
-
-    if (!token) {
-        redirect(`/${slug}/client-authentication`);
-    }
-
-    const client = await getClientFromToken(token);
-
-    if (!client) {
-        redirect(`/${slug}/client-authentication`);
-    }
+    const client = token ? await getClientFromToken(token) : null;
 
     return (
         <ClientAuthProvider initialClient={client}>

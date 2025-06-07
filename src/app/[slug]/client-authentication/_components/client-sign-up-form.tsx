@@ -8,6 +8,7 @@ import z from "zod";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { PatternFormat } from "react-number-format";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +20,6 @@ import { upsertClient } from "@/actions/upsert-client";
 
 const clientRegisterSchema = z.object({
     name: z.string().trim().min(1, { message: "O nome é obrigatório" }),
-    email: z.string().trim().min(1, { message: "E-mail é obrigatório." }).email({ message: "Email inválido" }),
     phoneNumber: z.string().trim().min(1, { message: "Telefone é obrigatório" }),
 });
 
@@ -34,7 +34,6 @@ const ClientSignUpForm = () => {
         resolver: zodResolver(clientRegisterSchema),
         defaultValues: {
             name: "",
-            email: "",
             phoneNumber: "",
         },
     });
@@ -62,10 +61,16 @@ const ClientSignUpForm = () => {
     });
 
     const onSubmit = (values: ClientFormData) => {
-        setClientData(values);
+        setClientData({
+            ...values,
+            phoneNumber: values.phoneNumber.replace(/\D/g, "")
+        });
         generateCodeAction.execute({
-            email: values.email,
-            clientData: values,
+            phoneNumber: values.phoneNumber.replace(/\D/g, ""),
+            clientData: {
+                ...values,
+                phoneNumber: values.phoneNumber.replace(/\D/g, "")
+            },
         });
     };
 
@@ -100,26 +105,21 @@ const ClientSignUpForm = () => {
 
                         <FormField
                             control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>E-mail</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Digite seu e-mail..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
                             name="phoneNumber"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Telefone</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Digite seu telefone..." {...field} />
+                                        <PatternFormat
+                                            format="(##) #####-####"
+                                            mask="_"
+                                            customInput={Input}
+                                            placeholder="Digite seu telefone..."
+                                            value={field.value}
+                                            onValueChange={(values) => {
+                                                field.onChange(values.value);
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

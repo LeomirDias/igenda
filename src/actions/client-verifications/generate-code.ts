@@ -16,18 +16,18 @@ export const generateCode = actionClient
             const verificationCode = generateVerificationCode();
 
             // Store the code and client data
-            verificationCodes.set(parsedInput.email, {
+            verificationCodes.set(parsedInput.phoneNumber, {
                 code: verificationCode,
                 clientData: parsedInput.clientData
             });
 
             // Delete verification code after 5 minutes
             setTimeout(() => {
-                verificationCodes.delete(parsedInput.email);
+                verificationCodes.delete(parsedInput.phoneNumber);
             }, 1000 * 60 * 5);
 
             // In production, send via WhatsApp. For now, log to console
-            console.log(`Verification code for ${parsedInput.email}: ${verificationCode}`);
+            console.log(`Verification code for ${parsedInput.phoneNumber}: ${verificationCode}`);
 
             return { success: true, message: "Verification code sent" };
         } catch (error) {

@@ -20,7 +20,7 @@ const ClientHomePage = async () => {
     // }
 
     return (
-        <h1>Página Inicial</h1>
+        <h1>Página Inicial - RECEBERÁ AS INFORMAÇÕES DA EMPRESA E OS BOTÕES PARA AGENDAR OU CONFERIR AGENDAMENTOS</h1>
     );
 }
 

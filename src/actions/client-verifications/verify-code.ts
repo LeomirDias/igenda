@@ -13,7 +13,7 @@ export const verifyCode = actionClient
     .schema(verifyCodeSchema)
     .action(async ({ parsedInput }): Promise<VerifyResponse> => {
         try {
-            const storedData = verificationCodes.get(parsedInput.email);
+            const storedData = verificationCodes.get(parsedInput.phoneNumber);
 
             if (!storedData) {
                 return { success: false, message: "Nenhum código de verificação encontrado" };
@@ -32,9 +32,9 @@ export const verifyCode = actionClient
                 return { success: false, message: "Empresa não encontrada" };
             }
 
-            // Verifica se já existe um cliente com este email
+            // Verifica se já existe um cliente com este número de telefone
             const existingClient = await db.query.clientsTable.findFirst({
-                where: eq(clientsTable.email, parsedInput.email),
+                where: eq(clientsTable.phoneNumber, parsedInput.phoneNumber),
             });
 
             // Cria ou atualiza o cliente
@@ -45,7 +45,7 @@ export const verifyCode = actionClient
 
             // Busca o cliente atualizado ou criado
             const client = await db.query.clientsTable.findFirst({
-                where: eq(clientsTable.email, parsedInput.email),
+                where: eq(clientsTable.phoneNumber, parsedInput.phoneNumber),
             });
 
             if (!client) {
@@ -72,7 +72,7 @@ export const verifyCode = actionClient
             });
 
             // Clean up verification code
-            verificationCodes.delete(parsedInput.email);
+            verificationCodes.delete(parsedInput.phoneNumber);
 
             return { success: true, client };
         } catch (error) {

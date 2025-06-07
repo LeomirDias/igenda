@@ -23,7 +23,6 @@ const verificationSchema = z.object({
 interface VerificationFormProps {
     clientData: {
         name: string;
-        email: string;
         phoneNumber: string;
     };
 }
@@ -70,7 +69,7 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
         try {
             setIsResending(true);
             const result = await generateCode({
-                email: clientData.email,
+                phoneNumber: clientData.phoneNumber,
                 clientData: clientData,
             });
 
@@ -106,7 +105,7 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
 
     const onSubmit = (values: z.infer<typeof verificationSchema>) => {
         verifyCodeAction.execute({
-            email: clientData.email,
+            phoneNumber: clientData.phoneNumber,
             code: values.code,
             enterpriseSlug,
         });
@@ -119,7 +118,7 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
                     <CardHeader>
                         <CardTitle>Verificação</CardTitle>
                         <CardDescription>
-                            Digite o código de 6 dígitos enviado para seu e-mail.
+                            Digite o código de 6 dígitos enviado para seu Whatsapp.
                             {timeLeft > 0 && (
                                 <p className="mt-2 text-sm text-muted-foreground">
                                     O código expira em: {formatTime(timeLeft)}

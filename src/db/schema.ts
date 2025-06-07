@@ -181,7 +181,6 @@ export const servicesTable = pgTable("services", {
 export const clientsTable = pgTable("clients", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
-    email: text("email").notNull().unique(),
     phoneNumber: text("phone_number").notNull(),
     createdAT: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),

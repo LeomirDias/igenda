@@ -27,7 +27,7 @@ const ClientLoginForm = () => {
     const params = useParams();
     const enterpriseSlug = params?.slug as string;
     const [showVerification, setShowVerification] = useState(false);
-    const [clientData, setClientData] = useState<{ name: string; email: string; phoneNumber: string; } | null>(null);
+    const [clientData, setClientData] = useState<{ name: string; phoneNumber: string; } | null>(null);
 
     const form = useForm<z.infer<typeof clientLoginSchema>>({
         resolver: zodResolver(clientLoginSchema),
@@ -42,10 +42,9 @@ const ClientLoginForm = () => {
                 try {
                     // Gera o código de verificação
                     const result = await generateCode({
-                        email: data.client.email,
+                        phoneNumber: data.client.phoneNumber,
                         clientData: {
                             name: data.client.name,
-                            email: data.client.email,
                             phoneNumber: data.client.phoneNumber,
                         },
                     });
@@ -53,7 +52,6 @@ const ClientLoginForm = () => {
                     if (result?.data?.success) {
                         setClientData({
                             name: data.client.name,
-                            email: data.client.email,
                             phoneNumber: data.client.phoneNumber,
                         });
                         setShowVerification(true);

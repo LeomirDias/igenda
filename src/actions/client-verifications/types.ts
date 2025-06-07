@@ -15,7 +15,6 @@ export const verifyResponseSchema = z.object({
     client: z.object({
         id: z.string(),
         name: z.string(),
-        email: z.string(),
         phoneNumber: z.string(),
         createdAT: z.date(),
         updatedAt: z.date().nullable(),
@@ -25,12 +24,12 @@ export const verifyResponseSchema = z.object({
 
 // Input schemas
 export const generateCodeSchema = z.object({
-    email: z.string().email(),
+    phoneNumber: z.string(),
     clientData: z.any()
 });
 
 export const verifyCodeSchema = z.object({
-    email: z.string().email(),
+    phoneNumber: z.string(),
     code: z.string().length(6),
     enterpriseSlug: z.string()
 });
