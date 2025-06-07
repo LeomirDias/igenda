@@ -214,6 +214,18 @@ export const clientSessionsTable = pgTable("client_sessions", {
     updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
 });
 
+//Client sessions table relationships
+export const clientSessionsTableRelations = relations(clientSessionsTable, ({ one }) => ({
+    client: one(clientsTable, {
+        fields: [clientSessionsTable.clientId],
+        references: [clientsTable.id],
+    }),
+    enterprise: one(enterprisesTable, {
+        fields: [clientSessionsTable.enterpriseId],
+        references: [enterprisesTable.id],
+    }),
+}));
+
 //Appointments table
 export const appointmentsTable = pgTable("appointments", {
     id: uuid("id").defaultRandom().primaryKey(),

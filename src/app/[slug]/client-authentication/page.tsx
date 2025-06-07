@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/components/ui/tabs";
 import { auth } from "@/lib/auth";
 
-import ClientLoginForm from "./_components/client-login-form ";
+
 import ClientSignUpForm from "./_components/client-sign-up-form";
-import LoginForm from "@/app/authentication/components/login-form ";
+import ClientLoginForm from "./_components/client-login-form";
 
 
 const AuthenticationPage = async () => {

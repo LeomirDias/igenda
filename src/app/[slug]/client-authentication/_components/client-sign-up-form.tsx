@@ -43,21 +43,21 @@ const ClientSignUpForm = () => {
         onSuccess: ({ data }) => {
             if (data?.success) {
                 setShowVerification(true);
-                toast.success("Código de verificação enviado! Verifique seu WhatsApp.");
+                toast.success("Código de verificação enviado! Verifique seu Whatsapp.");
             } else {
-                toast.error(data?.message || "Erro ao enviar código de verificação");
+                toast.error(data?.message || "Erro ao enviar código de verificação. Por favor, tente novamente.");
             }
         },
         onError: (error) => {
             console.error("Erro ao enviar código:", error);
-            toast.error("Erro ao enviar código de verificação");
+            toast.error("Erro ao enviar código de verificação. Por favor, tente novamente.");
         },
     });
 
     const upsertClientAction = useAction(upsertClient, {
         onError: (error) => {
             console.error("Erro ao criar cliente:", error);
-            toast.error("Erro ao criar sua conta");
+            toast.error("Erro ao criar sua conta. Por favor, tente novamente.");
         },
     });
 

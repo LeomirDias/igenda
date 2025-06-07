@@ -37,9 +37,7 @@ export const createEnterprise = async (
     city: string,
     state: string,
 ) => {
-    console.log("[Action: createEnterprise] Recebido:", { name, specialty, phoneNumber, register, instagramURL, cep, address, number, complement, city, state });
 
-    // Ensure the user is authenticated
     const session = await auth.api.getSession({
         headers: await headers()
     });
@@ -48,7 +46,6 @@ export const createEnterprise = async (
     }
 
     const slug = generateSlug(name);
-    console.log("[Action: createEnterprise] Slug Gerado:", slug);
 
     const [enterprise] = await db.insert(enterprisesTable).values({
         name,
@@ -64,7 +61,6 @@ export const createEnterprise = async (
         city,
         state,
     }).returning();
-    console.log("[Action: createEnterprise] Empresa Inserida:", enterprise);
 
     await db.insert(usersToEnterprisesTable).values({
         userId: session.user.id,

@@ -8,7 +8,8 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
+import { cookies } from "next/headers";
+import { getClientFromToken } from "@/middleware/client-auth";
 
 interface PageProps {
     params: Promise<{
@@ -16,24 +17,24 @@ interface PageProps {
     }>;
 }
 
-const BookingPage = async ({ params }: PageProps) => {
-    // Aguardando os parâmetros conforme recomendação do Next.js 15
+const ClientHomePage = async ({ params }: PageProps) => {
+
     const { slug } = await params;
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("client_token")?.value;
+    const client = await getClientFromToken(token || "");
 
     const enterprise = await db.query.enterprisesTable.findFirst({
         where: eq(enterprisesTable.slug, slug),
     });
 
-    if (!enterprise) {
-        return <div>Empresa não encontrada</div>;
-    }
-
     return (
         <SlugPageContainer>
             <SlugPageHeader>
                 <SlugPageHeaderContent>
-                    <SlugPageTitle>{enterprise.name}</SlugPageTitle>
-                    <SlugPageDescription>Seja bem vindo à iGenda de {enterprise.name}</SlugPageDescription>
+                    <SlugPageTitle>Olá, {client?.name}!</SlugPageTitle>
+                    <SlugPageDescription>Seja bem vindo à iGenda de {enterprise?.name}</SlugPageDescription>
                 </SlugPageHeaderContent>
             </SlugPageHeader>
             <SlugPageContent>
@@ -71,4 +72,4 @@ const BookingPage = async ({ params }: PageProps) => {
     );
 }
 
-export default BookingPage;
+export default ClientHomePage;
