@@ -44,7 +44,11 @@ const PublicEnterpriseServicesPage = async ({ params }: PageProps) => {
             <SlugPageContent>
                 <div className="flex flex-col gap-4">
                     {services.map((service) => (
-                        <ServiceCard key={service.id} service={service} />
+                        <ServiceCard
+                            key={service.id}
+                            service={service}
+                            enterpriseSlug={slug}
+                        />
                     ))}
                 </div>
             </SlugPageContent>
