@@ -9,12 +9,11 @@ import { CalendarIcon } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { addAppointment } from "@/actions/upsert-appointments";
 import { getAvailableTimes } from "@/actions/get-available-times";
+import { addAppointment } from "@/actions/upsert-appointments";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -32,7 +31,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
     Popover,
     PopoverContent,
@@ -45,9 +43,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
-import { cn } from "@/lib/utils";
 import { clientsTable, professionalsTable, servicesTable } from "@/db/schema";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
     clientId: z.string().min(1, {
@@ -97,7 +94,6 @@ const AddAppointmentForm = ({
     const selectedProfessionalId = form.watch("professionalId");
     const selectedClientId = form.watch("clientId");
     const selectedDate = form.watch("date");
-    const selectedServiceId = form.watch("serviceId");
 
     const { data: availableTimes } = useQuery({
         queryKey: ["available-times", selectedDate, selectedProfessionalId],
@@ -307,7 +303,7 @@ const AddAppointmentForm = ({
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {availableTimes?.data?.map((time: any) => (
+                                        {availableTimes?.data?.map((time: { value: string; available: boolean; label: string }) => (
                                             <SelectItem
                                                 key={time.value}
                                                 value={time.value}
