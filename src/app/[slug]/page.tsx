@@ -69,13 +69,13 @@ const ClientHomePage = async ({ params }: PageProps) => {
 
             <SlugPageContent>
                 <div className="flex items-center justify-center gap-4 w-full">
-                    <Link href={`/${slug}/agendar-horario`} target="_blank" className="w-1/2">
+                    <Link href={`/${slug}/public-enterprise-services`} target="_blank" className="w-1/2">
                         <Button variant="outline" className="flex flex-col items-center justify-center h-auto w-full">
                             <UserPlus2 />
                             Agendar horário
                         </Button>
                     </Link>
-                    <Link href={`/${slug}/agendar-horario`} target="_blank" className="w-1/2">
+                    <Link href={`/${slug}/client-home`} target="_blank" className="w-1/2">
                         <Button variant="outline" className="flex flex-col items-center justify-center h-auto w-full">
                             <CalendarIcon />
                             Meus agendamentos

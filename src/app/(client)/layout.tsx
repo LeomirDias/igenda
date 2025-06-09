@@ -10,6 +10,7 @@ interface ClientLayoutProps {
     }>;
 }
 
+
 export default async function ClientLayout({ children }: ClientLayoutProps) {
     const cookieStore = await cookies();
     const token = cookieStore.get("client_token")?.value;

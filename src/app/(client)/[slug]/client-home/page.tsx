@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm";
-import { Calendar } from "lucide-react";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -8,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SlugPageActions, SlugPageContainer, SlugPageContent, SlugPageDescription, SlugPageFooter, SlugPageFooterActions, SlugPageFooterContent, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
+import { SlugPageActions, SlugPageContainer, SlugPageContent, SlugPageDescription, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
 import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
 import { getClientFromToken } from "@/middleware/client-auth";
+
+import SlugPagesFooter from "../_components/slug-pages-footer";
 
 interface PageProps {
     params: Promise<{
@@ -72,15 +73,7 @@ const ClientHomePage = async ({ params }: PageProps) => {
                     </Link>
                 </SlugPageActions>
             </SlugPageContent>
-            <SlugPageFooter>
-                <SlugPageFooterContent>
-                    <SlugPageFooterActions>
-                        <Button>
-                            <Calendar />
-                        </Button>
-                    </SlugPageFooterActions>
-                </SlugPageFooterContent>
-            </SlugPageFooter>
+            <SlugPagesFooter />
         </SlugPageContainer>
     );
 }
