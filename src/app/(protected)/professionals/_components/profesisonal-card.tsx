@@ -1,10 +1,10 @@
 "use client";
 import { Calendar1Icon, Clock10Icon } from "lucide-react";
 import { Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useAction } from "next-safe-action/hooks"
 import { useState } from "react";
 import { toast } from "sonner";
-import Image from "next/image";
 
 import { deleteProfessional } from "@/actions/delete-professional";
 import {

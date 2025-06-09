@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
-import { getClientFromToken } from "@/middleware/client-auth";
+
 import { ClientAuthProvider } from "@/contexts/client-auth-context";
+import { getClientFromToken } from "@/middleware/client-auth";
 
 interface ClientLayoutProps {
     children: React.ReactNode;

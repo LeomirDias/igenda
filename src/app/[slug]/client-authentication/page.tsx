@@ -1,9 +1,8 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/components/ui/tabs";
 
-
-import ClientSignUpForm from "./_components/client-sign-up-form";
 import ClientLoginForm from "./_components/client-login-form";
+import ClientSignUpForm from "./_components/client-sign-up-form";
 
 
 const AuthenticationPage = async () => {

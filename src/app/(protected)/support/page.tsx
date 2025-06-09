@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
+
+import EmailCard from "@/app/(protected)/support/_components/email-card"
 import SupportHeader from "@/app/(protected)/support/_components/support-header"
 import WhatsappCard from "@/app/(protected)/support/_components/whatsapp-card"
-import EmailCard from "@/app/(protected)/support/_components/email-card"
 
 export const metadata: Metadata = {
     title: "Suporte - Nossa Aplicação",
