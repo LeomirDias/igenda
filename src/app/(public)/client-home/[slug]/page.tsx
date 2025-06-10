@@ -12,7 +12,9 @@ import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
 import { getClientFromToken } from "@/middleware/client-auth";
 
-import SlugPagesFooter from "../_components/slug-pages-footer";
+import SlugPagesFooter from "../../_components/slug-pages-footer";
+
+
 
 interface PageProps {
     params: Promise<{

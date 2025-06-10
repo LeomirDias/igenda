@@ -2,21 +2,22 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
-import { useAction } from "next-safe-action/hooks";
 
+import { generateCode } from "@/actions/client-verifications/generate-code";
+import { validatePhone } from "@/actions/client-verifications/validate-phone";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { validatePhone } from "@/actions/client-verifications/validate-phone";
-import { generateCode } from "@/actions/client-verifications/generate-code";
-import { useState } from "react";
+
 import VerificationForm from "./verification-form";
-import { PatternFormat } from "react-number-format";
 
 const clientLoginSchema = z.object({
     phoneNumber: z.string().trim().min(1, { message: "Telefone é obrigatório" }),

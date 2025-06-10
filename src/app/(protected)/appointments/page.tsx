@@ -13,12 +13,10 @@ import {
     PageTitle,
 } from "@/components/ui/page-container";
 import { db } from "@/db";
-
+import { appointmentsTable, clientsTable, professionalsTable, servicesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import AddAppointmentButton from "./_components/add-appointment-button";
-
-import { appointmentsTable, clientsTable, professionalsTable, servicesTable } from "@/db/schema";
 import { appointmentsTableColumns } from "./_components/table-columns";
 
 const AppointmentsPage = async () => {
@@ -73,7 +71,28 @@ const AppointmentsPage = async () => {
                 </PageActions>
             </PageHeader>
             <PageContent>
-                <DataTable data={appointments} columns={appointmentsTableColumns} />
+                <DataTable
+                    data={appointments.map(appointment => ({
+                        ...appointment,
+                        client: {
+                            id: appointment.client.id,
+                            name: appointment.client.name,
+                            email: appointment.client.phoneNumber, // Usando phoneNumber como email temporariamente
+                            phoneNumber: appointment.client.phoneNumber
+                        },
+                        professional: {
+                            id: appointment.professional.id,
+                            name: appointment.professional.name,
+                            specialty: appointment.professional.specialty
+                        },
+                        service: {
+                            id: appointment.service.id,
+                            name: appointment.service.name,
+                            servicePriceInCents: appointment.service.servicePriceInCents
+                        }
+                    }))}
+                    columns={appointmentsTableColumns}
+                />
             </PageContent>
         </PageContainer>
     );

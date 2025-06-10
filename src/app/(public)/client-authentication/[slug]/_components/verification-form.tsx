@@ -2,19 +2,19 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { useAction } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
 
+import { verifyCode } from "@/actions/client-verifications";
+import { generateCode } from "@/actions/client-verifications/generate-code";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { verifyCode } from "@/actions/client-verifications";
-import { generateCode } from "@/actions/client-verifications/generate-code";
 
 const verificationSchema = z.object({
     code: z.string().length(6, { message: "O código deve ter 6 dígitos" }),
@@ -92,7 +92,7 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
         onSuccess: ({ data }) => {
             if (data?.success) {
                 toast.success("Código verificado com sucesso!");
-                router.push(`/${enterpriseSlug}/client-home`);
+                router.push(`/client-home/${enterpriseSlug}`);
             } else {
                 toast.error(data?.message || "Código inválido. Por favor, tente novamente.");
             }
