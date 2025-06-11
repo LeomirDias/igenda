@@ -28,13 +28,13 @@ const ClientHomePage = async ({ params }: PageProps) => {
     const token = cookieStore.get("client_token")?.value;
 
     if (!token) {
-        redirect(`/${slug}/client-authentication`);
+        redirect(`/client-authentication/${slug}`);
     }
 
     const client = await getClientFromToken(token);
 
     if (!client) {
-        redirect(`/${slug}/client-authentication`);
+        redirect(`/client-authentication/${slug}`);
     }
 
     const enterprise = await db.query.enterprisesTable.findFirst({

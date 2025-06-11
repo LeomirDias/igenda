@@ -64,7 +64,7 @@ export const SlugPageContent = ({ children }: { children: React.ReactNode }) => 
 
 export const SlugPageFooter = ({ children }: { children: React.ReactNode }) => {
     return (
-        <div className="fixed inset-x-0 bottom-0 bg-background border-t shadow-t-lg z-50">
+        <div className="fixed inset-x-0 bottom-0 bg-background shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50">
             <div className="container mx-auto px-4 py-2 sm:py-3">
                 {children}
             </div>

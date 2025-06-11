@@ -2,9 +2,15 @@ import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { Separator } from "@/components/ui/separator";
+import { SlugPageContainer, SlugPageContent, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
+import { SlugPageDescription } from "@/components/ui/slug-page-container";
 import { db } from "@/db";
-import { enterprisesTable } from "@/db/schema";
+import { enterprisesTable, servicesTable } from "@/db/schema";
 import { getClientFromToken } from "@/middleware/client-auth";
+
+import SlugPagesFooter from "../../_components/slug-pages-footer";
+import ServiceCard from "./_components/service-card";
 
 
 interface PageProps {
@@ -18,15 +24,7 @@ const ClientSchedulingPage = async ({ params }: PageProps) => {
     const cookieStore = await cookies();
     const token = cookieStore.get("client_token")?.value;
 
-    if (!token) {
-        redirect(`/client-authentication/${slug}`);
-    }
-
-    const client = await getClientFromToken(token);
-
-    if (!client) {
-        redirect(`/client-authentication/${slug}`);
-    }
+    const client = await getClientFromToken(token ?? "");
 
     const enterprise = await db.query.enterprisesTable.findFirst({
         where: eq(enterprisesTable.slug, slug),
@@ -36,11 +34,26 @@ const ClientSchedulingPage = async ({ params }: PageProps) => {
         redirect("/enterprise-not-found");
     }
 
+    const services = await db.query.servicesTable.findMany({
+        where: eq(servicesTable.enterpriseId, enterprise.id),
+    });
+
 
     return (
-        <div>
-            <h1>Client Scheduling Page</h1>
-        </div>
+        <SlugPageContainer>
+            <SlugPageHeader>
+                <SlugPageHeaderContent>
+                    <SlugPageTitle>Olá, {client?.name ? client.name : "Sejam Bem-Vindo(a)"}!</SlugPageTitle>
+                    <SlugPageDescription>Faça seu agendamento com a {enterprise.name}</SlugPageDescription>
+                </SlugPageHeaderContent>
+            </SlugPageHeader>
+            <Separator />
+            <SlugPageContent>
+                <ServiceCard services={services} />
+            </SlugPageContent>
+            <SlugPagesFooter />
+        </SlugPageContainer>
+
     );
 }
 
