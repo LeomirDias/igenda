@@ -17,7 +17,7 @@ const ServiceCard = ({ services }: ServiceCardProps) => {
 
     const handleSelectService = (serviceId: string) => {
         appointmentStore.setServiceId(serviceId);
-        console.log("Serviço selecionado (id):", appointmentStore.serviceId);
+        console.log(useAppointmentStore.getState());
     }
 
     const formatPrice = (price: number) => {

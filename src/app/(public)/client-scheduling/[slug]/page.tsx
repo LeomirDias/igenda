@@ -6,12 +6,11 @@ import { Separator } from "@/components/ui/separator";
 import { SlugPageContainer, SlugPageContent, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
 import { SlugPageDescription } from "@/components/ui/slug-page-container";
 import { db } from "@/db";
-import { enterprisesTable, servicesTable } from "@/db/schema";
+import { enterprisesTable, professionalsTable, servicesTable } from "@/db/schema";
 import { getClientFromToken } from "@/middleware/client-auth";
 
 import SlugPagesFooter from "../../_components/slug-pages-footer";
-import ServiceCard from "./_components/service-card";
-
+import SchedulingContent from "./_components/scheduling-content";
 
 interface PageProps {
     params: Promise<{
@@ -38,22 +37,24 @@ const ClientSchedulingPage = async ({ params }: PageProps) => {
         where: eq(servicesTable.enterpriseId, enterprise.id),
     });
 
+    const professionals = await db.query.professionalsTable.findMany({
+        where: eq(professionalsTable.enterpriseId, enterprise.id),
+    });
 
     return (
         <SlugPageContainer>
             <SlugPageHeader>
                 <SlugPageHeaderContent>
-                    <SlugPageTitle>Olá, {client?.name ? client.name : "Sejam Bem-Vindo(a)"}!</SlugPageTitle>
+                    <SlugPageTitle>Olá, {client?.name ? client.name : "Seja bem-vindo(a)"}!</SlugPageTitle>
                     <SlugPageDescription>Faça seu agendamento com a {enterprise.name}</SlugPageDescription>
                 </SlugPageHeaderContent>
             </SlugPageHeader>
             <Separator />
             <SlugPageContent>
-                <ServiceCard services={services} />
+                <SchedulingContent services={services} professionals={professionals} />
             </SlugPageContent>
             <SlugPagesFooter />
         </SlugPageContainer>
-
     );
 }
 
