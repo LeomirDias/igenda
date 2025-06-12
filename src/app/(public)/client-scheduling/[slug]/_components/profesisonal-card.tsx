@@ -1,25 +1,28 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
 import { professionalsTable } from "@/db/schema";
 import { useAppointmentStore } from "@/stores/appointment-store";
 
+import DataPicker from "./data-picker";
 
 interface ProfessionalCardProps {
-    professionals: typeof professionalsTable.$inferSelect[]
+    professionals: typeof professionalsTable.$inferSelect[],
 }
 
 const ProfessionalCard = ({ professionals }: ProfessionalCardProps) => {
     const appointmentStore = useAppointmentStore();
+    const [isDataPickerOpen, setIsDataPickerOpen] = useState(false);
 
     const handleSelectProfessional = (professionalId: string) => {
         appointmentStore.setProfessionalId(professionalId);
         console.log(useAppointmentStore.getState());
+        setIsDataPickerOpen(true);
     }
-
-
 
     return (
         <div>
@@ -48,7 +51,10 @@ const ProfessionalCard = ({ professionals }: ProfessionalCardProps) => {
                         <Separator />
                     </div>
                 ))}
-
+                <DataPicker
+                    open={isDataPickerOpen}
+                    onOpenChange={setIsDataPickerOpen}
+                />
             </div>
         </div>
     )
