@@ -15,6 +15,7 @@ import {
 import { useAppointmentStore } from "@/stores/appointment-store";
 
 import NotificationTag from "./notification-tag";
+import TimePicker from "./time-picker";
 
 interface DataPickerProps {
     open: boolean;
@@ -59,7 +60,10 @@ const DataPicker = ({ open, onOpenChange }: DataPickerProps) => {
                         {date === undefined ? (
                             <NotificationTag itemForSelection="data" itemForShow="horários" />
                         ) : (
-                            <p className="text-sm text-muted-foreground">Horários disponíveis para a data e profissional selecionados</p>
+                            <div className="flex flex-col gap-2 items-center justify-center">
+                                <p className="text-sm text-muted-foreground">Horários disponíveis para a data e profissional selecionados</p>
+                                <TimePicker />
+                            </div>
                         )}
                     </div>
                 </div>

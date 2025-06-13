@@ -9,7 +9,7 @@ import { db } from "@/db";
 import { enterprisesTable, professionalsTable, servicesTable } from "@/db/schema";
 import { getClientFromToken } from "@/middleware/client-auth";
 
-import SlugPagesFooter from "../../_components/slug-pages-footer";
+import SlugPagesFooter from "../../_components/public-pages-footer.tsx";
 import SchedulingContent from "./_components/scheduling-content";
 
 interface PageProps {

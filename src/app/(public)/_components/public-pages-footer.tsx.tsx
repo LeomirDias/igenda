@@ -1,9 +1,18 @@
-import { Calendar, Clock, Home, User } from "lucide-react";
+import { Clock, Home, Store, User } from "lucide-react";
+import { cookies } from "next/headers";
 
 import { Button } from "@/components/ui/button";
 import { SlugPageFooter, SlugPageFooterActions, SlugPageFooterContent } from "@/components/ui/slug-page-container";
+import { getClientFromToken } from "@/middleware/client-auth";
 
-const SlugPagesFooter = () => {
+const PublicPagesFooter = async () => {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("client_token")?.value;
+    const client = await getClientFromToken(token!);
+
+    if (!client) {
+        return null;
+    }
     return (
         <SlugPageFooter>
             <SlugPageFooterContent>
@@ -14,12 +23,12 @@ const SlugPagesFooter = () => {
                             Início
                         </Button>
                         <Button variant="ghost" className="flex flex-col items-center justify-center gap-1 mt-1 text-muted-foreground text-xs">
-                            <Calendar />
-                            Agendamentos
-                        </Button>
-                        <Button variant="ghost" className="flex flex-col items-center justify-center gap-1 mt-1 text-muted-foreground text-xs">
                             <Clock />
                             Agendar
+                        </Button>
+                        <Button variant="ghost" className="flex flex-col items-center justify-center gap-1 mt-1 text-muted-foreground text-xs">
+                            <Store />
+                            {client?.enterprise?.name || "..."}
                         </Button>
                         <Button variant="ghost" className="flex flex-col items-center justify-center gap-1 mt-1 text-muted-foreground text-xs">
                             <User />
@@ -32,4 +41,4 @@ const SlugPagesFooter = () => {
     );
 }
 
-export default SlugPagesFooter;
+export default PublicPagesFooter;

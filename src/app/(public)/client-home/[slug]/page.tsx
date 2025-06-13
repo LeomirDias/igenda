@@ -1,18 +1,11 @@
-import { eq } from "drizzle-orm";
+
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { SlugPageActions, SlugPageContainer, SlugPageContent, SlugPageDescription, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
-import { db } from "@/db";
-import { enterprisesTable } from "@/db/schema";
+import { Separator } from "@/components/ui/separator";
 import { getClientFromToken } from "@/middleware/client-auth";
 
-import SlugPagesFooter from "../../_components/slug-pages-footer";
+import LastAppointmentsCard from "./components/last-appointments-card";
 
 
 
@@ -37,46 +30,17 @@ const ClientHomePage = async ({ params }: PageProps) => {
         redirect(`/client-authentication/${slug}`);
     }
 
-    const enterprise = await db.query.enterprisesTable.findFirst({
-        where: eq(enterprisesTable.slug, slug),
-    });
-
-    if (!enterprise) {
-        redirect("/");
-    }
-
     return (
-        <SlugPageContainer>
-            <SlugPageHeader>
-                <SlugPageHeaderContent>
-                    <SlugPageTitle>Olá, {client.name}!</SlugPageTitle>
-                    <SlugPageDescription>Seja bem vindo à iGenda de {enterprise.name}</SlugPageDescription>
-                </SlugPageHeaderContent>
-            </SlugPageHeader>
-            <SlugPageContent>
-                <SlugPageActions>
-                    <Link href="/">
-                        <Button>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Agendar horário</CardTitle>
-                                    <CardDescription>Agende um horário para o seu serviço</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex flex-col gap-2">
-                                            <Label>Data</Label>
-                                            <Input type="date" />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </Button>
-                    </Link>
-                </SlugPageActions>
-            </SlugPageContent>
-            <SlugPagesFooter />
-        </SlugPageContainer>
+        <div className="p-5">
+            <h1 className="text-xl font-bold">Olá {client?.name}!</h1>
+            <p className="text-sm text-muted-foreground">Sexta-Feira, 13 de Junho</p>
+
+            <Separator className="my-4" />
+
+            <div className="flex flex-col gap-4">
+                <LastAppointmentsCard />
+            </div>
+        </div>
     );
 }
 
