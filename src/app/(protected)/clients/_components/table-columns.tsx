@@ -1,7 +1,9 @@
 "use client"
 
-import { clientsTable } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
+
+import { clientsTable } from "@/db/schema"
+
 import TableClientActions from "./table-actions";
 
 type Client = typeof clientsTable.$inferSelect;

@@ -2,13 +2,14 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DataTable } from "@/components/ui/data-table";
 import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
 import { db } from "@/db";
-import { clientsTable, productsTable, servicesTable } from "@/db/schema";
+import { productsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
+
 import AddProductButton from "./_components/add-product-button";
 import { productsTableColumns } from "./_components/table-columns";
-import { DataTable } from "@/components/ui/data-table";
 
 const ProductsPage = async () => {
 

@@ -1,13 +1,14 @@
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
 
 import { PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
-import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
-import UserCard from "./_components/user-card";
+import { auth } from "@/lib/auth";
+
 import EnterpriseCard from "./_components/enterprise-card";
+import UserCard from "./_components/user-card";
 
 const SettingsPage = async () => {
 

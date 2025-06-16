@@ -4,17 +4,16 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
+import { upsertClient } from "@/actions/upsert-client";
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { upsertClient } from "@/actions/upsert-client";
 import { clientsTable } from "@/db/schema";
 
 
 const formSchema = z.object({
     name: z.string().trim().min(1, { message: "Nome do serviço é obrigatório." }),
-    email: z.string().email({ message: "Email inválido." }),
     phoneNumber: z.string().min(1, { message: "Número de telefone é obrigatório." }),
 })
 
@@ -30,7 +29,6 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: client?.name || "",
-            email: client?.email || "",
             phoneNumber: client?.phoneNumber || "",
         }
     })
@@ -50,7 +48,6 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
         upsertClientAction.execute({
             ...values,
             id: client?.id,
-            email: values.email,
             phoneNumber: values.phoneNumber,
         });
     };
@@ -71,21 +68,6 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
                                 </FormLabel>
                                 <FormControl>
                                     <Input placeholder="Digite o nome do cliente" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    Email
-                                </FormLabel>
-                                <FormControl>
-                                    <Input type="email" placeholder="Digite o email do cliente" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

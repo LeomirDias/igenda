@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -24,7 +24,6 @@ const clientLoginSchema = z.object({
 });
 
 const ClientLoginForm = () => {
-    const router = useRouter();
     const params = useParams();
     const enterpriseSlug = params?.slug as string;
     const [showVerification, setShowVerification] = useState(false);

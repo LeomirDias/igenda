@@ -1,9 +1,11 @@
 "use client"
 
-import { productsTable } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
-import TableProductActions from "./table-actions"
+
 import { Badge } from "@/components/ui/badge"
+import { productsTable } from "@/db/schema"
+
+import TableProductActions from "./table-actions"
 
 type Product = typeof productsTable.$inferSelect;
 

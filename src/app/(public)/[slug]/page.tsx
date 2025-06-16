@@ -11,10 +11,6 @@ import { SlugPageContainer, SlugPageContent, SlugPageDescription, SlugPageHeader
 import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
 
-import { generateEnterpriseMetadata } from "./metadata";
-
-export const generateMetadata = generateEnterpriseMetadata;
-
 interface PageProps {
     params: Promise<{
         slug: string;

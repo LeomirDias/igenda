@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useAction } from "next-safe-action/hooks"
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { useState } from "react";
-import Image from "next/image";
 
 import { upsertProfessional } from "@/actions/upsert-professionals";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { professionalsTable } from "@/db/schema";
-import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
     name: z.string().trim().min(1, { message: "Nome do profissional é obrigatório." }),

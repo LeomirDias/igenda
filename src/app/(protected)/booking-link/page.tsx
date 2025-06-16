@@ -1,15 +1,16 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container";
-import { auth } from "@/lib/auth";
+import { eq } from "drizzle-orm";
+import { Link } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import { usersToEnterprisesTable } from "@/db/schema";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container";
+import { db } from "@/db";
+import { usersToEnterprisesTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
+
 import { CopyLinkButton } from "./_components/copy-link-button";
-import { Link, Link2Icon } from "lucide-react";
 
 const BookingLinkPage = async () => {
     const session = await auth.api.getSession({

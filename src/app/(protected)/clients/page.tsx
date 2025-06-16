@@ -2,12 +2,13 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { DataTable } from "@/components/ui/data-table";
 import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
 import { db } from "@/db";
-import { clientsTable, servicesTable } from "@/db/schema";
+import { clientsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
+
 import AddClientButton from "./_components/add-client-button";
-import { DataTable } from "@/components/ui/data-table";
 import { clientsTableColumns } from "./_components/table-columns";
 
 const ClientsPage = async () => {

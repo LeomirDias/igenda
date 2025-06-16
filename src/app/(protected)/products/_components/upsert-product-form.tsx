@@ -1,25 +1,23 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { useAction } from "next-safe-action/hooks"
+import React from "react";
 import { useForm } from "react-hook-form";
+import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
-import React from "react";
 
-
+import { getProductCategories } from "@/actions/get-product-categories";
+import { upsertProduct } from "@/actions/upsert-product";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { productsTable } from "@/db/schema";
-import { upsertProduct } from "@/actions/upsert-product";
-import { getProductCategories } from "@/actions/get-product-categories";
-import { Check, ChevronsUpDown } from "lucide-react";
-
-import { NumericFormat } from "react-number-format";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { productsTable } from "@/db/schema";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 
 
 
@@ -207,7 +205,7 @@ const UpsertProductForm = ({ product, onSuccess }: upsertProductoForm) => {
                                                                     "opacity-0" // Always hidden for "create new"
                                                                 )}
                                                             />
-                                                            Criar nova: "{field.value}"
+                                                            Criar nova: &quot;{field.value}&quot;
                                                         </CommandItem>
                                                     )}
                                                 </CommandGroup>

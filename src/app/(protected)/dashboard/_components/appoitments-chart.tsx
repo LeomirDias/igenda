@@ -1,13 +1,13 @@
 "use client"
 
-import { DollarSign, TrendingUp } from "lucide-react"
+import dayjs from "dayjs"
+import { DollarSign } from "lucide-react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
@@ -17,7 +17,6 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
-import dayjs from "dayjs"
 import { formatCurrencyInCents } from "@/helpers/currency"
 
 interface DailyAppointment {

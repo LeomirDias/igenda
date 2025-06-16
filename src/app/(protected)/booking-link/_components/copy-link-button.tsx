@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 
 interface CopyLinkButtonProps {
     link: string;
@@ -14,7 +15,7 @@ export const CopyLinkButton = ({ link }: CopyLinkButtonProps) => {
             await navigator.clipboard.writeText(link);
             toast.success("Link copiado!", {
             });
-        } catch (error) {
+        } catch {
             toast.error("Não foi possível copiar o link. Tente novamente.");
         }
     };

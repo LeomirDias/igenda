@@ -1,13 +1,14 @@
 "use client"
 
+import { loadStripe } from "@stripe/stripe-js"
+import { Check, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useAction } from "next-safe-action/hooks"
+
 import { createStripeCheckout } from "@/actions/create-stripe-checkout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Check, CheckCircle, Loader2 } from "lucide-react"
-import { useAction } from "next-safe-action/hooks"
-import { loadStripe } from "@stripe/stripe-js"
-import { useRouter } from "next/navigation"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface SubscriptionPlanProps {
     active?: boolean
@@ -15,7 +16,7 @@ interface SubscriptionPlanProps {
     userEmail?: string
 }
 
-export default function SubscriptionPlan({ active = false, userEmail, className }: SubscriptionPlanProps) {
+export default function SubscriptionPlan({ active = false, userEmail }: SubscriptionPlanProps) {
 
     const router = useRouter();
 

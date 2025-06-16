@@ -1,11 +1,9 @@
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { EditIcon, MoreVerticalIcon, Trash2 } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
+import { useState } from "react";
+import { toast } from "sonner";
+
+import { deleteClient } from "@/actions/delete-clients";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -15,17 +13,20 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { EditIcon, MoreVerticalIcon, Trash2 } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
-import UpsertClientForm from "./upsert-client-form";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { clientsTable } from "@/db/schema";
-import { useState } from "react";
-import { useAction } from "next-safe-action/hooks";
-import { toast } from "sonner";
-import { deleteClient } from "@/actions/delete-clients";
+
+import UpsertClientForm from "./upsert-client-form";
 
 interface ClientTableActionsProps {
     client: typeof clientsTable.$inferSelect;

@@ -1,17 +1,9 @@
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button";
 import { EditIcon, MoreVerticalIcon, Trash2 } from "lucide-react";
-import { Dialog } from "@/components/ui/dialog";
-import UpsertProductForm from "./upsert-product-form";
-import { productsTable } from "@/db/schema";
+import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import { toast } from "sonner";
+
+import { deleteProduct } from "@/actions/delete-product";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,9 +15,19 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useAction } from "next-safe-action/hooks";
-import { deleteProduct } from "@/actions/delete-product";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { productsTable } from "@/db/schema";
+
+import UpsertProductForm from "./upsert-product-form";
 
 interface ProductsTableActionsProps {
     product: typeof productsTable.$inferSelect;
