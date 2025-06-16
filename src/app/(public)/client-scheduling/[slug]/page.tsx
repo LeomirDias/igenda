@@ -25,6 +25,10 @@ const ClientSchedulingPage = async ({ params }: PageProps) => {
 
     const client = await getClientFromToken(token ?? "");
 
+    // if (!client) {
+    //     redirect(`/client-authentication/${slug}`);
+    // }
+
     const enterprise = await db.query.enterprisesTable.findFirst({
         where: eq(enterprisesTable.slug, slug),
     });

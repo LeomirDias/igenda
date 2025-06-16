@@ -1,12 +1,14 @@
 "use server";
 
-import { actionClient } from "@/lib/next-safe-action";
+import { addMinutes } from "date-fns";
+import { eq } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
+
 import { db } from "@/db";
 import { clientSessionsTable } from "@/db/schema";
-import { v4 as uuidv4 } from "uuid";
-import { addMinutes } from "date-fns";
-import { upsertSessionSchema, SessionResponse } from "./types";
-import { eq } from "drizzle-orm";
+import { actionClient } from "@/lib/next-safe-action";
+
+import { SessionResponse, upsertSessionSchema } from "./types";
 
 export const upsertClientSession = actionClient
     .schema(upsertSessionSchema)
