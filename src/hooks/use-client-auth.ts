@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { cookies } from "next/headers";
+import { useEffect, useState } from "react";
 
 export const useClientAuth = () => {
     const router = useRouter();

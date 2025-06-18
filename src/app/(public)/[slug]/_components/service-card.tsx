@@ -1,11 +1,13 @@
 "use client";
-import { Clock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Clock } from "lucide-react";
+import { useParams } from 'next/navigation'
+
+import StoreRedirectButton from "@/app/(public)/_components/store-redirect-button";
 import { Separator } from "@/components/ui/separator";
-import { SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
 import { servicesTable } from "@/db/schema";
-import { useAppointmentStore } from "@/stores/appointment-store";
+
+import NotificationTag from "../../_components/notification-tag";
 
 
 interface ServiceCardProps {
@@ -13,12 +15,9 @@ interface ServiceCardProps {
 }
 
 const ServiceCard = ({ services }: ServiceCardProps) => {
-    const appointmentStore = useAppointmentStore();
 
-    const handleSelectService = (serviceId: string) => {
-        appointmentStore.setServiceId(serviceId);
-        console.log(useAppointmentStore.getState());
-    }
+    const params = useParams()
+    const slug = params.slug as string
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat("pt-BR", {
@@ -29,12 +28,7 @@ const ServiceCard = ({ services }: ServiceCardProps) => {
 
     return (
         <div>
-            <SlugPageHeader>
-                <SlugPageHeaderContent>
-                    <SlugPageTitle>Serviços</SlugPageTitle>
-                </SlugPageHeaderContent>
-            </SlugPageHeader>
-
+            <NotificationTag itemForSelection="serviço" itemForShow="profissionais" />
             <div className="space-y-3 mt-4">
                 {services.map((service: typeof servicesTable.$inferSelect) => (
                     <div key={service.id} className="flex flex-col gap-3">
@@ -52,9 +46,15 @@ const ServiceCard = ({ services }: ServiceCardProps) => {
                                         </div>
                                     </div>
                                 </div>
-                                <Button onClick={() => handleSelectService(service.id)} className="text-xs h-8 w-16">
+                                <StoreRedirectButton
+                                    storeKey="setServiceId"
+                                    value={service.id}
+                                    redirectTo="professional-selection"
+                                    slug={slug}
+                                    className="text-xs h-8 w-16"
+                                >
                                     Agendar
-                                </Button>
+                                </StoreRedirectButton>
                             </div>
                         </div>
                         <Separator />

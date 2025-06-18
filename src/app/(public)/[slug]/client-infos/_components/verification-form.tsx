@@ -11,10 +11,13 @@ import z from "zod";
 
 import { verifyCode } from "@/actions/client-verifications";
 import { generateCode } from "@/actions/client-verifications/generate-code";
+import { upsertClient } from "@/actions/upsert-client";
+import { upsertClientSession } from "@/actions/upsert-client-session";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAppointmentStore } from "@/stores/appointment-store";
 
 const verificationSchema = z.object({
     code: z.string().length(6, { message: "O código deve ter 6 dígitos" }),
@@ -25,17 +28,19 @@ interface VerificationFormProps {
         name: string;
         phoneNumber: string;
     };
+    isLogin: boolean;
 }
 
 const EXPIRATION_TIME = 5 * 60; // 5 minutos em segundos
 
-const VerificationForm = ({ clientData }: VerificationFormProps) => {
+const VerificationForm = ({ clientData, isLogin }: VerificationFormProps) => {
     const router = useRouter();
     const params = useParams();
     const enterpriseSlug = params?.slug as string;
     const [timeLeft, setTimeLeft] = useState(EXPIRATION_TIME);
     const [canResend, setCanResend] = useState(false);
     const [isResending, setIsResending] = useState(false);
+    const setClientId = useAppointmentStore((state) => state.setClientId);
 
     const form = useForm<z.infer<typeof verificationSchema>>({
         resolver: zodResolver(verificationSchema),
@@ -89,10 +94,67 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
     };
 
     const verifyCodeAction = useAction(verifyCode, {
-        onSuccess: ({ data }) => {
+        onSuccess: async ({ data }) => {
             if (data?.success) {
-                toast.success("Código verificado com sucesso!");
-                router.push(`/client-home/${enterpriseSlug}`);
+                try {
+                    if (isLogin) {
+                        // Cria uma nova sessão para o cliente
+                        const sessionResult = await upsertClientSession({
+                            clientId: data.client?.id ?? "",
+                            enterpriseId: data.client?.enterpriseId ?? "",
+                        });
+
+                        if (!sessionResult) {
+                            throw new Error("Erro ao criar sessão");
+                        }
+
+                        if (sessionResult.data?.success) {
+                            toast.success("Código verificado com sucesso!");
+                            setClientId(data.client?.id ?? "");
+                            console.log(useAppointmentStore.getState());
+                            router.push(`/${enterpriseSlug}/confirm-appoitment`);
+                        } else {
+                            throw new Error(sessionResult.data?.message ?? "Erro ao criar sessão");
+                        }
+                    } else {
+                        // Cria ou atualiza o cliente
+                        const clientResult = await upsertClient({
+                            id: data.client?.id,
+                            name: clientData.name,
+                            phoneNumber: clientData.phoneNumber,
+                        });
+
+                        if (!clientResult) {
+                            throw new Error("Erro ao criar/atualizar cliente");
+                        }
+
+                        if (clientResult.data?.success) {
+                            // Cria uma nova sessão para o cliente
+                            const sessionResult = await upsertClientSession({
+                                clientId: clientResult.data.clientId,
+                                enterpriseId: data.client?.enterpriseId ?? "",
+                            });
+
+                            if (!sessionResult) {
+                                throw new Error("Erro ao criar sessão");
+                            }
+
+                            if (sessionResult.data?.success) {
+                                toast.success("Código verificado com sucesso!");
+                                setClientId(clientResult.data.clientId);
+                                console.log(useAppointmentStore.getState());
+                                router.push(`/${enterpriseSlug}/confirm-appoitment`);
+                            } else {
+                                throw new Error(sessionResult.data?.message ?? "Erro ao criar sessão");
+                            }
+                        } else {
+                            throw new Error("Falha ao criar/atualizar cliente");
+                        }
+                    }
+                } catch (error) {
+                    console.error("Erro ao processar verificação:", error);
+                    toast.error("Erro ao processar verificação. Por favor, tente novamente.");
+                }
             } else {
                 toast.error(data?.message || "Código inválido. Por favor, tente novamente.");
             }

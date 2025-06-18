@@ -11,8 +11,8 @@ const AuthenticationPage = async () => {
         <div className="flex h-screen w-screen items-center justify-center p-4">
             <Tabs defaultValue="login" className="w-full max-w-[400px] mx-auto">
                 <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">Login</TabsTrigger>
-                    <TabsTrigger value="register">Criar conta</TabsTrigger>
+                    <TabsTrigger value="login">Já sou cliente</TabsTrigger>
+                    <TabsTrigger value="register">Sou um novo cliente</TabsTrigger>
                 </TabsList>
                 <TabsContent value="login">
                     <ClientLoginForm />

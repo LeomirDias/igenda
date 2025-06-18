@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,7 +10,8 @@ import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
 
-import { generateCode } from "@/actions/client-verifications";
+import { generateCode } from "@/actions/client-verifications/generate-code";
+import { validatePhone } from "@/actions/client-verifications/validate-phone";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -17,58 +19,69 @@ import { Input } from "@/components/ui/input";
 
 import VerificationForm from "./verification-form";
 
-const clientRegisterSchema = z.object({
-    name: z.string().trim().min(1, { message: "O nome é obrigatório" }),
+const clientLoginSchema = z.object({
     phoneNumber: z.string().trim().min(1, { message: "Telefone é obrigatório" }),
 });
 
-type ClientFormData = z.infer<typeof clientRegisterSchema>;
-
-const ClientSignUpForm = () => {
+const ClientLoginForm = () => {
+    const params = useParams();
+    const enterpriseSlug = params?.slug as string;
     const [showVerification, setShowVerification] = useState(false);
-    const [clientData, setClientData] = useState<ClientFormData | null>(null);
+    const [clientData, setClientData] = useState<{ name: string; phoneNumber: string; } | null>(null);
 
-    const form = useForm<ClientFormData>({
-        resolver: zodResolver(clientRegisterSchema),
+    const form = useForm<z.infer<typeof clientLoginSchema>>({
+        resolver: zodResolver(clientLoginSchema),
         defaultValues: {
-            name: "",
             phoneNumber: "",
         },
     });
 
-    const generateCodeAction = useAction(generateCode, {
-        onSuccess: ({ data }) => {
-            if (data?.success) {
-                setShowVerification(true);
-                toast.success("Código de verificação enviado! Verifique seu Whatsapp.");
+    const validatePhoneAction = useAction(validatePhone, {
+        onSuccess: async ({ data }) => {
+            if (data?.success && data.client) {
+                try {
+                    // Gera o código de verificação
+                    const result = await generateCode({
+                        phoneNumber: data.client.phoneNumber,
+                        clientData: {
+                            name: data.client.name,
+                            phoneNumber: data.client.phoneNumber,
+                        },
+                    });
+
+                    if (result?.data?.success) {
+                        setClientData({
+                            name: data.client.name,
+                            phoneNumber: data.client.phoneNumber,
+                        });
+                        setShowVerification(true);
+                        toast.success("Código de verificação enviado para seu Whatsapp!");
+                    } else {
+                        toast.error("Erro ao gerar código de verificação. Por favor, tente novamente.");
+                    }
+                } catch (error) {
+                    console.error("Erro ao gerar código:", error);
+                    toast.error("Erro ao gerar código de verificação. Por favor, tente novamente.");
+                }
             } else {
-                toast.error(data?.message || "Erro ao enviar código de verificação. Por favor, tente novamente.");
+                toast.error(data?.message || "Erro ao validar telefone. Por favor, tente novamente.");
             }
         },
         onError: (error) => {
-            console.error("Erro ao enviar código:", error);
-            toast.error("Erro ao enviar código de verificação. Por favor, tente novamente.");
+            console.error("Erro ao validar telefone:", error);
+            toast.error("Erro ao validar telefone. Por favor informe o telefone cadastrado.");
         },
     });
 
-
-
-    const onSubmit = (values: ClientFormData) => {
-        setClientData({
-            ...values,
-            phoneNumber: values.phoneNumber.replace(/\D/g, "")
-        });
-        generateCodeAction.execute({
+    const onSubmit = (values: z.infer<typeof clientLoginSchema>) => {
+        validatePhoneAction.execute({
             phoneNumber: values.phoneNumber.replace(/\D/g, ""),
-            clientData: {
-                ...values,
-                phoneNumber: values.phoneNumber.replace(/\D/g, "")
-            },
+            enterpriseSlug,
         });
     };
 
     if (showVerification && clientData) {
-        return <VerificationForm clientData={clientData} />;
+        return <VerificationForm clientData={clientData} isLogin={true} />;
     }
 
     return (
@@ -76,26 +89,12 @@ const ClientSignUpForm = () => {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <CardHeader>
-                        <CardTitle>Cadastro</CardTitle>
+                        <CardTitle>Login</CardTitle>
                         <CardDescription>
-                            Crie uma conta para continuar.
+                            Faça login na sua conta para continuar.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nome</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Digite seu nome..." {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
                         <FormField
                             control={form.control}
                             name="phoneNumber"
@@ -120,11 +119,11 @@ const ClientSignUpForm = () => {
                         />
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" className="w-full" disabled={generateCodeAction.isPending}>
-                            {generateCodeAction.isPending ? (
-                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando código...</>
+                        <Button type="submit" className="w-full" disabled={validatePhoneAction.isPending}>
+                            {validatePhoneAction.isPending ? (
+                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validando...</>
                             ) : (
-                                "Criar conta"
+                                "Entrar"
                             )}
                         </Button>
                     </CardFooter>
@@ -134,4 +133,4 @@ const ClientSignUpForm = () => {
     );
 };
 
-export default ClientSignUpForm;
+export default ClientLoginForm; 

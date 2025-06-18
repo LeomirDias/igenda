@@ -1,6 +1,7 @@
 "use client";
 
 import { ptBR } from "date-fns/locale";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button"
@@ -16,15 +17,16 @@ import {
 } from "@/components/ui/sheet"
 import { useAppointmentStore } from "@/stores/appointment-store";
 
-import NotificationTag from "./notification-tag";
-import TimePicker from "./time-picker";
+import NotificationTag from "../../_components/notification-tag";
+import TimePicker from "../_components/time-picker";
 
-interface DataPickerProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}
 
-const DataPicker = ({ open, onOpenChange }: DataPickerProps) => {
+
+const DataPicker = () => {
+    const router = useRouter()
+    const params = useParams()
+    const slug = params.slug as string
+
     const [date, setDate] = useState<Date | undefined>(undefined);
 
     const setStoreDate = useAppointmentStore((state) => state.setDate);
@@ -34,13 +36,15 @@ const DataPicker = ({ open, onOpenChange }: DataPickerProps) => {
         if (selectedDate) {
             setStoreDate(selectedDate.toISOString());
             console.log(useAppointmentStore.getState());
-        } else {
-            setStoreDate("");
         }
     };
 
+    const handleClickConfirm = () => {
+        router.push(`/${slug}/client-infos`);
+    }
+
     return (
-        <Sheet open={open} onOpenChange={onOpenChange}>
+        <Sheet open>
             <SheetContent side="right">
                 <SheetHeader>
                     <SheetTitle>Agendar Horário</SheetTitle>
@@ -93,7 +97,7 @@ const DataPicker = ({ open, onOpenChange }: DataPickerProps) => {
                     </div>
                 </div>
                 <SheetFooter>
-                    <Button type="submit" disabled={date === undefined}>Confirmar Agendamento</Button>
+                    <Button type="submit" disabled={date === undefined} onClick={handleClickConfirm}>Confirmar</Button>
                     <SheetClose asChild>
                         <Button variant="outline">Fechar</Button>
                     </SheetClose>

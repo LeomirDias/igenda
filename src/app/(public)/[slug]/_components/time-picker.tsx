@@ -2,18 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useState } from "react";
 
 import { getAvailableTimes } from "@/actions/get-available-times";
 import { Badge } from "@/components/ui/badge";
 import { useAppointmentStore } from "@/stores/appointment-store";
 
-import ConfirmAppointment from "./confirm-appoitment";
-
 const TimePicker = () => {
     const selectedProfessionalId = useAppointmentStore((state) => state.professionalId);
     const selectedDate = useAppointmentStore((state) => state.date);
-    const [isConfirmAppointmentOpen, setIsConfirmAppointmentOpen] = useState(false);
     const setStoreTime = useAppointmentStore((state) => state.setTime);
 
     const { data: availableTimes } = useQuery({
@@ -33,7 +29,6 @@ const TimePicker = () => {
     const handleSelectTime = (selectedTime: string | undefined) => {
         if (selectedTime) {
             setStoreTime(selectedTime);
-            setIsConfirmAppointmentOpen(true);
             console.log(useAppointmentStore.getState());
         } else {
             setStoreTime("");
@@ -59,12 +54,6 @@ const TimePicker = () => {
                     </Badge>
                 </div>
             ))}
-            {isConfirmAppointmentOpen && (
-                <ConfirmAppointment
-                    open={isConfirmAppointmentOpen}
-                    onOpenChange={setIsConfirmAppointmentOpen}
-                />
-            )}
         </div>
     );
 }

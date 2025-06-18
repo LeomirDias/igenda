@@ -8,9 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import { SlugPageContainer, SlugPageContent, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
 import { SlugPageDescription } from "@/components/ui/slug-page-container";
 import { db } from "@/db";
-import { enterprisesTable, servicesTable } from "@/db/schema";
+import { enterprisesTable, professionalsTable } from "@/db/schema";
 
-import ServiceCard from "./_components/service-card";
+import ProfessionalCard from "./_components/professional-card";
+
 
 interface PageProps {
     params: Promise<{
@@ -18,7 +19,7 @@ interface PageProps {
     }>;
 }
 
-const ClientSchedulingPage = async ({ params }: PageProps) => {
+const ProfessionalSelectionPage = async ({ params }: PageProps) => {
     const { slug } = await params;
 
     const enterprise = await db.query.enterprisesTable.findFirst({
@@ -29,8 +30,8 @@ const ClientSchedulingPage = async ({ params }: PageProps) => {
         redirect("/enterprise-not-found");
     }
 
-    const services = await db.query.servicesTable.findMany({
-        where: eq(servicesTable.enterpriseId, enterprise.id),
+    const professionals = await db.query.professionalsTable.findMany({
+        where: eq(professionalsTable.enterpriseId, enterprise.id),
     });
 
     const enterpriseInitials = enterprise.name
@@ -66,11 +67,11 @@ const ClientSchedulingPage = async ({ params }: PageProps) => {
             <Separator />
             <SlugPageContent>
                 <div>
-                    <ServiceCard services={services} />
+                    <ProfessionalCard professionals={professionals} />
                 </div>
             </SlugPageContent>
         </SlugPageContainer>
     );
 }
 
-export default ClientSchedulingPage;
+export default ProfessionalSelectionPage;

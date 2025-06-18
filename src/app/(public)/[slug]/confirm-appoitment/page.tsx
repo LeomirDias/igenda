@@ -1,9 +1,13 @@
 "use client";
 
 import dayjs from "dayjs";
+import { useParams, useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
+import { createAppointment } from "@/actions/create-appointments";
+import { getEnterpriseBySlug } from "@/actions/get-enterprise-by-slug";
 import { getProfessional } from "@/actions/get-professional";
 import { getService } from "@/actions/get-service";
 import { Button } from "@/components/ui/button";
@@ -11,16 +15,26 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAppointmentStore } from "@/stores/appointment-store";
 
-interface ConfirmAppointmentProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}
-
-const ConfirmAppointment = ({ open, onOpenChange }: ConfirmAppointmentProps) => {
+const ConfirmAppointment = () => {
+    const router = useRouter();
+    const params = useParams()
+    const slug = params.slug as string
     const appointment = useAppointmentStore.getState();
     const [professionalName, setProfessionalName] = useState<string>("");
     const [serviceName, setServiceName] = useState<string>("");
     const [servicePrice, setServicePrice] = useState<number>(0);
+    const [enterpriseId, setEnterpriseId] = useState<string>("");
+
+    const { execute: executeGetEnterprise } = useAction(getEnterpriseBySlug, {
+        onSuccess: (enterprise) => {
+            setEnterpriseId(enterprise.data?.id ?? "");
+        },
+        onError: (error) => {
+            console.error("Erro ao buscar empresa:", error);
+            toast.error("Erro ao buscar empresa");
+            router.push(`/${slug}`);
+        }
+    });
 
     const { execute: executeProfessional } = useAction(getProfessional, {
         onSuccess: (professional) => {
@@ -41,6 +55,20 @@ const ConfirmAppointment = ({ open, onOpenChange }: ConfirmAppointmentProps) => 
         }
     });
 
+    const { execute: executeAddAppointment } = useAction(createAppointment, {
+        onSuccess: () => {
+            router.push(`/${slug}/successful-scheduling`);
+        },
+        onError: () => {
+            toast.error("Erro ao criar agendamento. Por favor, tente novamente.");
+            router.push(`/${slug}`);
+        }
+    });
+
+    useEffect(() => {
+        executeGetEnterprise({ slug });
+    }, [executeGetEnterprise, slug]);
+
     useEffect(() => {
         if (appointment.professionalId) {
             executeProfessional({ professionalId: appointment.professionalId });
@@ -53,11 +81,27 @@ const ConfirmAppointment = ({ open, onOpenChange }: ConfirmAppointmentProps) => 
         }
     }, [appointment.serviceId, executeService]);
 
+    const handleClickConfirm = () => {
+        if (!appointment.clientId || !appointment.serviceId || !appointment.professionalId || !appointment.date || !appointment.time || !enterpriseId) {
+            toast.error("Dados do agendamento incompletos");
+            return;
+        }
+
+        executeAddAppointment({
+            clientId: appointment.clientId,
+            serviceId: appointment.serviceId,
+            professionalId: appointment.professionalId,
+            date: appointment.date,
+            time: appointment.time,
+            enterpriseId: enterpriseId
+        });
+    }
+
     return (
-        <Sheet open={open} onOpenChange={onOpenChange}>
+        <Sheet open>
             <SheetContent side="bottom">
                 <SheetHeader>
-                    <SheetTitle>Confirmar Agendamento</SheetTitle>
+                    <SheetTitle>Quase lá!</SheetTitle>
                     <SheetDescription>Confirme os detalhes do seu agendamento</SheetDescription>
                 </SheetHeader>
                 <Separator />
@@ -72,7 +116,7 @@ const ConfirmAppointment = ({ open, onOpenChange }: ConfirmAppointmentProps) => 
                 </div>
                 <Separator />
                 <SheetFooter>
-                    <Button>Confirmar Agendamento</Button>
+                    <Button type="submit" onClick={handleClickConfirm}>Confirmar agendamento</Button>
                 </SheetFooter>
             </SheetContent>
         </Sheet>

@@ -3,7 +3,6 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/db";
@@ -21,9 +20,6 @@ export const upsertClient = actionClient
         const session = await auth.api.getSession({
             headers: await headers(),
         });
-
-        if (!session?.user) throw new Error("Unauthorized");
-        if (!session.user.enterprise?.id) throw new Error("Enterprise not found");
 
         const { id, name, phoneNumber } = parsedInput;
 
@@ -45,12 +41,12 @@ export const upsertClient = actionClient
                 .values({
                     name,
                     phoneNumber,
-                    enterpriseId: session.user.enterprise.id,
+                    enterpriseId: session?.user.enterprise?.id ?? "",
                 })
                 .returning({ id: clientsTable.id });
 
             clientId = client.id;
         }
 
-        revalidatePath("/clients");
+        return { success: true, clientId };
     });
