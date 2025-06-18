@@ -1,7 +1,6 @@
 "use server";
 
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 import { db } from "@/db";
 import { enterprisesTable, usersToEnterprisesTable } from "@/db/schema";
@@ -36,6 +35,7 @@ export const createEnterprise = async (
     complement: string | undefined,
     city: string,
     state: string,
+    avatarImageURL?: string,
 ) => {
 
     const session = await auth.api.getSession({
@@ -60,11 +60,13 @@ export const createEnterprise = async (
         complement,
         city,
         state,
+        avatarImageURL,
     }).returning();
 
     await db.insert(usersToEnterprisesTable).values({
         userId: session.user.id,
         enterpriseId: enterprise.id,
     });
-    redirect("/dashboard");
+
+    return { enterpriseId: enterprise.id, redirect: "/dashboard" };
 };

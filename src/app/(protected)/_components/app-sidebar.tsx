@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import {
     Sidebar,
@@ -179,9 +179,12 @@ export function AppSidebar() {
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton size="lg">
                                     <Avatar className="h-10 w-10">
-                                        <AvatarFallback>
-                                            {enterpriseInitials}
-                                        </AvatarFallback>
+                                        <AvatarImage src={session.data?.user?.enterprise?.avatarImageURL || ""} />
+                                        {!session.data?.user?.enterprise?.avatarImageURL && (
+                                            <AvatarFallback>
+                                                {enterpriseInitials}
+                                            </AvatarFallback>
+                                        )}
                                     </Avatar>
                                     <div>
                                         <p className="text-sm">{session.data?.user?.enterprise?.name}</p>

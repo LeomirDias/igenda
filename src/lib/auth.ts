@@ -44,6 +44,7 @@ export const auth = betterAuth({
                     enterprise: enterprise?.enterpriseId ? {
                         id: enterprise?.enterpriseId,
                         name: enterprise?.enterprise?.name,
+                        avatarImageURL: enterprise?.enterprise?.avatarImageURL,
                     } : undefined,
                 },
                 session,

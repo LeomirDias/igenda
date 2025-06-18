@@ -1,14 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
 import { createEnterprise } from "@/actions/create-enterprise";
+import { uploadProfilePicture } from "@/actions/upsert-user-profile-picture";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -32,7 +35,11 @@ const enterpriseFormSchema = z.object({
 });
 
 const EnterpriseForm = () => {
+    const router = useRouter();
     const [isCepLoading, setIsCepLoading] = useState(false);
+    const [avatarFile, setAvatarFile] = useState<File>();
+    const [avatarPreview, setAvatarPreview] = useState<string>();
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
     const form = useForm<z.infer<typeof enterpriseFormSchema>>({
         resolver: zodResolver(enterpriseFormSchema),
@@ -97,9 +104,21 @@ const EnterpriseForm = () => {
         }
     }, [cep, form]);
 
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setAvatarFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAvatarPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
     const onSubmit = async (data: z.infer<typeof enterpriseFormSchema>) => {
         try {
-            await createEnterprise(
+            const result = await createEnterprise(
                 data.name,
                 data.specialty,
                 data.phoneNumber,
@@ -110,8 +129,25 @@ const EnterpriseForm = () => {
                 data.number,
                 data.complement || "",
                 data.city,
-                data.state
+                data.state,
             );
+
+            // Se houver um arquivo de avatar, faz o upload após criar a empresa
+            if (avatarFile) {
+                setIsUploadingAvatar(true);
+                try {
+                    const formData = new FormData();
+                    formData.append('photo', avatarFile);
+                    await uploadProfilePicture(formData, result.enterpriseId);
+                } catch (error) {
+                    console.error("Erro ao fazer upload da imagem:", error);
+                    toast.error("Erro ao fazer upload da imagem. A empresa foi criada, mas a imagem não foi salva.");
+                } finally {
+                    setIsUploadingAvatar(false);
+                }
+            }
+
+            router.push(result.redirect);
         } catch (error) {
             if (isRedirectError(error)) {
                 return
@@ -125,6 +161,37 @@ const EnterpriseForm = () => {
         <>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="flex items-center gap-4">
+                        <div className="relative h-24 w-24 rounded-full overflow-hidden bg-muted">
+                            {avatarPreview ? (
+                                <Image
+                                    src={avatarPreview}
+                                    alt="Avatar Preview"
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <div className="h-full w-full flex items-center justify-center">
+                                    <Upload className="h-8 w-8 text-muted-foreground" />
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <FormLabel>Foto da Empresa</FormLabel>
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                                disabled={isUploadingAvatar}
+                            />
+                            {isUploadingAvatar && (
+                                <div className="flex items-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <span className="text-sm text-muted-foreground">Enviando imagem...</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     <FormField
                         control={form.control}
                         name="name"
@@ -301,7 +368,6 @@ const EnterpriseForm = () => {
                 </form>
             </Form>
         </>
-
     );
 }
 
