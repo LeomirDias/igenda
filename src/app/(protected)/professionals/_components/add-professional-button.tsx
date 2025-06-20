@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
-import UpsertProfessionalForm from "./upsert-professional-form";
+import CreateProfessionalForm from "./create-professional-form";
 
 const AddProfessionalButton = () => {
 
@@ -19,7 +19,7 @@ const AddProfessionalButton = () => {
                     Adicionar profissonal
                 </Button>
             </DialogTrigger>
-            <UpsertProfessionalForm onSuccess={() => setIsOpen(false)} />
+            <CreateProfessionalForm />
         </Dialog>
     );
 }

@@ -27,7 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { professionalsTable } from "@/db/schema";
 
 import { getAvailability } from "../helpers/availability";
-import UpsertProfessionalForm from "./upsert-professional-form";
+import UpdateProfessionalForm from "./update-professional-form";
 
 interface ProfessionalCardProps {
     professional: typeof professionalsTable.$inferSelect
@@ -65,7 +65,7 @@ const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
         <Card>
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Avatar className="h-10 w-10 relative">
+                    <Avatar className="h-16 w-16 relative">
                         {professional.avatarImageURL ? (
                             <Image
                                 src={professional.avatarImageURL}
@@ -105,12 +105,11 @@ const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
                     <DialogTrigger asChild>
                         <Button className="w-full">Ver detalhes</Button>
                     </DialogTrigger>
-                    <UpsertProfessionalForm professional={{
+                    <UpdateProfessionalForm professional={{
                         ...professional,
                         availableToTime: availability.to.format("HH:mm:ss"),
                         availableFromTime: availability.from.format("HH:mm:ss"),
                     }}
-                        onSuccess={() => setIsUpsertProfessionalFormOpen(false)}
                     />
                 </Dialog>
 

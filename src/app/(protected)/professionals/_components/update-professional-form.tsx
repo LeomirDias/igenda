@@ -1,13 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import Image from "next/image";
-import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import z from "zod";
 
-import { upsertProfessional } from "@/actions/upsert-professionals";
+import { updateProfessional } from "@/actions/update-professional";
+import { UpdateProfessionalSchema, updateProfessionalSchema } from "@/actions/update-professional/schema";
+import { uploadProfessionalProfilePicture } from "@/actions/upsert-professional-profile-picture";
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -15,105 +17,79 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { professionalsTable } from "@/db/schema";
 
-const formSchema = z.object({
-    name: z.string().trim().min(1, { message: "Nome do profissional é obrigatório." }),
-    specialty: z.string().trim().min(1, { message: "Função ou especialidade do profissional é obrigatória." }),
-    phoneNumber: z.string().trim().min(1, { message: "Telefone do profissonal é obrigatório." }),
-    instagramURL: z.string().trim().url({ message: "URL do Instagram inválida." }),
-    avatarImageURL: z.string().url({ message: "URL do avatar inválida." }).optional(),
-    availableFromWeekDay: z.string(),
-    availableToWeekDay: z.string(),
-    availableFromTime: z.string().min(1, { message: "Hora de início é obrigatória" }),
-    availableToTime: z.string().min(1, { message: "Hora de término é obrigatória.", }),
-}).refine(
-    (data) => {
-        return data.availableFromTime < data.availableToTime;
-    },
-    {
-        message:
-            "O horário de início não pode ser anterior ao horário de término.",
-        path: ["availableToTime"],
-    },
-);
-
-interface UpsertProfessionalFormProps {
+interface UpdateProfessionalFormProps {
     professional?: typeof professionalsTable.$inferSelect;
-    onSuccess?: () => void;
 }
 
-const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalFormProps) => {
+const UpdateProfessionalForm = ({ professional }: UpdateProfessionalFormProps) => {
+    const router = useRouter();
     const [avatarPreview, setAvatarPreview] = useState<string | null>(professional?.avatarImageURL || null);
-    const [isUploading, setIsUploading] = useState(false);
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+    const [avatarFile, setAvatarFile] = useState<File>();
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        shouldUnregister: true,
-        resolver: zodResolver(formSchema),
+    const { execute: executeUpdateProfessional, status } = useAction(updateProfessional);
+
+    const form = useForm<UpdateProfessionalSchema>({
+        resolver: zodResolver(updateProfessionalSchema),
         defaultValues: {
+            id: professional?.id,
             name: professional?.name || "",
             specialty: professional?.specialty || "",
             phoneNumber: professional?.phoneNumber || "",
             instagramURL: professional?.instagramURL || "",
-            avatarImageURL: professional?.avatarImageURL || undefined,
-            availableFromWeekDay: professional?.availableFromWeekDay?.toString() || "1",
-            availableToWeekDay: professional?.availableToWeekDay?.toString() || "6",
+            availableFromWeekDay: professional?.availableFromWeekDay || 1,
+            availableToWeekDay: professional?.availableToWeekDay || 6,
             availableFromTime: professional?.availableFromTime || "",
             availableToTime: professional?.availableToTime || "",
         }
-    })
-
-    const upsertProfessionalAction = useAction(upsertProfessional, {
-        onSuccess: () => {
-            toast.success(professional ? "Profissional atualizado com sucesso!" : "Profissional adicionado com sucesso!");
-            onSuccess?.();
-            form.reset();
-            setAvatarPreview(null);
-        },
-        onError: (error) => {
-            console.error("Erro ao salvar profissional:", error);
-            toast.error(professional ? `Erro ao atualizar profissional.` : `Erro ao adicionar profissional.`);
-        },
     });
 
-    const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setAvatarPreview(URL.createObjectURL(file));
-            setIsUploading(true);
-            const formData = new FormData();
-            formData.append("file", file);
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-            try {
-                const response = await fetch("/api/upload", {
-                    method: "POST",
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    throw new Error("Falha no upload da imagem.");
-                }
-
-                const data = await response.json();
-                form.setValue("avatarImageURL", data.url, { shouldValidate: true });
-                setAvatarPreview(data.url);
-            } catch (error) {
-                console.error("Erro no upload:", error);
-                toast.error("Erro ao fazer upload da imagem. Tente novamente.");
-                setAvatarPreview(professional?.avatarImageURL || null);
-                form.setValue("avatarImageURL", professional?.avatarImageURL || undefined);
-            } finally {
-                setIsUploading(false);
-            }
-        }
+        setAvatarFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAvatarPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        upsertProfessionalAction.execute({
-            ...values,
-            id: professional?.id,
-            avatarImageURL: values.avatarImageURL,
-            availableFromWeekDay: parseInt(values.availableFromWeekDay),
-            availableToWeekDay: parseInt(values.availableToWeekDay),
-        })
+    const onSubmit = async (data: UpdateProfessionalSchema) => {
+        try {
+            await executeUpdateProfessional({
+                id: professional?.id,
+                name: data.name,
+                specialty: data.specialty,
+                phoneNumber: data.phoneNumber,
+                instagramURL: data.instagramURL,
+                availableFromWeekDay: data.availableFromWeekDay,
+                availableToWeekDay: data.availableToWeekDay,
+                availableFromTime: data.availableFromTime,
+                availableToTime: data.availableToTime,
+            });
+
+            if (avatarFile) {
+                setIsUploadingAvatar(true);
+                try {
+                    const formData = new FormData();
+                    formData.append('photo', avatarFile);
+                    await uploadProfessionalProfilePicture(formData, professional?.id || "");
+                } catch (error) {
+                    console.error("Erro ao fazer upload da imagem:", error);
+                    toast.error("Erro ao fazer upload da imagem. O profissional foi atualizado, mas a imagem não foi salva.");
+                } finally {
+                    setIsUploadingAvatar(false);
+                }
+            }
+
+            toast.success("Profissional atualizado com sucesso!");
+            router.push("/professionals");
+        } catch (error) {
+            console.error("Erro ao atualizar profissional:", error);
+            toast.error("Erro ao atualizar profissional. Por favor, tente novamente.");
+        }
     };
 
     return (
@@ -122,43 +98,37 @@ const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalF
             <DialogDescription>{professional ? "Edite as informações desse profissional." : "Adicione um novo profissional à sua empresa!"}</DialogDescription>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="avatarImageURL"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Foto do Profissional</FormLabel>
-                                <FormControl>
-                                    <>
-                                        <Input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleAvatarChange}
-                                            className="mb-2"
-                                            disabled={isUploading}
-                                        />
-                                        {isUploading && (
-                                            <div className="flex items-center text-sm text-muted-foreground">
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Enviando imagem...
-                                            </div>
-                                        )}
-                                        {avatarPreview && (
-                                            <div className="mt-2 relative w-32 h-32 rounded-full overflow-hidden">
-                                                <Image
-                                                    src={avatarPreview}
-                                                    alt="Prévia do avatar"
-                                                    fill
-                                                    style={{ objectFit: "cover" }}
-                                                />
-                                            </div>
-                                        )}
-                                    </>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    <div className="flex items-center gap-4">
+                        <div className="relative h-24 w-24 rounded-full overflow-hidden bg-muted">
+                            {avatarPreview ? (
+                                <Image
+                                    src={avatarPreview}
+                                    alt="Avatar Preview"
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <div className="h-full w-full flex items-center justify-center">
+                                    <Upload className="h-8 w-8 text-muted-foreground" />
+                                </div>
+                            )}
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <FormLabel>Foto do Profissional</FormLabel>
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                                disabled={isUploadingAvatar}
+                            />
+                            {isUploadingAvatar && (
+                                <div className="flex items-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <span className="text-sm text-muted-foreground">Enviando imagem...</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     <FormField
                         control={form.control}
                         name="name"
@@ -224,8 +194,8 @@ const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalF
                             <FormItem>
                                 <FormLabel>Dia inicial de disponibilidade</FormLabel>
                                 <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    onValueChange={(value) => field.onChange(parseInt(value))}
+                                    defaultValue={field.value?.toString()}
                                 >
                                     <FormControl>
                                         <SelectTrigger className="w-full">
@@ -253,8 +223,8 @@ const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalF
                             <FormItem>
                                 <FormLabel>Dia final de disponibilidade</FormLabel>
                                 <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    onValueChange={(value) => field.onChange(parseInt(value))}
+                                    defaultValue={field.value?.toString()}
                                 >
                                     <FormControl>
                                         <SelectTrigger className="w-full">
@@ -414,8 +384,8 @@ const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalF
                         )}
                     />
                     <DialogFooter>
-                        <Button type="submit" disabled={upsertProfessionalAction.isPending || isUploading}>
-                            {(upsertProfessionalAction.isPending || isUploading)
+                        <Button type="submit" disabled={isUploadingAvatar || status === "executing"}>
+                            {status === "executing" || isUploadingAvatar
                                 ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Salvando...</>
                                 : professional ? "Editar profissional"
                                     : "Cadastrar profissional"}
@@ -427,4 +397,4 @@ const UpsertProfessionalForm = ({ professional, onSuccess }: UpsertProfessionalF
     );
 }
 
-export default UpsertProfessionalForm;
+export default UpdateProfessionalForm;
