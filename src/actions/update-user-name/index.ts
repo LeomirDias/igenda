@@ -1,11 +1,13 @@
 "use server";
 
-import { db } from "@/db";
-import { usersTable } from "@/db/schema";
-import { actionClient } from "@/lib/next-safe-action";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
+
+import { db } from "@/db";
+import { usersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { actionClient } from "@/lib/next-safe-action";
+
 import { schema } from "./schema";
 
 export const updateUserName = actionClient
