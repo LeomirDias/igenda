@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Upload } from "lucide-react";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -39,13 +38,13 @@ const formSchema = z.object({
 
 interface CreateProfessionalFormProps {
     professional?: typeof professionalsTable.$inferSelect;
+    onSuccess?: () => void;
 }
 
-const CreateProfessionalForm = ({ professional }: CreateProfessionalFormProps) => {
+const CreateProfessionalForm = ({ professional, onSuccess }: CreateProfessionalFormProps) => {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(professional?.avatarImageURL || null);
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File>();
-    const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         shouldUnregister: true,
@@ -103,7 +102,8 @@ const CreateProfessionalForm = ({ professional }: CreateProfessionalFormProps) =
             }
 
             toast.success("Profissional cadastrado com sucesso!");
-            router.push(result.redirect);
+            form.reset();
+            onSuccess?.();
         } catch (error) {
             if (isRedirectError(error)) {
                 return;

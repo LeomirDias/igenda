@@ -19,7 +19,7 @@ const AddProfessionalButton = () => {
                     Adicionar profissonal
                 </Button>
             </DialogTrigger>
-            <CreateProfessionalForm />
+            <CreateProfessionalForm onSuccess={() => setIsOpen(false)} />
         </Dialog>
     );
 }

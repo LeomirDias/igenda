@@ -57,5 +57,5 @@ export const createProfessional = async (
             enterpriseId: session.user.enterprise.id,
         }).returning();
 
-    return { professionalId: professional.id, redirect: "/professionals" };
+    return { professionalId: professional.id, revalidatePath: "/professionals" };
 };

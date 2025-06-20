@@ -110,6 +110,7 @@ const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
                         availableToTime: availability.to.format("HH:mm:ss"),
                         availableFromTime: availability.from.format("HH:mm:ss"),
                     }}
+                        onSuccess={() => setIsUpsertProfessionalFormOpen(false)}
                     />
                 </Dialog>
 

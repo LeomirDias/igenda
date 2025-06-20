@@ -54,7 +54,7 @@ const ProfessionalCard = ({ professionals }: ProfessionalCardProps) => {
                                     slug={slug}
                                     className="text-xs h-8 w-16"
                                 >
-                                    Agendar
+                                    Selecionar
                                 </StoreRedirectButton>
                             </div>
                         </div>

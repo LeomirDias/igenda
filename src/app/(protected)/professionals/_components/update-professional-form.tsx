@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Upload } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,10 +18,10 @@ import { professionalsTable } from "@/db/schema";
 
 interface UpdateProfessionalFormProps {
     professional?: typeof professionalsTable.$inferSelect;
+    onSuccess?: () => void;
 }
 
-const UpdateProfessionalForm = ({ professional }: UpdateProfessionalFormProps) => {
-    const router = useRouter();
+const UpdateProfessionalForm = ({ professional, onSuccess }: UpdateProfessionalFormProps) => {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(professional?.avatarImageURL || null);
     const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File>();
@@ -86,7 +85,8 @@ const UpdateProfessionalForm = ({ professional }: UpdateProfessionalFormProps) =
             }
 
             toast.success("Profissional atualizado com sucesso!");
-            router.push("/professionals");
+            form.reset();
+            onSuccess?.();
         } catch (error) {
             console.error("Erro ao atualizar profissional:", error);
             toast.error("Erro ao atualizar profissional. Por favor, tente novamente.");
