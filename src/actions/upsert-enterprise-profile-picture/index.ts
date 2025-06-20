@@ -6,7 +6,7 @@ import { db } from '@/db'
 import { enterprisesTable } from '@/db/schema'
 import { uploadToLocal } from '@/lib/upload-image'
 
-export async function uploadProfilePicture(formData: FormData, enterpriseId: string) {
+export async function uploadEnterpriseProfilePicture(formData: FormData, enterpriseId: string) {
     const file = formData.get('photo') as File
     if (!file || file.size === 0) {
         throw new Error('Imagem inválida')

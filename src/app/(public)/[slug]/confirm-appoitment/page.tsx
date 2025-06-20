@@ -83,7 +83,8 @@ const ConfirmAppointment = () => {
 
     const handleClickConfirm = () => {
         if (!appointment.clientId || !appointment.serviceId || !appointment.professionalId || !appointment.date || !appointment.time || !enterpriseId) {
-            toast.error("Dados do agendamento incompletos");
+            toast.error("Dados do agendamento incompleto, por favor, tente novamente.");
+            router.push(`/${slug}`);
             return;
         }
 

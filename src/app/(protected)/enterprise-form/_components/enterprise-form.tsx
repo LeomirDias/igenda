@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { createEnterprise } from "@/actions/create-enterprise";
-import { uploadProfilePicture } from "@/actions/upsert-user-profile-picture";
+import { uploadEnterpriseProfilePicture } from "@/actions/upsert-enterprise-profile-picture";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -138,7 +138,7 @@ const EnterpriseForm = () => {
                 try {
                     const formData = new FormData();
                     formData.append('photo', avatarFile);
-                    await uploadProfilePicture(formData, result.enterpriseId);
+                    await uploadEnterpriseProfilePicture(formData, result.enterpriseId);
                 } catch (error) {
                     console.error("Erro ao fazer upload da imagem:", error);
                     toast.error("Erro ao fazer upload da imagem. A empresa foi criada, mas a imagem não foi salva.");

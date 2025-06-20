@@ -1,14 +1,17 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Store } from "lucide-react";
+import { Loader2, Store, Upload } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import z from "zod";
 
 import { updateEnterprise } from "@/actions/update-enterprise";
+import { UpdateEnterpriseSchema, updateEnterpriseSchema } from "@/actions/update-enterprise/schema";
+import { uploadEnterpriseProfilePicture } from "@/actions/upsert-enterprise-profile-picture";
 import { enterpriseSpecialty } from "@/app/(protected)/enterprise-form/_constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,19 +28,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { enterprisesTable } from "@/db/schema";
 
-const formSchema = z.object({
-    name: z.string().trim().min(1, { message: "Nome da empresa é obrigatório." }),
-    specialty: z.string().trim().min(1, { message: "Área de atuação é obrigatória." }),
-    phoneNumber: z.string().trim().min(1, { message: "Telefone da empresa é obrigatório." }),
-    register: z.string().trim().min(1, { message: "Registro da empresa é obrigatório." }),
-    instagramURL: z.string().trim().url({ message: "URL do Instagram inválida." }),
-    cep: z.string().trim().min(1, { message: "CEP da empresa é obrigatório." }),
-    address: z.string().trim().min(1, { message: "Endereço da empresa é obrigatório." }),
-    number: z.string().trim().min(1, { message: "Número da empresa é obrigatório." }),
-    complement: z.string().trim().optional(),
-    city: z.string().trim().min(1, { message: "Cidade da empresa é obrigatória." }),
-    state: z.string().trim().min(1, { message: "Estado da empresa é obrigatório." }),
-})
+// const formSchema = z.object({
+//     name: z.string().trim().min(1, { message: "Nome da empresa é obrigatório." }),
+//     specialty: z.string().trim().min(1, { message: "Área de atuação é obrigatória." }),
+//     phoneNumber: z.string().trim().min(1, { message: "Telefone da empresa é obrigatório." }),
+//     register: z.string().trim().min(1, { message: "Registro da empresa é obrigatório." }),
+//     instagramURL: z.string().trim().url({ message: "URL do Instagram inválida." }),
+//     cep: z.string().trim().min(1, { message: "CEP da empresa é obrigatório." }),
+//     address: z.string().trim().min(1, { message: "Endereço da empresa é obrigatório." }),
+//     number: z.string().trim().min(1, { message: "Número da empresa é obrigatório." }),
+//     complement: z.string().trim().optional(),
+//     city: z.string().trim().min(1, { message: "Cidade da empresa é obrigatória." }),
+//     state: z.string().trim().min(1, { message: "Estado da empresa é obrigatório." }),
+// })
 
 interface EnterpriseCardProps {
     enterprise?: typeof enterprisesTable.$inferSelect;
@@ -45,10 +48,16 @@ interface EnterpriseCardProps {
 
 const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
     const [isCepLoading, setIsCepLoading] = useState(false);
+    const router = useRouter();
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(enterprise?.avatarImageURL || null);
+    const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+    const [avatarFile, setAvatarFile] = useState<File>();
 
-    const form = useForm<z.infer<typeof formSchema>>({
+    const { execute: executeUpdateEnterprise } = useAction(updateEnterprise);
+
+    const form = useForm<UpdateEnterpriseSchema>({
         shouldUnregister: true,
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(updateEnterpriseSchema),
         defaultValues: {
             name: enterprise?.name || "",
             specialty: enterprise?.specialty || "",
@@ -118,11 +127,55 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
         }
     }, [cep, form]);
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        upsertEnterpriseAction.execute({
-            ...values,
-            id: enterprise?.id,
-        })
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setAvatarFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setAvatarPreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const onSubmit = async (data: UpdateEnterpriseSchema) => {
+        try {
+            await executeUpdateEnterprise({
+                id: enterprise?.id,
+                name: data.name,
+                specialty: data.specialty,
+                phoneNumber: data.phoneNumber,
+                register: data.register,
+                instagramURL: data.instagramURL,
+                cep: data.cep,
+                address: data.address,
+                number: data.number,
+                complement: data.complement,
+                city: data.city,
+                state: data.state,
+            });
+
+            if (avatarFile) {
+                setIsUploadingAvatar(true);
+                try {
+                    const formData = new FormData();
+                    formData.append('photo', avatarFile);
+                    await uploadEnterpriseProfilePicture(formData, enterprise?.id || "");
+                } catch (error) {
+                    console.error("Erro ao fazer upload da imagem:", error);
+                    toast.error("Erro ao fazer upload da imagem. A empresa foi atualizada, mas a imagem não foi salva.");
+                } finally {
+                    setIsUploadingAvatar(false);
+                }
+            }
+
+            toast.success("Empresa atualizada com sucesso!");
+            router.push("/settings");
+        } catch (error) {
+            console.error("Erro ao atualizar empresa:", error);
+            toast.error("Erro ao atualizar empresa. Por favor, tente novamente.");
+        }
     };
 
     return (
@@ -134,9 +187,40 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
                 </div>
             </CardHeader>
             <Separator />
-            <CardContent className="pt-6">
+            <CardContent className="space-y-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <div className="flex items-center gap-4">
+                            <div className="relative h-24 w-24 overflow-hidden bg-muted border-1 border-gray-200 rounded-full">
+                                {avatarPreview ? (
+                                    <Image
+                                        src={avatarPreview}
+                                        alt="Avatar Preview"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                ) : (
+                                    <div className="h-full w-full flex items-center justify-center">
+                                        <Upload className="h-8 w-8 text-muted-foreground" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <FormLabel>Foto da empresa</FormLabel>
+                                <Input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarChange}
+                                    disabled={isUploadingAvatar}
+                                />
+                                {isUploadingAvatar && (
+                                    <div className="flex items-center gap-2">
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <span className="text-sm text-muted-foreground">Enviando imagem...</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}

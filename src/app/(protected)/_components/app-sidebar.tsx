@@ -172,13 +172,13 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
 
-            <SidebarFooter className="p-4 border-t bg-background">
+            <SidebarFooter className="py-4 border-t bg-background">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton size="lg">
-                                    <Avatar className="h-10 w-10">
+                                    <Avatar className="h-12 w-12 border-1 border-gray-200 rounded-full">
                                         <AvatarImage src={session.data?.user?.enterprise?.avatarImageURL || ""} />
                                         {!session.data?.user?.enterprise?.avatarImageURL && (
                                             <AvatarFallback>
@@ -188,7 +188,7 @@ export function AppSidebar() {
                                     </Avatar>
                                     <div>
                                         <p className="text-sm">{session.data?.user?.enterprise?.name}</p>
-                                        <p className="text-sm text-muted-foreground">{session.data?.user.email}</p>
+                                        <p className="text-xs text-muted-foreground">{session.data?.user.email}</p>
                                     </div>
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>

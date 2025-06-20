@@ -1,44 +1,63 @@
-import { cookies } from "next/headers";
+
+import { eq } from "drizzle-orm";
+import { BadgeInfo } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card"
-import { getClientFromToken } from "@/middleware/client-auth";
+import { SlugPageDescription, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
+import { db } from "@/db";
+import { enterprisesTable } from "@/db/schema";
 
-const PublicPagesHeader = async () => {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("client_token")?.value;
-    const client = await getClientFromToken(token!);
+interface PageProps {
+    params: Promise<{
+        slug: string;
+    }>;
+}
 
-    if (!client) {
-        return null;
-    }
+const PublicPagesHeader = async ({ params }: PageProps) => {
+    const { slug } = await params;
 
+    const enterprise = await db.query.enterprisesTable.findFirst({
+        where: eq(enterprisesTable.slug, slug),
+    });
 
-    const enterpriseInitials = client?.enterprise?.name
+    const enterpriseInitials = enterprise?.name
         .split(" ")
-        .map((name) => name[0])
+        .map((name: string) => name[0])
         .join("");
 
     return (
-        <Card className="w-full border-none rounded-none">
-            <CardContent className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Avatar className="h-18 w-18">
-                        <AvatarFallback>
-                            {enterpriseInitials}
-                        </AvatarFallback>
-                    </Avatar>
+        <SlugPageHeader>
+            <SlugPageHeaderContent>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Avatar className="h-16 w-16 relative border-1 border-gray-200 rounded-full">
+                            {enterprise?.avatarImageURL ? (
+                                <Image
+                                    src={enterprise?.avatarImageURL}
+                                    alt={enterprise?.name}
+                                    fill
+                                    style={{ objectFit: "cover" }}
+                                    className="rounded-full"
+                                />
+                            ) : (
+                                <AvatarFallback>{enterpriseInitials}</AvatarFallback>
+                            )}
+                        </Avatar>
+                        <div className="flex flex-col">
+                            <SlugPageTitle>{enterprise?.name}</SlugPageTitle>
+                            <SlugPageDescription>Está é a iGenda de {enterprise?.name}.</SlugPageDescription>
+                        </div>
+                    </div>
                     <div>
-                        <h1 className="text-2xl font-bold">
-                            {client?.enterprise?.name || "..."}
-                        </h1>
-                        <p className="text-sm text-muted-foreground">
-                            Seja bem vindo à iGenda de {client?.enterprise?.name || "..."}
-                        </p>
+                        <Link href={`/${slug}/enterprise-infos`}>
+                            <BadgeInfo className="h-6 w-6 text-primary" />
+                        </Link>
                     </div>
                 </div>
-            </CardContent>
-        </Card>
+            </SlugPageHeaderContent>
+        </SlugPageHeader>
     );
 }
 

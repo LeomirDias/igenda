@@ -65,7 +65,7 @@ const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
         <Card>
             <CardHeader>
                 <div className="flex items-center gap-2">
-                    <Avatar className="h-16 w-16 relative">
+                    <Avatar className="h-16 w-16 relative border-1 border-gray-200 rounded-full">
                         {professional.avatarImageURL ? (
                             <Image
                                 src={professional.avatarImageURL}

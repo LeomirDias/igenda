@@ -30,6 +30,7 @@ const UpdateProfessionalForm = ({ professional }: UpdateProfessionalFormProps) =
     const { execute: executeUpdateProfessional, status } = useAction(updateProfessional);
 
     const form = useForm<UpdateProfessionalSchema>({
+        shouldUnregister: true,
         resolver: zodResolver(updateProfessionalSchema),
         defaultValues: {
             id: professional?.id,

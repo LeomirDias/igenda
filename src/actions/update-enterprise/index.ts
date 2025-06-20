@@ -26,6 +26,10 @@ export const updateEnterprise = actionClient
             throw new Error("Unauthorized");
         }
 
+        if (!session?.user.enterprise?.id) {
+            throw new Error("Enterprise not found");
+        }
+
         const {
             id,
             name,
