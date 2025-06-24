@@ -5,12 +5,14 @@ import dayjs from "dayjs";
 
 import { getAvailableTimes } from "@/actions/get-available-times";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { useAppointmentStore } from "@/stores/appointment-store";
 
 const TimePicker = () => {
     const selectedProfessionalId = useAppointmentStore((state) => state.professionalId);
     const selectedDate = useAppointmentStore((state) => state.date);
     const setStoreTime = useAppointmentStore((state) => state.setTime);
+    const selectedTime = useAppointmentStore((state) => state.time);
 
     const { data: availableTimes } = useQuery({
         queryKey: ["available-times", selectedDate, selectedProfessionalId],
@@ -29,25 +31,23 @@ const TimePicker = () => {
     const handleSelectTime = (selectedTime: string | undefined) => {
         if (selectedTime) {
             setStoreTime(selectedTime);
-            console.log(useAppointmentStore.getState());
         } else {
             setStoreTime("");
         }
     };
 
-
     return (
-        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-4">
+        <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-2 mt-4 w-full items-center justify-center">
             {availableTimes.data.map((time) => (
                 <div key={time.value}>
                     <Badge
-                        variant={time.available ? "outline" : "secondary"}
-                        className={`text-sm ${time.available
-                            ? useAppointmentStore.getState().time === time.value
-                                ? 'bg-primary text-primary-foreground cursor-pointer font-normal'
-                                : 'cursor-pointer border-primary text-primary font-normal'
-                            : 'text-muted-foreground font-normal border-muted-foreground/50'
-                            }`}
+                        variant={selectedTime === time.value ? "default" : "outline"}
+                        className={cn(
+                            "w-[70px] text-sm font-normal transition-all duration-200 p-2 border-1 border-gray-300",
+                            time.available
+                                ? "cursor-pointer hover:scale-105"
+                                : "bg-white text-red-500 border-red-500 cursor-not-allowed"
+                        )}
                         onClick={() => time.available && handleSelectTime(time.value)}
                     >
                         {time.label}

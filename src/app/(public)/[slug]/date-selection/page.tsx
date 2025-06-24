@@ -1,9 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { ptBR } from "date-fns/locale";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { getProfessional } from "@/actions/get-professional";
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -20,8 +22,6 @@ import { useAppointmentStore } from "@/stores/appointment-store";
 import NotificationTag from "../../_components/notification-tag";
 import TimePicker from "../_components/time-picker";
 
-
-
 const DataPicker = () => {
     const router = useRouter()
     const params = useParams()
@@ -30,6 +30,22 @@ const DataPicker = () => {
     const [date, setDate] = useState<Date | undefined>(undefined);
 
     const setStoreDate = useAppointmentStore((state) => state.setDate);
+    const selectedProfessionalId = useAppointmentStore((state) => state.professionalId);
+
+    const { data: professional } = useQuery({
+        queryKey: ["professional", selectedProfessionalId],
+        queryFn: () => getProfessional({ professionalId: selectedProfessionalId ?? "" }),
+        enabled: !!selectedProfessionalId,
+    });
+
+    const isDateAvailable = (date: Date) => {
+        if (!selectedProfessionalId || !professional?.data) return false;
+        const dayOfWeek = date.getDay();
+        return (
+            dayOfWeek >= professional.data.availableFromWeekDay &&
+            dayOfWeek <= professional.data.availableToWeekDay
+        );
+    };
 
     const handleSelectDate = (selectedDate: Date | undefined) => {
         setDate(selectedDate);
@@ -43,9 +59,13 @@ const DataPicker = () => {
         router.push(`/${slug}/client-infos`);
     }
 
+    const handleClose = () => {
+        router.push(`/${slug}/professional-selection`);
+    }
+
     return (
         <Sheet open>
-            <SheetContent side="right">
+            <SheetContent side="right" className="w-full sm:max-w-xl">
                 <SheetHeader>
                     <SheetTitle>Agendar Horário</SheetTitle>
                     <SheetDescription>
@@ -53,36 +73,14 @@ const DataPicker = () => {
                     </SheetDescription>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 h-[calc(100vh-8rem)] overflow-y-auto">
-                    <div>
+                    <div className="w-full">
                         <Calendar
                             mode="single"
                             selected={date}
                             onSelect={handleSelectDate}
                             initialFocus
                             locale={ptBR}
-                            styles={{
-                                head_cell: {
-                                    width: "100%",
-                                    textTransform: "capitalize",
-                                },
-                                cell: {
-                                    width: "100%",
-                                },
-                                button: {
-                                    width: "100%",
-                                },
-                                nav_button_previous: {
-                                    width: "32px",
-                                    height: "32px",
-                                },
-                                nav_button_next: {
-                                    width: "32px",
-                                    height: "32px",
-                                },
-                                caption: {
-                                    textTransform: "capitalize",
-                                },
-                            }}
+                            disabled={(date) => !isDateAvailable(date)}
                         />
                     </div>
                     <div className="px-4">
@@ -99,7 +97,7 @@ const DataPicker = () => {
                 <SheetFooter>
                     <Button type="submit" disabled={date === undefined} onClick={handleClickConfirm}>Confirmar</Button>
                     <SheetClose asChild>
-                        <Button variant="outline">Fechar</Button>
+                        <Button variant="secondary" onClick={handleClose}>Voltar</Button>
                     </SheetClose>
                 </SheetFooter>
             </SheetContent>
