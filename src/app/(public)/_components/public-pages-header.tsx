@@ -1,28 +1,46 @@
+"use client";
 
-import { eq } from "drizzle-orm";
 import { BadgeInfo } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
+import { getEnterpriseBySlug } from "@/actions/get-enterprise-by-slug";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SlugPageDescription, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
-import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
 
 interface PageProps {
-    params: Promise<{
+    params: {
         slug: string;
-    }>;
+    };
 }
 
-const PublicPagesHeader = async ({ params }: PageProps) => {
-    const { slug } = await params;
+const PublicPagesHeader = ({ params }: PageProps) => {
+    const { slug } = params;
+    const [enterprise, setEnterprise] = useState<typeof enterprisesTable.$inferSelect | null>(null);
 
-    const enterprise = await db.query.enterprisesTable.findFirst({
-        where: eq(enterprisesTable.slug, slug),
+    const { execute: fetchEnterprise } = useAction(getEnterpriseBySlug, {
+        onSuccess: (response) => {
+            if (!response.data) return;
+            setEnterprise(response.data);
+        },
+        onError: (error) => {
+            toast.error(error.error?.serverError || "Erro ao carregar dados da empresa");
+        }
     });
 
-    const enterpriseInitials = enterprise?.name
+    useEffect(() => {
+        fetchEnterprise({ slug });
+    }, [slug, fetchEnterprise]);
+
+    if (!enterprise) {
+        return null;
+    }
+
+    const enterpriseInitials = enterprise.name
         .split(" ")
         .map((name: string) => name[0])
         .join("");
@@ -33,10 +51,10 @@ const PublicPagesHeader = async ({ params }: PageProps) => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Avatar className="h-16 w-16 relative border-1 border-gray-200 rounded-full">
-                            {enterprise?.avatarImageURL ? (
+                            {enterprise.avatarImageURL ? (
                                 <Image
-                                    src={enterprise?.avatarImageURL}
-                                    alt={enterprise?.name}
+                                    src={enterprise.avatarImageURL}
+                                    alt={enterprise.name}
                                     fill
                                     style={{ objectFit: "cover" }}
                                     className="rounded-full"
@@ -46,8 +64,8 @@ const PublicPagesHeader = async ({ params }: PageProps) => {
                             )}
                         </Avatar>
                         <div className="flex flex-col">
-                            <SlugPageTitle>{enterprise?.name}</SlugPageTitle>
-                            <SlugPageDescription>Está é a iGenda de {enterprise?.name}.</SlugPageDescription>
+                            <SlugPageTitle>{enterprise.name}</SlugPageTitle>
+                            <SlugPageDescription>Está é a iGenda de {enterprise.name}.</SlugPageDescription>
                         </div>
                     </div>
                     <div>

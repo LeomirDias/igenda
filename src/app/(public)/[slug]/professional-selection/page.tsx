@@ -1,35 +1,51 @@
-import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
+"use client";
 
+import { redirect } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { getEnterpriseBySlug } from "@/actions/get-enterprise-by-slug";
 import { Separator } from "@/components/ui/separator";
 import { SlugPageContainer, SlugPageContent } from "@/components/ui/slug-page-container";
-import { db } from "@/db";
-import { enterprisesTable, professionalsTable } from "@/db/schema";
+import { enterprisesTable } from "@/db/schema";
+import { useAppointmentStore } from "@/stores/appointment-store";
 
 import PublicPagesHeader from "../../_components/public-pages-header";
 import ProfessionalCard from "./_components/professional-card";
 
-
 interface PageProps {
-    params: Promise<{
+    params: {
         slug: string;
-    }>;
+    };
 }
 
-const ProfessionalSelectionPage = async ({ params }: PageProps) => {
-    const { slug } = await params;
+const ProfessionalSelectionPage = ({ params }: PageProps) => {
+    const { serviceId } = useAppointmentStore();
+    const [enterprise, setEnterprise] = useState<typeof enterprisesTable.$inferSelect | null>(null);
 
-    const enterprise = await db.query.enterprisesTable.findFirst({
-        where: eq(enterprisesTable.slug, slug),
+    const { execute: fetchEnterprise } = useAction(getEnterpriseBySlug, {
+        onSuccess: (response) => {
+            if (!response.data) return;
+            setEnterprise(response.data);
+        },
+        onError: (error) => {
+            toast.error(error.error?.serverError || "Erro ao carregar dados da empresa");
+            redirect("/enterprise-not-found");
+        }
     });
 
-    if (!enterprise) {
-        redirect("/enterprise-not-found");
+    useEffect(() => {
+        fetchEnterprise({ slug: params.slug });
+    }, [params.slug, fetchEnterprise]);
+
+    if (!serviceId) {
+        redirect(`/${params.slug}`);
     }
 
-    const professionals = await db.query.professionalsTable.findMany({
-        where: eq(professionalsTable.enterpriseId, enterprise.id),
-    });
+    if (!enterprise) {
+        return null;
+    }
 
     return (
         <SlugPageContainer>
@@ -37,7 +53,7 @@ const ProfessionalSelectionPage = async ({ params }: PageProps) => {
             <Separator />
             <SlugPageContent>
                 <div>
-                    <ProfessionalCard professionals={professionals} />
+                    <ProfessionalCard serviceId={serviceId} />
                 </div>
             </SlugPageContent>
         </SlugPageContainer>

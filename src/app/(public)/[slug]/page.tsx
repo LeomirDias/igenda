@@ -34,7 +34,7 @@ const ClientSchedulingPage = async ({ params }: PageProps) => {
 
     return (
         <SlugPageContainer>
-            <PublicPagesHeader params={params} />
+            <PublicPagesHeader params={{ slug }} />
             <Separator />
             <SlugPageContent>
                 <div>

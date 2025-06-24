@@ -137,6 +137,7 @@ export const professionalsTableRelations = relations(professionalsTable, ({ many
         references: [enterprisesTable.id],
     }),
     appointmentsTable: many(appointmentsTable),
+    professionalsToServices: many(professionalsToServicesTable)
 }));
 
 //Mid Table for relation N-N professionals & services
@@ -175,6 +176,15 @@ export const servicesTable = pgTable("services", {
         .notNull()
         .references(() => enterprisesTable.id, { onDelete: "cascade" }),
 });
+
+//Services table relationships
+export const servicesTableRelations = relations(servicesTable, ({ many, one }) => ({
+    enterprise: one(enterprisesTable, {
+        fields: [servicesTable.enterpriseId],
+        references: [enterprisesTable.id],
+    }),
+    professionalsToServices: many(professionalsToServicesTable)
+}));
 
 //Clients table
 export const clientsTable = pgTable("clients", {

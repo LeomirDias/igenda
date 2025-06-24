@@ -14,13 +14,18 @@ const schema = z.object({
 export const getEnterpriseBySlug = actionClient
     .schema(schema)
     .action(async ({ parsedInput }) => {
-        const enterprise = await db.query.enterprisesTable.findFirst({
-            where: eq(enterprisesTable.slug, parsedInput.slug),
-        });
+        try {
+            const enterprise = await db.query.enterprisesTable.findFirst({
+                where: eq(enterprisesTable.slug, parsedInput.slug),
+            });
 
-        if (!enterprise) {
-            throw new Error("Empresa não encontrada");
+            if (!enterprise) {
+                throw new Error("Empresa não encontrada");
+            }
+
+            return enterprise;
+        } catch (error) {
+            console.error("[GET_ENTERPRISE_BY_SLUG]", error);
+            throw new Error("Erro ao buscar empresa");
         }
-
-        return enterprise;
     }); 

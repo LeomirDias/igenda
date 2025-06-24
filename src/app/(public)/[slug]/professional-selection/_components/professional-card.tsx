@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
+import { getProfessionalsByService } from "@/actions/associate-professionals-to-service";
 import NotificationTag from "@/app/(public)/_components/notification-tag";
 import StoreRedirectButton from "@/app/(public)/_components/store-redirect-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -10,18 +14,35 @@ import { Separator } from "@/components/ui/separator";
 import { professionalsTable } from "@/db/schema";
 
 interface ProfessionalCardProps {
-    professionals: typeof professionalsTable.$inferSelect[],
+    serviceId: string;
 }
 
-const ProfessionalCard = ({ professionals }: ProfessionalCardProps) => {
-    const params = useParams()
-    const slug = params.slug as string
+const ProfessionalCard = ({ serviceId }: ProfessionalCardProps) => {
+    const params = useParams();
+    const slug = params.slug as string;
+    const [professionals, setProfessionals] = useState<typeof professionalsTable.$inferSelect[]>([]);
+
+    const { execute: fetchProfessionals } = useAction(getProfessionalsByService, {
+        onSuccess: (response) => {
+            if (!response.data) return;
+            setProfessionals(response.data);
+        },
+        onError: (error: { error?: { serverError?: string } }) => {
+            toast.error(error.error?.serverError || "Erro ao buscar profissionais");
+        }
+    });
+
+    useEffect(() => {
+        if (serviceId) {
+            fetchProfessionals({ serviceId });
+        }
+    }, [serviceId, fetchProfessionals]);
 
     return (
         <div>
             <NotificationTag itemForSelection="profissional" itemForShow="data" />
             <div className="space-y-3 mt-4">
-                {professionals.map((professional: typeof professionalsTable.$inferSelect) => (
+                {professionals.map((professional) => (
                     <div key={professional.id} className="flex flex-col gap-3">
                         <div>
                             <div className="flex items-center justify-between">
@@ -45,7 +66,6 @@ const ProfessionalCard = ({ professionals }: ProfessionalCardProps) => {
                                             <p className="font-semibold text-primary text-xs">{professional.specialty}</p>
                                         </div>
                                     </div>
-
                                 </div>
                                 <StoreRedirectButton
                                     storeKey="setProfessionalId"
@@ -61,9 +81,14 @@ const ProfessionalCard = ({ professionals }: ProfessionalCardProps) => {
                         <Separator />
                     </div>
                 ))}
+                {professionals.length === 0 && (
+                    <p className="text-center text-muted-foreground">
+                        Nenhum profissional disponível para este serviço.
+                    </p>
+                )}
             </div>
         </div>
-    )
+    );
 }
 
 export default ProfessionalCard;

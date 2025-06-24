@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container"
 import { db } from "@/db";
-import { servicesTable } from "@/db/schema";
+import { professionalsTable, servicesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import AddServiceButton from "./_components/add-service-button";
@@ -30,6 +30,10 @@ const EnterpriseServicesPage = async () => {
         where: eq(servicesTable.enterpriseId, session.user.enterprise.id),
     })
 
+    const professionals = await db.query.professionalsTable.findMany({
+        where: eq(professionalsTable.enterpriseId, session.user.enterprise.id),
+    });
+
     return (
         <PageContainer>
             <PageHeader>
@@ -43,7 +47,13 @@ const EnterpriseServicesPage = async () => {
             </PageHeader>
             <PageContent>
                 <div className="grid grid-cols-6 gap-6">
-                    {services.map(service => <ServiceCard key={service.id} service={service} />)}
+                    {services.map(service => (
+                        <ServiceCard
+                            key={service.id}
+                            service={service}
+                            professionals={professionals}
+                        />
+                    ))}
                 </div>
             </PageContent>
         </PageContainer>
