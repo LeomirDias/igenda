@@ -104,7 +104,7 @@ const ServiceCard = ({ service, professionals }: ServiceCardProps) => {
 
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="outline" className="w-full hover:bg-red-200">
+                        <Button variant="outline" className="w-full hover:bg-red-200 hover:text-red-500 hover:border-red-300">
                             Excluir serviço
                         </Button>
                     </AlertDialogTrigger>

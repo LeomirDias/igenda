@@ -1,6 +1,5 @@
 "use client";
 import { Calendar1Icon, Clock10Icon } from "lucide-react";
-import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useAction } from "next-safe-action/hooks"
 import { useState } from "react";
@@ -117,8 +116,7 @@ const ProfessionalCard = ({ professional }: ProfessionalCardProps) => {
                 {professional && (
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button variant="outline" className="w-full hover:bg-red-500 hover:text-white">
-                                <Trash2 />
+                            <Button variant="outline" className="w-full hover:bg-red-200 hover:text-red-500 hover:border-red-300">
                                 Deletar profissional
                             </Button>
                         </AlertDialogTrigger>
