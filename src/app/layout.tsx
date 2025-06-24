@@ -1,15 +1,15 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Roboto } from "next/font/google";
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 import { Toaster } from "@/components/ui/sonner";
 import { ReactQueryProvider } from "@/providers/react-query";
-import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const roboto = Roboto({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
 });
 
@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${manrope.variable} antialiased`}
+        className={`${roboto.className} antialiased`}
       >
         <ReactQueryProvider>
           <NuqsAdapter>{children}</NuqsAdapter>
