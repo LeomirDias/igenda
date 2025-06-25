@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { ArrowUpRight, MessageCircle } from "lucide-react";
+import { MapPinnedIcon, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
@@ -66,7 +66,7 @@ const EnterpriseInfosPage = async ({ params }: PageProps) => {
                 <div className="flex flex-col md:flex-row gap-8 justify-center items-center max-w-5xl mx-auto w-full min-h-[calc(100vh-20rem)] p-4">
                     <div className="w-full md:w-1/2 aspect-square max-w-[280px] md:max-w-md">
                         <a href={`https://wa.me/${enterprise.phoneNumber}`} target="_blank" rel="noopener noreferrer" className="h-full">
-                            <Card className="hover:bg-opacity-90 transition-colors cursor-pointer h-full bg-gradient-to-br from-[#25D366] to-[#128C7E]">
+                            <Card className="hover:bg-opacity-90 transition-colors cursor-pointer h-full bg-[linear-gradient(to_right,#25D366,#128C7E)]">
                                 <CardHeader className="flex flex-col items-center justify-center h-full text-center text-white gap-4 md:gap-6">
                                     <MessageCircle className="h-12 w-12 md:h-16 md:w-16" />
                                     <h1 className="text-lg md:text-xl font-semibold">Fale com {enterprise.name} no WhatsApp</h1>
@@ -76,9 +76,9 @@ const EnterpriseInfosPage = async ({ params }: PageProps) => {
                     </div>
                     <div className="w-full md:w-1/2 aspect-square max-w-[280px] md:max-w-md">
                         <a href={getGoogleMapsUrl()} target="_blank" rel="noopener noreferrer" className="h-full">
-                            <Card className="hover:bg-opacity-90 transition-colors cursor-pointer h-full bg-gradient-to-br from-[#4285F4] via-[#DB4437] to-[#F4B400]">
+                            <Card className="hover:bg-opacity-90 transition-colors cursor-pointer h-full bg-[linear-gradient(to_right,#4285F4,#0f9d58,#F4B400,#DB4437)]">
                                 <CardHeader className="flex flex-col items-center justify-center h-full text-center text-white gap-4 md:gap-6">
-                                    <ArrowUpRight className="h-12 w-12 md:h-16 md:w-16" />
+                                    <MapPinnedIcon className="h-12 w-12 md:h-16 md:w-16" />
                                     <h1 className="text-lg md:text-xl font-semibold">Encontre {enterprise.name} no Google Maps</h1>
                                 </CardHeader>
                             </Card>
