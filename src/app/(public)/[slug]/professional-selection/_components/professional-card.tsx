@@ -10,17 +10,14 @@ import { getProfessionalsByService } from "@/actions/associate-professionals-to-
 import NotificationTag from "@/app/(public)/_components/notification-tag";
 import StoreRedirectButton from "@/app/(public)/_components/store-redirect-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 import { professionalsTable } from "@/db/schema";
+import { useAppointmentStore } from "@/stores/appointment-store";
 
-interface ProfessionalCardProps {
-    serviceId: string;
-}
-
-const ProfessionalCard = ({ serviceId }: ProfessionalCardProps) => {
+const ProfessionalCard = () => {
     const params = useParams();
     const slug = params.slug as string;
     const [professionals, setProfessionals] = useState<typeof professionalsTable.$inferSelect[]>([]);
+    const { serviceId } = useAppointmentStore();
 
     const { execute: fetchProfessionals } = useAction(getProfessionalsByService, {
         onSuccess: (response) => {
@@ -40,8 +37,7 @@ const ProfessionalCard = ({ serviceId }: ProfessionalCardProps) => {
 
     return (
         <div>
-            <NotificationTag itemForSelection="profissional" itemForShow="data" />
-            <div className="space-y-3 mt-4">
+            <div className="space-y-3 mt-4 mb-4">
                 {professionals.map((professional) => (
                     <div key={professional.id} className="flex flex-col gap-3">
                         <div>
@@ -78,7 +74,6 @@ const ProfessionalCard = ({ serviceId }: ProfessionalCardProps) => {
                                 </StoreRedirectButton>
                             </div>
                         </div>
-                        <Separator />
                     </div>
                 ))}
                 {professionals.length === 0 && (
@@ -87,6 +82,7 @@ const ProfessionalCard = ({ serviceId }: ProfessionalCardProps) => {
                     </p>
                 )}
             </div>
+            <NotificationTag itemForSelection="profissional" itemForShow="data" />
         </div>
     );
 }
