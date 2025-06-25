@@ -1,7 +1,6 @@
 "use client";
 
 import { BookUser, BotMessageSquare, Box, Calendar, CircleHelp, CreditCard, LayoutDashboard, LinkIcon, LogOutIcon, PlaySquareIcon, SettingsIcon, Tag, Users } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation";
 
@@ -111,10 +110,8 @@ export function AppSidebar() {
         .join("");
 
     return (
-        <Sidebar>
-            <SidebarHeader className="p-4 border-b flex items-center justify-center bg-background">
-                <Image src="/Logo.svg" alt="iGenda" width={90} height={28} />
-            </SidebarHeader>
+        <Sidebar collapsible="icon">
+            <SidebarHeader className="p-4 border-b flex items-center justify-center bg-background" />
 
             <SidebarContent className="bg-background">
                 <SidebarGroup>
@@ -178,7 +175,7 @@ export function AppSidebar() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton size="lg">
-                                    <Avatar className="h-12 w-12 border-1 border-gray-200 rounded-full">
+                                    <Avatar className="h-12 w-12 border-2 border-green-500 rounded-full group-data-[state=collapsed]:h-8 group-data-[state=collapsed]:w-8" >
                                         <AvatarImage src={session.data?.user?.enterprise?.avatarImageURL || ""} />
                                         {!session.data?.user?.enterprise?.avatarImageURL && (
                                             <AvatarFallback>
@@ -186,7 +183,7 @@ export function AppSidebar() {
                                             </AvatarFallback>
                                         )}
                                     </Avatar>
-                                    <div>
+                                    <div className="group-data-[state=collapsed]:hidden">
                                         <p className="text-sm">{session.data?.user?.enterprise?.name}</p>
                                         <p className="text-xs text-muted-foreground">{session.data?.user.email}</p>
                                     </div>
