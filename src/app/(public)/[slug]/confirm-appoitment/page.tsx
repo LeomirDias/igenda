@@ -24,6 +24,7 @@ const ConfirmAppointment = () => {
     const [serviceName, setServiceName] = useState<string>("");
     const [servicePrice, setServicePrice] = useState<number>(0);
     const [enterpriseId, setEnterpriseId] = useState<string>("");
+    const [serviceDuration, setServiceDuration] = useState<number>(0);
 
     const { execute: executeGetEnterprise } = useAction(getEnterpriseBySlug, {
         onSuccess: (enterprise) => {
@@ -49,6 +50,7 @@ const ConfirmAppointment = () => {
         onSuccess: (service) => {
             setServiceName(service.data?.name ?? "");
             setServicePrice((service.data?.servicePriceInCents ?? 0) / 100);
+            setServiceDuration(service.data?.durationInMinutes ?? 0);
         },
         onError: (error) => {
             console.error("Erro ao buscar serviço:", error);
@@ -113,6 +115,7 @@ const ConfirmAppointment = () => {
                         <p>Profissional: {professionalName || "Carregando..."}</p>
                         <p>Serviço: {serviceName || "Carregando..."}</p>
                         <p>Valor: R$ {servicePrice.toFixed(2) || "Carregando..."}</p>
+                        <p>Duração: {serviceDuration} minutos</p>
                     </div>
                 </div>
                 <Separator />
