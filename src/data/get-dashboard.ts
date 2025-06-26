@@ -14,6 +14,9 @@ const getDashboard = async ({ session, from, to }: Params) => {
     const chartStartDate = dayjs().subtract(10, 'days').startOf('day').toDate();
     const chartEndDate = dayjs().add(10, 'days').endOf('day').toDate();
 
+    const todayStart = dayjs().startOf('day').toDate();
+    const todayEnd = dayjs().endOf('day').toDate();
+
     const [
         [totalRevenue],
         [totalAppointments],
@@ -109,14 +112,15 @@ const getDashboard = async ({ session, from, to }: Params) => {
         db.query.appointmentsTable.findMany({
             where: and(
                 eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-                gte(appointmentsTable.date, new Date(from)),
-                lte(appointmentsTable.date, new Date(to)),
+                gte(appointmentsTable.date, todayStart),
+                lte(appointmentsTable.date, todayEnd),
             ),
             with: {
                 client: true,
                 professional: true,
                 service: true,
-            }
+            },
+            orderBy: (appointmentsTable.date),
         }),
 
         db

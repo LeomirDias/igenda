@@ -9,7 +9,7 @@ import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, P
 import getDashboard from "@/data/get-dashboard";
 import { auth } from "@/lib/auth";
 
-import { appointmentsTableColumns } from "../appointments/_components/table-columns";
+import { appointmentsTableColumns } from "./_components/table-columns";
 import { AppointmentsChart } from "./_components/appoitments-chart";
 import { DatePicker } from "./_components/date-picker";
 import StatsCards from "./_components/stats-cards";
@@ -86,7 +86,9 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable columns={appointmentsTableColumns} data={todayAppointments} />
+                        <div className="max-h-[400px] overflow-auto">
+                            <DataTable columns={appointmentsTableColumns} data={todayAppointments} />
+                        </div>
                     </CardContent>
                 </Card>
                 <TopProfessionals professionals={topProfessionals} />

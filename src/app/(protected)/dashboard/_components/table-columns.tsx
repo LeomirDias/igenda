@@ -12,7 +12,6 @@ type AppointmentWithRelations = typeof appointmentsTable.$inferSelect & {
     client: {
         id: string;
         name: string;
-        email: string;
         phoneNumber: string;
     };
     professional: {
@@ -61,11 +60,6 @@ export const appointmentsTableColumns: ColumnDef<AppointmentWithRelations>[] = [
                 locale: ptBR,
             });
         },
-    },
-    {
-        id: "specialty",
-        accessorKey: "professional.specialty",
-        header: "Especialidade",
     },
     {
         id: "price",

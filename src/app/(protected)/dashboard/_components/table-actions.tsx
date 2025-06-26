@@ -31,7 +31,6 @@ type AppointmentWithRelations = typeof appointmentsTable.$inferSelect & {
     client: {
         id: string;
         name: string;
-        email: string;
         phoneNumber: string;
     };
     professional: {
