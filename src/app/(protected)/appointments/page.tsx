@@ -97,3 +97,4 @@ const AppointmentsPage = async () => {
 };
 
 export default AppointmentsPage;
+export const revalidate = 15;
