@@ -68,3 +68,57 @@ export const addAppointment = actionClient
         revalidatePath("/appointments");
         revalidatePath("/dashboard");
     });
+
+export const updateAppointment = actionClient
+    .schema(upsertAppointmentSchema)
+    .action(async ({ parsedInput }) => {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+        if (!session?.user) {
+            throw new Error("Unauthorized");
+        }
+        if (!session?.user.enterprise?.id) {
+            throw new Error("Enterprise not found");
+        }
+        if (!parsedInput.id) {
+            throw new Error("Appointment ID is required for update");
+        }
+        const availableTimes = await getAvailableTimes({
+            professionalId: parsedInput.professionalId,
+            date: dayjs(parsedInput.date).format("YYYY-MM-DD"),
+        });
+        if (!availableTimes?.data) {
+            throw new Error("No available times");
+        }
+        const isTimeAvailable = availableTimes.data?.some(
+            (time) => time.value === parsedInput.time && time.available,
+        );
+        if (!isTimeAvailable) {
+            throw new Error("Time not available");
+        }
+        // Busca o preço do serviço selecionado
+        const service = await db.query.servicesTable.findFirst({
+            where: eq(servicesTable.id, parsedInput.serviceId),
+        });
+        if (!service) {
+            throw new Error("Service not found");
+        }
+        const appointmentDateTime = dayjs(parsedInput.date)
+            .set("hour", parseInt(parsedInput.time.split(":")[0]))
+            .set("minute", parseInt(parsedInput.time.split(":")[1]))
+            .toDate();
+        await db
+            .update(appointmentsTable)
+            .set({
+                clientId: parsedInput.clientId,
+                serviceId: parsedInput.serviceId,
+                professionalId: parsedInput.professionalId,
+                time: parsedInput.time,
+                date: appointmentDateTime,
+                appointmentPriceInCents: service.servicePriceInCents,
+            })
+            .where(eq(appointmentsTable.id, parsedInput.id));
+        revalidatePath("/appointments");
+        revalidatePath("/dashboard");
+    });

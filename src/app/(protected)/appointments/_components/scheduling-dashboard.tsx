@@ -13,10 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, User, MapPin } from "lucide-react";
+import { Clock, User, MapPin, Pencil } from "lucide-react";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import isBetween from "dayjs/plugin/isBetween";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import UpsertAppointmentForm from "./upsert-appointment-form";
 dayjs.extend(weekday);
 dayjs.extend(isBetween);
 
@@ -71,6 +73,7 @@ export function SchedulingDashboard({
   const [selectedProfessional, setSelectedProfessional] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [editingAppointmentId, setEditingAppointmentId] = useState<string | null>(null);
 
   // Função para calcular a posição do card na timeline
   const getAppointmentPosition = (time: string) => {
@@ -257,7 +260,7 @@ export function SchedulingDashboard({
                   return (
                     <Card
                       key={appointment.id}
-                      className={`absolute flex cursor-pointer items-center justify-center mt-1 border-l-4 transition-shadow hover:shadow-md ${
+                      className={`absolute flex cursor-default items-center justify-center mt-1 border-l-4 transition-shadow hover:shadow-md ${
                         isPast
                           ? "border-green-300 bg-green-50"
                           : "border-blue-300 bg-blue-50"
@@ -269,7 +272,19 @@ export function SchedulingDashboard({
                         width: `230px`,
                       }}
                     >
-                      <div className="flex flex-col justify-center px-1.5 text-center">
+                      {/* Botão de edição */}
+                      <button
+                        className="absolute top-1 right-1 z-10 p-1 rounded-full cursor-pointer group"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingAppointmentId(appointment.id);
+                        }}
+                        title="Editar agendamento"
+                        type="button"
+                      >
+                        <Pencil className="w-3 h-3 text-muted-foreground transition-transform duration-150 group-hover:scale-145" />
+                      </button>
+                      <div className="flex flex-col justify-center px-1.5 text-center w-full">
                         <h4 className="truncate text-xs font-semibold">
                           {appointment.service.name}
                         </h4>
@@ -297,6 +312,34 @@ export function SchedulingDashboard({
                     </Card>
                   );
                 })}
+                {/* Dialog de edição */}
+                <Dialog open={!!editingAppointmentId} onOpenChange={(open) => {
+                  if (!open) setEditingAppointmentId(null);
+                }}>
+                  <DialogContent className="sm:max-w-[500px]">
+                    {editingAppointmentId && (
+                      <UpsertAppointmentForm
+                        isOpen={!!editingAppointmentId}
+                        clients={clients}
+                        professionals={professionals}
+                        services={services}
+                        appointment={(() => {
+                          const a = appointments.find(ap => ap.id === editingAppointmentId);
+                          if (!a) return undefined;
+                          return {
+                            id: a.id,
+                            clientId: a.client.id,
+                            professionalId: a.professional.id,
+                            serviceId: a.service.id,
+                            date: typeof a.date === 'string' ? a.date : dayjs(a.date).format('YYYY-MM-DD'),
+                            time: a.time,
+                          };
+                        })()}
+                        onSuccess={() => setEditingAppointmentId(null)}
+                      />
+                    )}
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>

@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { getAvailableTimes } from "@/actions/get-available-times";
-import { addAppointment } from "@/actions/upsert-appointments";
+import { addAppointment, updateAppointment } from "@/actions/upsert-appointments";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -64,31 +64,49 @@ const formSchema = z.object({
     }),
 });
 
-interface AddAppointmentFormProps {
+interface UpsertAppointmentFormProps {
     isOpen: boolean;
     clients: (typeof clientsTable.$inferSelect)[];
     professionals: (typeof professionalsTable.$inferSelect)[];
     services: (typeof servicesTable.$inferSelect)[];
     onSuccess?: () => void;
+    appointment?: {
+        id: string;
+        clientId: string;
+        professionalId: string;
+        serviceId: string;
+        date: string; // formato YYYY-MM-DD
+        time: string; // formato HH:mm:ss
+    };
 }
 
-const AddAppointmentForm = ({
+const UpsertAppointmentForm = ({
     clients,
     professionals,
     services,
     onSuccess,
     isOpen,
-}: AddAppointmentFormProps) => {
+    appointment,
+}: UpsertAppointmentFormProps) => {
+    const isEdit = !!appointment;
     const form = useForm<z.infer<typeof formSchema>>({
         shouldUnregister: true,
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            clientId: "",
-            professionalId: "",
-            serviceId: "",
-            date: undefined,
-            time: "",
-        },
+        defaultValues: isEdit && appointment
+            ? {
+                  clientId: appointment.clientId,
+                  professionalId: appointment.professionalId,
+                  serviceId: appointment.serviceId,
+                  date: appointment.date ? dayjs(appointment.date).toDate() : undefined,
+                  time: appointment.time || "",
+              }
+            : {
+                  clientId: "",
+                  professionalId: "",
+                  serviceId: "",
+                  date: undefined,
+                  time: "",
+              },
     });
 
     const selectedProfessionalId = form.watch("professionalId");
@@ -107,15 +125,25 @@ const AddAppointmentForm = ({
 
     useEffect(() => {
         if (isOpen) {
-            form.reset({
-                clientId: "",
-                professionalId: "",
-                serviceId: "",
-                date: undefined,
-                time: "",
-            });
+            if (isEdit && appointment) {
+                form.reset({
+                    clientId: appointment.clientId,
+                    professionalId: appointment.professionalId,
+                    serviceId: appointment.serviceId,
+                    date: appointment.date ? dayjs(appointment.date).toDate() : undefined,
+                    time: appointment.time || "",
+                });
+            } else {
+                form.reset({
+                    clientId: "",
+                    professionalId: "",
+                    serviceId: "",
+                    date: undefined,
+                    time: "",
+                });
+            }
         }
-    }, [isOpen, form]);
+    }, [isOpen, form, isEdit, appointment]);
 
     const createAppointmentAction = useAction(addAppointment, {
         onSuccess: () => {
@@ -127,11 +155,29 @@ const AddAppointmentForm = ({
         },
     });
 
+    const updateAppointmentAction = useAction(updateAppointment, {
+        onSuccess: () => {
+            toast.success("Agendamento atualizado com sucesso.");
+            onSuccess?.();
+        },
+        onError: () => {
+            toast.error("Erro ao atualizar agendamento.");
+        },
+    });
+
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        createAppointmentAction.execute({
-            ...values,
-            date: dayjs(values.date).format("YYYY-MM-DD"),
-        });
+        if (isEdit && appointment) {
+            updateAppointmentAction.execute({
+                ...values,
+                id: appointment.id,
+                date: dayjs(values.date).format("YYYY-MM-DD"),
+            });
+        } else {
+            createAppointmentAction.execute({
+                ...values,
+                date: dayjs(values.date).format("YYYY-MM-DD"),
+            });
+        }
     };
 
     const isDateAvailable = (date: Date) => {
@@ -152,9 +198,11 @@ const AddAppointmentForm = ({
     return (
         <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-                <DialogTitle>Novo agendamento</DialogTitle>
+                <DialogTitle>{isEdit ? "Editar agendamento" : "Novo agendamento"}</DialogTitle>
                 <DialogDescription>
-                    Crie um novo agendamento para o seu cliente.
+                    {isEdit
+                        ? "Edite os dados do agendamento."
+                        : "Crie um novo agendamento para o seu cliente."}
                 </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -320,9 +368,13 @@ const AddAppointmentForm = ({
                     />
 
                     <DialogFooter>
-                        <Button type="submit" disabled={createAppointmentAction.isPending}>
-                            {createAppointmentAction.isPending
-                                ? "Criando..."
+                        <Button type="submit" disabled={createAppointmentAction.isPending || updateAppointmentAction.isPending}>
+                            {createAppointmentAction.isPending || updateAppointmentAction.isPending
+                                ? isEdit
+                                    ? "Salvando..."
+                                    : "Criando..."
+                                : isEdit
+                                ? "Salvar alterações"
                                 : "Criar agendamento"}
                         </Button>
                     </DialogFooter>
@@ -332,4 +384,4 @@ const AddAppointmentForm = ({
     );
 };
 
-export default AddAppointmentForm;
+export default UpsertAppointmentForm;
