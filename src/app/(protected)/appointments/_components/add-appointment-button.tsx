@@ -27,7 +27,7 @@ const AddAppointmentButton = ({
             <DialogTrigger asChild>
                 <Button>
                     <Plus />
-                    Novo agendamento
+                    Adicionar agendamento
                 </Button>
             </DialogTrigger>
             <AddAppointmentForm

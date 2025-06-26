@@ -59,22 +59,15 @@ const AppointmentsPage = async () => {
 
   return (
     <PageContainer>
-      <PageHeader>
-        <PageHeaderContent>
-          <PageTitle>Agendamentos</PageTitle>
-          <PageDescription>
-            Gerencie os agendamentos da sua empresa
-          </PageDescription>
-        </PageHeaderContent>
-        <PageActions>
-          <AddAppointmentButton
-            clients={clients}
-            professionals={professionals}
-            services={services}
-          />
-        </PageActions>
-      </PageHeader>
       <PageContent>
+        <PageHeader>
+          <PageHeaderContent>
+            <PageTitle>Agendamentos</PageTitle>
+            <PageDescription>
+              Acompanhe e gerencie os agendamentos diários de sua empresa.
+            </PageDescription>
+          </PageHeaderContent>
+        </PageHeader>
         <SchedulingDashboard
           professionals={professionals}
           appointments={appointments.map((appointment) => ({
@@ -82,7 +75,6 @@ const AppointmentsPage = async () => {
             client: {
               id: appointment.client.id,
               name: appointment.client.name,
-              email: appointment.client.phoneNumber, // Usando phoneNumber como email temporariamente
               phoneNumber: appointment.client.phoneNumber,
             },
             professional: {
@@ -96,10 +88,8 @@ const AppointmentsPage = async () => {
               servicePriceInCents: appointment.service.servicePriceInCents,
             },
           }))}
-          services={services.map((service) => ({
-            id: service.id,
-            name: service.name,
-          }))}
+          services={services}
+          clients={clients}
         />
       </PageContent>
     </PageContainer>

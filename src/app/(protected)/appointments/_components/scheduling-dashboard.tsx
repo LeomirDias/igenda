@@ -20,13 +20,14 @@ import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(weekday);
 dayjs.extend(isBetween);
 
-import { professionalsTable, appointmentsTable } from "@/db/schema";
+import { professionalsTable, appointmentsTable, servicesTable, clientsTable } from "@/db/schema";
+import AddAppointmentButton from "./add-appointment-button";
+import { Button } from "@/components/ui/button";
 
 type AppointmentWithRelations = typeof appointmentsTable.$inferSelect & {
   client: {
     id: string;
     name: string;
-    email: string;
     phoneNumber: string;
   };
   professional: {
@@ -59,13 +60,15 @@ export function SchedulingDashboard({
   professionals,
   appointments,
   services,
+  clients,
 }: {
   professionals: (typeof professionalsTable.$inferSelect)[];
   appointments: AppointmentWithRelations[];
-  services: { id: string; name: string }[];
+  services: (typeof servicesTable.$inferSelect)[];
+  clients: (typeof clientsTable.$inferSelect)[];
 }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [selectedDoctor, setSelectedDoctor] = useState<string>("");
+  const [selectedProfessional, setSelectedProfessional] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -81,14 +84,15 @@ export function SchedulingDashboard({
   const filteredAppointments = appointments.filter((appointment) => {
     const appDate = dayjs(appointment.date);
     const inDay = date ? appDate.isSame(dayjs(date), "day") : true;
-    const matchesDoctor =
-      !selectedDoctor || appointment.professional.id === selectedDoctor;
+    const matchesProfessional =
+      !selectedProfessional ||
+      appointment.professional.id === selectedProfessional;
     const matchesService =
       !selectedService || appointment.service.id === selectedService;
     const matchesSearch =
       !searchTerm ||
       appointment.client.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return inDay && matchesDoctor && matchesService && matchesSearch;
+    return inDay && matchesProfessional && matchesService && matchesSearch;
   });
 
   // Agrupar agendamentos por horário
@@ -108,10 +112,10 @@ export function SchedulingDashboard({
     const timeGroup = appointmentsByTime[appointment.time];
     const index = timeGroup.findIndex((a) => a.id === appointment.id);
     const totalInGroup = timeGroup.length;
-    const cardWidth = 240;
-    const gap = 8; // Aumentado o gap para melhor separação
+    const cardWidth = 230;
+    const gap = 6; // Aumentado o gap para melhor separação
     const totalWidth = totalInGroup * cardWidth + (totalInGroup - 1) * gap;
-    const startX = 20; // Margem fixa à esquerda em vez de centralizar
+    const startX = 10; // Margem fixa à esquerda em vez de centralizar
     return startX + index * (cardWidth + gap);
   };
 
@@ -125,9 +129,9 @@ export function SchedulingDashboard({
   };
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen w-full bg-white">
       {/* Barra Lateral */}
-      <div className="w-80 overflow-y-auto border-r border-gray-200 p-6">
+      <div className="flex h-full w-72 flex-col overflow-y-auto border-r border-gray-200 p-2">
         {/* Calendário */}
         <div className="mb-8">
           <h2 className="mb-4 text-lg font-semibold">Calendário</h2>
@@ -139,22 +143,23 @@ export function SchedulingDashboard({
           />
         </div>
         {/* Filtros */}
-        <div className="space-y-4">
+        <div className="mb-8 space-y-4">
           <h3 className="text-lg font-semibold">Filtros</h3>
           <div className="space-y-2">
-            <Label htmlFor="search">Buscar</Label>
+            <Label htmlFor="search">Cliente</Label>
             <Input
               id="search"
-              placeholder="Nome do paciente..."
+              placeholder="Nome do cliente..."
               value={searchTerm}
+              className="w-full"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="doctor">Profissional</Label>
-            <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o profissional" />
+            <Label htmlFor="professional">Profissional</Label>
+            <Select value={selectedProfessional} onValueChange={setSelectedProfessional}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Busque por profissional" />
               </SelectTrigger>
               <SelectContent>
                 {professionals.map((professional) => (
@@ -168,8 +173,8 @@ export function SchedulingDashboard({
           <div className="space-y-2">
             <Label htmlFor="service">Serviço</Label>
             <Select value={selectedService} onValueChange={setSelectedService}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o serviço" />
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Busque por serviço" />
               </SelectTrigger>
               <SelectContent>
                 {services.map((service) => (
@@ -180,11 +185,30 @@ export function SchedulingDashboard({
               </SelectContent>
             </Select>
           </div>
+          <div>
+            <Button
+              type="button"
+              variant="outline"
+              className="text-sm hover:text-red-500 hover:bg-red-50 hover:border-red-500"
+              onClick={() => {
+                setSearchTerm("");
+                setSelectedProfessional("");
+                setSelectedService("");
+              }}
+            >
+              Resetar filtros
+            </Button>
+          </div>
         </div>
+        <AddAppointmentButton
+          clients={clients}
+          professionals={professionals}
+          services={services}
+        />
       </div>
 
       {/* Área Principal - Timeline do Dia */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-y-auto border-1 border-gray-200">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <h1 className="text-2xl font-bold text-gray-900">
@@ -204,11 +228,11 @@ export function SchedulingDashboard({
           <div className="relative">
             <div className="flex">
               {/* Coluna de horários */}
-              <div className="flex w-20 flex-col">
+              <div className="flex w-16 flex-col">
                 {timeSlots.map((time) => (
                   <div
                     key={time}
-                    className="flex items-center justify-center border-b border-gray-100 text-xs font-medium text-gray-600"
+                    className="flex items-center justify-center text-xs font-medium text-gray-600"
                     style={{ height: `${SLOT_HEIGHT}px` }}
                   >
                     {time}
@@ -216,12 +240,12 @@ export function SchedulingDashboard({
                 ))}
               </div>
               {/* Coluna dos agendamentos */}
-              <div className="relative flex-1">
+              <div className="relative flex-1 overflow-y-auto">
                 {/* Linhas de grade */}
                 {timeSlots.map((_, idx) => (
                   <div
                     key={idx}
-                    className="absolute right-0 left-0 border-b border-gray-100"
+                    className="absolute right-0 left-0 border-b border-gray-200"
                     style={{ top: idx * SLOT_HEIGHT, height: 0 }}
                   />
                 ))}
@@ -233,7 +257,7 @@ export function SchedulingDashboard({
                   return (
                     <Card
                       key={appointment.id}
-                      className={`absolute flex cursor-pointer items-center justify-center border-l-4 transition-shadow hover:shadow-md ${
+                      className={`absolute flex cursor-pointer items-center justify-center mt-1 border-l-4 transition-shadow hover:shadow-md ${
                         isPast
                           ? "border-green-300 bg-green-50"
                           : "border-blue-300 bg-blue-50"
@@ -241,8 +265,8 @@ export function SchedulingDashboard({
                       style={{
                         top: `${top}px`,
                         left: `${left}px`,
-                        height: `${SLOT_HEIGHT - 4}px`,
-                        width: `240px`,
+                        height: `${SLOT_HEIGHT - 8}px`,
+                        width: `230px`,
                       }}
                     >
                       <div className="flex flex-col justify-center px-1.5 text-center">
