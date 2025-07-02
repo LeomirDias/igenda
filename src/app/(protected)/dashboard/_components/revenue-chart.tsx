@@ -1,7 +1,7 @@
 "use client";
 
 import dayjs from "dayjs";
-import { Calendar } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -17,6 +17,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { formatCurrencyInCents } from "@/helpers/currency";
 
 interface DailyAppointment {
   date: string;
@@ -24,13 +25,11 @@ interface DailyAppointment {
   revenue: number | null;
 }
 
-interface AppointmentsChartProps {
+interface RevenueChartProps {
   dailyAppointmentsData: DailyAppointment[];
 }
 
-export function AppointmentsChart({
-  dailyAppointmentsData,
-}: AppointmentsChartProps) {
+export function RevenueChart({ dailyAppointmentsData }: RevenueChartProps) {
   const chartDays = Array.from({ length: 21 }).map((_, i) =>
     dayjs()
       .subtract(10 - i, "days")
@@ -42,24 +41,24 @@ export function AppointmentsChart({
     return {
       date: dayjs(date).format("DD/MM"),
       fullDate: date,
-      appointments: dataForDay?.appointments || 0,
+      revenue: Number(dataForDay?.revenue || 0),
     };
   });
 
   const chartConfig = {
-    appointments: {
-      label: "Agendamentos",
-      color: "#0B68F7",
+    revenue: {
+      label: "Faturamento",
+      color: "#10B981",
     },
   } satisfies ChartConfig;
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-2">
-        <Calendar className="text-muted-foreground" />
-        <CardTitle>Agendamentos</CardTitle>
+        <DollarSign className="text-muted-foreground" />
+        <CardTitle>Faturamento</CardTitle>
         <CardDescription>
-          Total de agendamentos para os últimos 21 dias
+          Total de faturamento para os últimos 21 dias
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -75,18 +74,25 @@ export function AppointmentsChart({
               tickMargin={10}
               axisLine={false}
             />
-            <YAxis tickLine={false} axisLine={false} tickMargin={8} />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value) => formatCurrencyInCents(value)}
+            />
             <ChartTooltip
               content={
                 <ChartTooltipContent
                   formatter={(value) => {
                     return (
                       <>
-                        <div className="h-3 w-3 rounded bg-[#0B68F7]" />
+                        <div className="h-3 w-3 rounded bg-[#10B981]" />
                         <span className="text-muted-foreground">
-                          Agendamentos:
+                          Faturamento:
                         </span>
-                        <span className="font-semibold">{value}</span>
+                        <span className="font-semibold">
+                          {formatCurrencyInCents(Number(value))}
+                        </span>
                       </>
                     );
                   }}
@@ -103,9 +109,9 @@ export function AppointmentsChart({
             />
             <Area
               type="monotone"
-              dataKey="appointments"
-              stroke="var(--color-appointments)"
-              fill="var(--color-appointments)"
+              dataKey="revenue"
+              stroke="var(--color-revenue)"
+              fill="var(--color-revenue)"
               fillOpacity={0.2}
               strokeWidth={2}
             />
