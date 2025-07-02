@@ -231,7 +231,7 @@ export const servicesTableRelations = relations(
 export const clientsTable = pgTable("clients", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
-  phoneNumber: text("phone_number").notNull(),
+  phoneNumber: text("phone_number").notNull().unique(),
   createdAT: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
