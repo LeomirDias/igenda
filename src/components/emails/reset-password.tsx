@@ -45,7 +45,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
               </Text>
               <Text className="m-0 mb-[16px] text-[16px] leading-[24px] text-gray-700">
                 Recebemos uma solicitação para redefinir a senha da sua conta
-                associada ao e-mail <strong>{userEmail}</strong>.
+                associada ao e-mail {userEmail}.
               </Text>
               <Text className="m-0 mb-[24px] text-[16px] leading-[24px] text-gray-700">
                 Clique no botão abaixo para criar uma nova senha. Este link irá
@@ -57,7 +57,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
             <Section className="mb-[32px] text-center">
               <Button
                 href={resetUrl}
-                className="box-border inline-block rounded-[8px] bg-blue-600 px-[32px] py-[16px] text-[16px] font-semibold text-white no-underline"
+                className="box-border inline-block rounded-[8px] bg-green-600 px-[32px] py-[16px] text-[16px] font-semibold text-white no-underline"
               >
                 Redefinir senha
               </Button>
@@ -69,7 +69,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
                 Se o botão acima não funcionar, copie e cole este link no seu
                 navegador:
               </Text>
-              <Text className="m-0 text-[14px] leading-[20px] break-all text-blue-600">
+              <Text className="m-0 text-[14px] leading-[20px] break-all text-green-600">
                 {resetUrl}
               </Text>
             </Section>
@@ -94,10 +94,11 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
             {/* Footer */}
             <Section className="border-t border-gray-200 pt-[24px] text-center">
               <Text className="m-0 mb-[8px] text-[12px] leading-[16px] text-gray-500">
-                This email was sent to {userEmail}
+                Este e-mail foi enviado para{" "}
+                <strong className="text-green-600">{userEmail}</strong>
               </Text>
               <Text className="m-0 mb-[8px] text-[12px] leading-[16px] text-gray-500">
-                © 2025 IGenda. Todos os direitos reservados.
+                © 2025 iGenda. Todos os direitos reservados.
               </Text>
             </Section>
           </Container>

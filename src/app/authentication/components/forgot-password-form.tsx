@@ -56,7 +56,7 @@ export function ForgotPasswordForm({
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Password reset email sent");
+      toast.success("E-mail de redefinição de senha enviado");
     }
 
     setIsLoading(false);
