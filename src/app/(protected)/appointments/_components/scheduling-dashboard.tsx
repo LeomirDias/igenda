@@ -22,7 +22,12 @@ import UpsertAppointmentForm from "./upsert-appointment-form";
 dayjs.extend(weekday);
 dayjs.extend(isBetween);
 
-import { professionalsTable, appointmentsTable, servicesTable, clientsTable } from "@/db/schema";
+import {
+  professionalsTable,
+  appointmentsTable,
+  servicesTable,
+  clientsTable,
+} from "@/db/schema";
 import AddAppointmentButton from "./add-appointment-button";
 import { Button } from "@/components/ui/button";
 
@@ -73,7 +78,9 @@ export function SchedulingDashboard({
   const [selectedProfessional, setSelectedProfessional] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [editingAppointmentId, setEditingAppointmentId] = useState<string | null>(null);
+  const [editingAppointmentId, setEditingAppointmentId] = useState<
+    string | null
+  >(null);
 
   // Função para calcular a posição do card na timeline
   const getAppointmentPosition = (time: string) => {
@@ -160,7 +167,10 @@ export function SchedulingDashboard({
           </div>
           <div className="space-y-2">
             <Label htmlFor="professional">Profissional</Label>
-            <Select value={selectedProfessional} onValueChange={setSelectedProfessional}>
+            <Select
+              value={selectedProfessional}
+              onValueChange={setSelectedProfessional}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Busque por profissional" />
               </SelectTrigger>
@@ -192,7 +202,7 @@ export function SchedulingDashboard({
             <Button
               type="button"
               variant="outline"
-              className="text-sm hover:text-red-500 hover:bg-red-50 hover:border-red-500"
+              className="text-sm hover:border-red-500 hover:bg-red-50 hover:text-red-500"
               onClick={() => {
                 setSearchTerm("");
                 setSelectedProfessional("");
@@ -260,7 +270,7 @@ export function SchedulingDashboard({
                   return (
                     <Card
                       key={appointment.id}
-                      className={`absolute flex cursor-default items-center justify-center mt-1 border-l-4 transition-shadow hover:shadow-md ${
+                      className={`absolute mt-1 flex cursor-default items-center justify-center border-l-4 transition-shadow hover:shadow-md ${
                         isPast
                           ? "border-green-300 bg-green-50"
                           : "border-blue-300 bg-blue-50"
@@ -274,7 +284,7 @@ export function SchedulingDashboard({
                     >
                       {/* Botão de edição */}
                       <button
-                        className="absolute top-1 right-1 z-10 p-1 rounded-full cursor-pointer group"
+                        className="group absolute top-1 right-1 z-10 cursor-pointer rounded-full p-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingAppointmentId(appointment.id);
@@ -282,20 +292,17 @@ export function SchedulingDashboard({
                         title="Editar agendamento"
                         type="button"
                       >
-                        <Pencil className="w-3 h-3 text-muted-foreground transition-transform duration-150 group-hover:scale-145" />
+                        <Pencil className="text-muted-foreground h-3 w-3 transition-transform duration-150 group-hover:scale-145" />
                       </button>
-                      <div className="flex flex-col justify-center px-1.5 text-center w-full">
+                      <div className="flex w-full flex-col justify-center px-1.5 text-center">
                         <h4 className="truncate text-xs font-semibold">
                           {appointment.service.name}
                         </h4>
                         <div className="flex items-center justify-center">
                           <div className="flex items-center justify-center text-xs text-gray-600">
                             <span className="truncate text-xs">
-                              R${" "}
-                              {(
-                                appointment.service.servicePriceInCents / 100
-                              ).toFixed(2)}{" "}
-                              - {appointment.time.substring(0, 5)}
+                              {appointment.professional.name} -{" "}
+                              {appointment.time.substring(0, 5)}
                             </span>
                           </div>
                         </div>
@@ -313,9 +320,12 @@ export function SchedulingDashboard({
                   );
                 })}
                 {/* Dialog de edição */}
-                <Dialog open={!!editingAppointmentId} onOpenChange={(open) => {
-                  if (!open) setEditingAppointmentId(null);
-                }}>
+                <Dialog
+                  open={!!editingAppointmentId}
+                  onOpenChange={(open) => {
+                    if (!open) setEditingAppointmentId(null);
+                  }}
+                >
                   <DialogContent className="sm:max-w-[500px]">
                     {editingAppointmentId && (
                       <UpsertAppointmentForm
@@ -324,14 +334,19 @@ export function SchedulingDashboard({
                         professionals={professionals}
                         services={services}
                         appointment={(() => {
-                          const a = appointments.find(ap => ap.id === editingAppointmentId);
+                          const a = appointments.find(
+                            (ap) => ap.id === editingAppointmentId,
+                          );
                           if (!a) return undefined;
                           return {
                             id: a.id,
                             clientId: a.client.id,
                             professionalId: a.professional.id,
                             serviceId: a.service.id,
-                            date: typeof a.date === 'string' ? a.date : dayjs(a.date).format('YYYY-MM-DD'),
+                            date:
+                              typeof a.date === "string"
+                                ? a.date
+                                : dayjs(a.date).format("YYYY-MM-DD"),
                             time: a.time,
                           };
                         })()}
