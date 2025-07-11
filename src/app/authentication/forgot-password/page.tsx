@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 
-import ForgotPasswordForm from "../components/forgot-password-form";
+import ForgotPasswordForm from "../_components/forgot-password-form";
 
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({
