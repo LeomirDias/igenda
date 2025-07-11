@@ -7,76 +7,72 @@ import { eq } from "drizzle-orm";
 import { verificationCodes, verifyCodeSchema, VerifyResponse } from "./types";
 import { upsertClientSession } from "../upsert-client-session";
 import { cookies } from "next/headers";
-import { upsertClient } from "../upsert-client";
 
 export const verifyCode = actionClient
-    .schema(verifyCodeSchema)
-    .action(async ({ parsedInput }): Promise<VerifyResponse> => {
-        try {
-            const storedData = verificationCodes.get(parsedInput.phoneNumber);
+  .schema(verifyCodeSchema)
+  .action(async ({ parsedInput }): Promise<VerifyResponse> => {
+    try {
+      const storedData = verificationCodes.get(parsedInput.phoneNumber);
 
-            if (!storedData) {
-                return { success: false, message: "Nenhum código de verificação encontrado" };
-            }
+      if (!storedData) {
+        return {
+          success: false,
+          message: "Nenhum código de verificação encontrado",
+        };
+      }
 
-            if (storedData.code !== parsedInput.code) {
-                return { success: false, message: "Código de verificação inválido" };
-            }
+      if (storedData.code !== parsedInput.code) {
+        return { success: false, message: "Código de verificação inválido" };
+      }
 
-            // Get enterprise by slug
-            const enterprise = await db.query.enterprisesTable.findFirst({
-                where: eq(enterprisesTable.slug, parsedInput.enterpriseSlug)
-            });
+      // Get enterprise by slug
+      const enterprise = await db.query.enterprisesTable.findFirst({
+        where: eq(enterprisesTable.slug, parsedInput.enterpriseSlug),
+      });
 
-            if (!enterprise) {
-                return { success: false, message: "Empresa não encontrada" };
-            }
+      if (!enterprise) {
+        return { success: false, message: "Empresa não encontrada" };
+      }
 
-            // Verifica se já existe um cliente com este número de telefone
-            const existingClient = await db.query.clientsTable.findFirst({
-                where: eq(clientsTable.phoneNumber, parsedInput.phoneNumber),
-            });
+      // Cria o cliente diretamente no banco
+      const [client] = await db
+        .insert(clientsTable)
+        .values({
+          name: storedData.clientData.name,
+          phoneNumber: storedData.clientData.phoneNumber,
+          enterpriseId: enterprise.id,
+        })
+        .returning();
 
-            // Cria ou atualiza o cliente
-            await upsertClient({
-                id: existingClient?.id,
-                ...storedData.clientData,
-            });
+      if (!client) {
+        return { success: false, message: "Erro ao criar cliente" };
+      }
 
-            // Busca o cliente atualizado ou criado
-            const client = await db.query.clientsTable.findFirst({
-                where: eq(clientsTable.phoneNumber, parsedInput.phoneNumber),
-            });
+      // Cria ou atualiza a sessão do cliente
+      const sessionResult = await upsertClientSession({
+        clientId: client.id,
+        enterpriseId: enterprise.id,
+      });
 
-            if (!client) {
-                return { success: false, message: "Erro ao criar/atualizar cliente" };
-            }
+      if (!sessionResult?.data?.success) {
+        return { success: false, message: "Falha ao criar sessão do cliente" };
+      }
 
-            // Cria ou atualiza a sessão do cliente
-            const sessionResult = await upsertClientSession({
-                clientId: client.id,
-                enterpriseId: enterprise.id,
-            });
+      // Set session token in cookie
+      const cookieStore = await cookies();
+      cookieStore.set("client_token", sessionResult.data.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        expires: sessionResult.data.expiresAt,
+      });
 
-            if (!sessionResult?.data?.success) {
-                return { success: false, message: "Falha ao criar sessão do cliente" };
-            }
+      // Clean up verification code
+      verificationCodes.delete(parsedInput.phoneNumber);
 
-            // Set session token in cookie
-            const cookieStore = await cookies();
-            cookieStore.set("client_token", sessionResult.data.token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
-                expires: sessionResult.data.expiresAt,
-            });
-
-            // Clean up verification code
-            verificationCodes.delete(parsedInput.phoneNumber);
-
-            return { success: true, client };
-        } catch (error) {
-            console.error("Error verifying code:", error);
-            return { success: false, message: "Falha ao verificar código" };
-        }
-    }); 
+      return { success: true, client };
+    } catch (error) {
+      console.error("Error verifying code:", error);
+      return { success: false, message: "Falha ao verificar código" };
+    }
+  });
