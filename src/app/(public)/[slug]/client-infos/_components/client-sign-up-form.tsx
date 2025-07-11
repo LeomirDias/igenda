@@ -32,8 +32,16 @@ import { Input } from "@/components/ui/input";
 import VerificationForm from "./verification-form";
 
 const clientRegisterSchema = z.object({
-  name: z.string().trim().min(1, { message: "O nome é obrigatório" }),
-  phoneNumber: z.string().trim().min(1, { message: "Telefone é obrigatório" }),
+  name: z
+    .string()
+    .trim()
+    .min(3, {
+      message: "O nome é obrigatório e deve ter no mínimo 3 caracteres",
+    }),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(11, { message: "Telefone deve ter 11 dígitos" }),
 });
 
 type ClientFormData = z.infer<typeof clientRegisterSchema>;
