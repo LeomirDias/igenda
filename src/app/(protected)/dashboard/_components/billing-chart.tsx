@@ -1,7 +1,8 @@
 "use client";
 
 import dayjs from "dayjs";
-import { DollarSign } from "lucide-react";
+import "dayjs/locale/pt-br";
+import { Calendar } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -19,17 +20,17 @@ import {
 } from "@/components/ui/chart";
 import { formatCurrencyInCents } from "@/helpers/currency";
 
-interface DailyAppointment {
+interface DailyBilling {
   date: string;
-  appointments: number;
-  revenue: number | null;
+  revenue: number;
 }
 
-interface RevenueChartProps {
-  dailyAppointmentsData: DailyAppointment[];
+interface BillingChartProps {
+  dailyBillingData: DailyBilling[];
 }
 
-export function RevenueChart({ dailyAppointmentsData }: RevenueChartProps) {
+export function BillingChart({ dailyBillingData }: BillingChartProps) {
+  dayjs.locale("pt-br");
   const chartDays = Array.from({ length: 21 }).map((_, i) =>
     dayjs()
       .subtract(10 - i, "days")
@@ -37,11 +38,11 @@ export function RevenueChart({ dailyAppointmentsData }: RevenueChartProps) {
   );
 
   const chartData = chartDays.map((date) => {
-    const dataForDay = dailyAppointmentsData.find((item) => item.date === date);
+    const dataForDay = dailyBillingData.find((item) => item.date === date);
     return {
       date: dayjs(date).format("DD/MM"),
       fullDate: date,
-      revenue: Number(dataForDay?.revenue || 0),
+      revenue: dataForDay ? Number(dataForDay.revenue) : 0,
     };
   });
 
@@ -55,7 +56,7 @@ export function RevenueChart({ dailyAppointmentsData }: RevenueChartProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-2">
-        <DollarSign className="text-muted-foreground" />
+        <Calendar className="text-muted-foreground" />
         <CardTitle>Faturamento</CardTitle>
         <CardDescription>
           Total de faturamento para os últimos 21 dias
@@ -98,9 +99,9 @@ export function RevenueChart({ dailyAppointmentsData }: RevenueChartProps) {
                   }}
                   labelFormatter={(label, payload) => {
                     if (payload && payload[0]) {
-                      return dayjs(payload[0].payload?.fullDate).format(
-                        "DD/MM/YYYY (dddd)",
-                      );
+                      return dayjs(payload[0].payload?.fullDate)
+                        .format("DD/MM/YYYY (dddd)")
+                        .replace(/^(.)/, (c) => c.toUpperCase());
                     }
                     return label;
                   }}

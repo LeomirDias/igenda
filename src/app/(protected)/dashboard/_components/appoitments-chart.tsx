@@ -1,6 +1,7 @@
 "use client";
 
 import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
 import { Calendar } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -31,6 +32,7 @@ interface AppointmentsChartProps {
 export function AppointmentsChart({
   dailyAppointmentsData,
 }: AppointmentsChartProps) {
+  dayjs.locale("pt-br");
   const chartDays = Array.from({ length: 21 }).map((_, i) =>
     dayjs()
       .subtract(10 - i, "days")
@@ -92,9 +94,9 @@ export function AppointmentsChart({
                   }}
                   labelFormatter={(label, payload) => {
                     if (payload && payload[0]) {
-                      return dayjs(payload[0].payload?.fullDate).format(
-                        "DD/MM/YYYY (dddd)",
-                      );
+                      return dayjs(payload[0].payload?.fullDate)
+                        .format("DD/MM/YYYY (dddd)")
+                        .replace(/^(.)/, (c) => c.toUpperCase());
                     }
                     return label;
                   }}

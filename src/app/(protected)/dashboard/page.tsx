@@ -20,6 +20,8 @@ import { RevenueChart } from "./_components/revenue-chart";
 import StatsCards from "./_components/stats-cards";
 import TopProfessionals from "./_components/top-professionals";
 import TopServices from "./_components/top-services";
+import { getDailyBillingData } from "@/data/get-dashboard";
+import { BillingChart } from "./_components/billing-chart";
 
 interface DashboardPageProps {
   searchParams: Promise<{
@@ -64,6 +66,10 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     session: { user: { enterprise: { id: session.user.enterprise.id } } },
   });
 
+  const dailyBillingData = await getDailyBillingData(
+    session.user.enterprise.id,
+  );
+
   return (
     <PageContainer>
       <PageHeader>
@@ -87,7 +93,7 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
       </PageContent>
       <div className="grid grid-cols-2 gap-4">
         <AppointmentsChart dailyAppointmentsData={dailyAppointmentsData} />
-        <RevenueChart dailyAppointmentsData={dailyAppointmentsData} />
+        <BillingChart dailyBillingData={dailyBillingData} />
       </div>
       <div className="grid grid-cols-[2.25fr_1fr] gap-4">
         <TopProfessionals professionals={topProfessionals} />
