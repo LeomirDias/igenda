@@ -16,7 +16,6 @@ import { auth } from "@/lib/auth";
 
 import { AppointmentsChart } from "./_components/appoitments-chart";
 import { DatePicker } from "./_components/date-picker";
-import { RevenueChart } from "./_components/revenue-chart";
 import StatsCards from "./_components/stats-cards";
 import TopProfessionals from "./_components/top-professionals";
 import TopServices from "./_components/top-services";
