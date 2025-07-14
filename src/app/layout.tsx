@@ -6,6 +6,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ReactQueryProvider } from "@/providers/react-query";
+import { ThemeProvider } from "next-themes";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
@@ -25,7 +26,11 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${roboto.className} antialiased`}>
         <ReactQueryProvider>
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <NuqsAdapter>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              {children}
+            </ThemeProvider>
+          </NuqsAdapter>
         </ReactQueryProvider>
         <Toaster position="bottom-center" richColors theme="light" />
       </body>
