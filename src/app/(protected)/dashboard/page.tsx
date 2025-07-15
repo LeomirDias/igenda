@@ -82,19 +82,17 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
           <DatePicker />
         </PageActions>
       </PageHeader>
-      <PageContent>
-        <StatsCards
-          totalRevenue={totalRevenue.total ? Number(totalRevenue.total) : null}
-          totalAppointments={totalAppointments.total}
-          totalClients={totalClients.total}
-          totalProfessionals={totalProfessionals.total}
-        />
-      </PageContent>
-      <div className="grid grid-cols-2 gap-4">
+      <StatsCards
+        totalRevenue={totalRevenue.total ? Number(totalRevenue.total) : null}
+        totalAppointments={totalAppointments.total}
+        totalClients={totalClients.total}
+        totalProfessionals={totalProfessionals.total}
+      />
+      <div className="hidden gap-4 lg:grid lg:grid-cols-2">
         <AppointmentsChart dailyAppointmentsData={dailyAppointmentsData} />
         <BillingChart dailyBillingData={dailyBillingData} />
       </div>
-      <div className="grid grid-cols-[2.25fr_1fr] gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.25fr_1fr]">
         <TopProfessionals professionals={topProfessionals} />
         <TopServices topServices={topServices} />
       </div>

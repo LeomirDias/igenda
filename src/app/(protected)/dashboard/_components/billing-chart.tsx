@@ -55,18 +55,29 @@ export function BillingChart({ dailyBillingData }: BillingChartProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center gap-2">
-        <Calendar className="text-muted-foreground" />
-        <CardTitle>Faturamento</CardTitle>
-        <CardDescription>
+      <CardHeader className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+        <div className="flex items-center gap-2">
+          <Calendar className="text-muted-foreground" />
+          <CardTitle className="text-lg sm:text-xl">Faturamento</CardTitle>
+        </div>
+        <CardDescription className="text-sm sm:text-base">
           Total de faturamento para os últimos 21 dias
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[200px]">
+      <CardContent className="overflow-hidden">
+        <ChartContainer
+          config={chartConfig}
+          className="min-h-[200px] sm:min-h-[250px]"
+        >
           <AreaChart
             data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            margin={{
+              top: 20,
+              right: 5,
+              left: 5,
+              bottom: 5,
+            }}
+            className="w-full"
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
@@ -74,11 +85,16 @@ export function BillingChart({ dailyBillingData }: BillingChartProps) {
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              fontSize={11}
+              interval="preserveStartEnd"
+              minTickGap={5}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              fontSize={11}
+              width={30}
               tickFormatter={(value) => formatCurrencyInCents(value)}
             />
             <ChartTooltip
