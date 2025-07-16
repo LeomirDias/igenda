@@ -62,12 +62,14 @@ export function ResendEmailVerificationForm({
   }
 
   return (
-    <Card>
+    <Card className="w-full max-w-md border-[#424242] bg-[#191919] backdrop-blur-sm sm:max-w-lg md:max-w-xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <CardHeader>
-            <CardTitle>Reenviar Email de Verificação</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl sm:text-2xl">
+              Reenviar Email de Verificação
+            </CardTitle>
+            <CardDescription className="text-sm sm:text-base">
               Digite seu e-mail para receber um novo link de verificação.
             </CardDescription>
           </CardHeader>
@@ -77,9 +79,13 @@ export function ResendEmailVerificationForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">E-mail</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite seu e-mail..." {...field} />
+                    <Input
+                      placeholder="Digite seu e-mail..."
+                      {...field}
+                      className="h-10 text-sm sm:h-11 sm:text-base"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -90,10 +96,10 @@ export function ResendEmailVerificationForm({
             <div className="w-full space-y-2">
               <Button
                 type="submit"
-                className="w-full"
-                disabled={form.formState.isSubmitting}
+                className="h-10 w-full text-sm sm:h-11 sm:text-base"
+                disabled={isLoading}
               >
-                {form.formState.isSubmitting ? (
+                {isLoading ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   "Reenviar Email"

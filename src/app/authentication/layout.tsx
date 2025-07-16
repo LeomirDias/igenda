@@ -9,5 +9,5 @@ export default function AuthenticationLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="dark min-h-screen bg-[#000000]">{children}</div>;
+  return <div className="dark min-h-screen bg-[#202020]">{children}</div>;
 }

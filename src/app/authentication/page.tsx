@@ -35,7 +35,7 @@ const AuthenticationPage = async () => {
         </div>
 
         <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 border border-[#000000] bg-[#000000]/5">
+          <TabsList className="grid w-full grid-cols-2 border border-[#202020] bg-[#202020]/5">
             <TabsTrigger value="login" className="cursor-pointer">
               Login
             </TabsTrigger>

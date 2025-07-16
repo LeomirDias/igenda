@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
 import ResendEmailVerificationForm from "./components/resend-email-verifiy-form";
+import Image from "next/image";
+import Link from "next/link";
 
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({
@@ -15,24 +17,19 @@ const AuthenticationPage = async () => {
   }
 
   return (
-    <div className="flex h-screen w-screen">
-      <div className="h-full w-1/2">
-        <img
-          src="/CapaAuthentication.png"
-          alt="logo"
-          className="h-full w-full object-cover"
-        />
-      </div>
-
-      <div className="flex w-1/2 flex-col">
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-[400px]">
-            <ResendEmailVerificationForm />
-          </div>
+    <div className="flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
+      <div className="flex w-full max-w-md flex-col items-center sm:max-w-lg md:max-w-xl">
+        <div className="mb-6 flex justify-center sm:mb-8">
+          <Image
+            src="/LogoiGenda.png"
+            alt="iGenda Logo"
+            width={300}
+            height={80}
+            className="h-20 w-auto sm:h-24"
+            priority
+          />
         </div>
-        <footer className="text-muted-foreground mx-auto mb-8 w-[400px] py-4 text-center text-sm">
-          © {new Date().getFullYear()} iGenda. Todos os direitos reservados.
-        </footer>
+        <ResendEmailVerificationForm />
       </div>
     </div>
   );
