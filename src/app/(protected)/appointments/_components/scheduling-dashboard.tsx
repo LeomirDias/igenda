@@ -13,11 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, User, MapPin, Pencil } from "lucide-react";
+import { Clock, User, MapPin, Pencil, Menu } from "lucide-react";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import isBetween from "dayjs/plugin/isBetween";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import UpsertAppointmentForm from "./upsert-appointment-form";
 dayjs.extend(weekday);
 dayjs.extend(isBetween);
@@ -81,6 +82,7 @@ export function SchedulingDashboard({
   const [editingAppointmentId, setEditingAppointmentId] = useState<
     string | null
   >(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Função para calcular a posição do card na timeline
   const getAppointmentPosition = (time: string) => {
@@ -122,10 +124,9 @@ export function SchedulingDashboard({
     const timeGroup = appointmentsByTime[appointment.time];
     const index = timeGroup.findIndex((a) => a.id === appointment.id);
     const totalInGroup = timeGroup.length;
-    const cardWidth = 230;
-    const gap = 6; // Aumentado o gap para melhor separação
-    const totalWidth = totalInGroup * cardWidth + (totalInGroup - 1) * gap;
-    const startX = 10; // Margem fixa à esquerda em vez de centralizar
+    const cardWidth = 180; // Largura base para mobile
+    const gap = 6;
+    const startX = 10;
     return startX + index * (cardWidth + gap);
   };
 
@@ -138,130 +139,163 @@ export function SchedulingDashboard({
     return appointmentTime.isBefore(now);
   };
 
-  return (
-    <div className="flex h-screen w-full bg-white">
-      {/* Barra Lateral */}
-      <div className="flex h-full w-72 flex-col overflow-y-auto border-r border-gray-200 p-2">
-        {/* Calendário */}
-        <div className="mb-8">
-          <h2 className="mb-4 text-lg font-semibold">Calendário</h2>
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={setDate}
-            className="rounded-md border"
-          />
-        </div>
-        {/* Filtros */}
-        <div className="mb-8 space-y-4">
-          <h3 className="text-lg font-semibold">Filtros</h3>
-          <div className="space-y-2">
-            <Label htmlFor="search">Cliente</Label>
-            <Input
-              id="search"
-              placeholder="Nome do cliente..."
-              value={searchTerm}
-              className="w-full"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="professional">Profissional</Label>
-            <Select
-              value={selectedProfessional}
-              onValueChange={setSelectedProfessional}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Busque por profissional" />
-              </SelectTrigger>
-              <SelectContent>
-                {professionals.map((professional) => (
-                  <SelectItem key={professional.id} value={professional.id}>
-                    {professional.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="service">Serviço</Label>
-            <Select value={selectedService} onValueChange={setSelectedService}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Busque por serviço" />
-              </SelectTrigger>
-              <SelectContent>
-                {services.map((service) => (
-                  <SelectItem key={service.id} value={service.id}>
-                    {service.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Button
-              type="button"
-              variant="outline"
-              className="text-sm hover:border-red-500 hover:bg-red-50 hover:text-red-500"
-              onClick={() => {
-                setSearchTerm("");
-                setSelectedProfessional("");
-                setSelectedService("");
-              }}
-            >
-              Resetar filtros
-            </Button>
-          </div>
-        </div>
-        <AddAppointmentButton
-          clients={clients}
-          professionals={professionals}
-          services={services}
+  // Componente da barra lateral
+  const SidebarContent = () => (
+    <div className="flex h-full flex-col space-y-6 overflow-y-auto p-4">
+      {/* Calendário */}
+      <div>
+        <h2 className="text-foreground mb-4 text-lg font-semibold">
+          Calendário
+        </h2>
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          className="border-border rounded-md border"
         />
       </div>
 
-      {/* Área Principal - Timeline do Dia */}
-      <div className="flex flex-1 flex-col overflow-y-auto border-1 border-gray-200">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 p-6">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Agendamentos -{" "}
-            {date
-              ?.toLocaleDateString("pt-BR", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })
-              .replace(/^\w/, (c) => c.toUpperCase())}
-          </h1>
+      {/* Filtros */}
+      <div className="space-y-4">
+        <h3 className="text-foreground text-lg font-semibold">Filtros</h3>
+        <div className="space-y-2">
+          <Label htmlFor="search">Cliente</Label>
+          <Input
+            id="search"
+            placeholder="Nome do cliente..."
+            value={searchTerm}
+            className="w-full"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="professional">Profissional</Label>
+          <Select
+            value={selectedProfessional}
+            onValueChange={setSelectedProfessional}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Busque por profissional" />
+            </SelectTrigger>
+            <SelectContent>
+              {professionals.map((professional) => (
+                <SelectItem key={professional.id} value={professional.id}>
+                  {professional.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="service">Serviço</Label>
+          <Select value={selectedService} onValueChange={setSelectedService}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Busque por serviço" />
+            </SelectTrigger>
+            <SelectContent>
+              {services.map((service) => (
+                <SelectItem key={service.id} value={service.id}>
+                  {service.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Button
+            type="button"
+            variant="outline"
+            className="hover:border-destructive hover:bg-destructive/10 hover:text-destructive text-sm"
+            onClick={() => {
+              setSearchTerm("");
+              setSelectedProfessional("");
+              setSelectedService("");
+            }}
+          >
+            Resetar filtros
+          </Button>
+        </div>
+      </div>
+
+      <AddAppointmentButton
+        clients={clients}
+        professionals={professionals}
+        services={services}
+      />
+    </div>
+  );
+
+  return (
+    <div className="bg-background flex h-screen w-full">
+      {/* Barra Lateral - Desktop */}
+      <div className="lg:border-border hidden lg:flex lg:w-72 lg:flex-col lg:border-r">
+        <SidebarContent />
+      </div>
+
+      {/* Área Principal - Timeline do Dia */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Header */}
+        <div className="border-border flex items-center justify-between border-b p-4 lg:p-6">
+          <div className="flex items-center gap-4">
+            {/* Botão do menu mobile */}
+            <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="lg:hidden">
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80 p-0">
+                <SidebarContent />
+              </SheetContent>
+            </Sheet>
+
+            <div>
+              <h1 className="text-foreground text-xl font-bold lg:text-2xl">
+                Agendamentos
+              </h1>
+              <p className="text-muted-foreground text-sm lg:text-base">
+                {date
+                  ?.toLocaleDateString("pt-BR", {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })
+                  .replace(/^\w/, (c) => c.toUpperCase())}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Timeline do dia */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-auto">
           <div className="relative">
             <div className="flex">
               {/* Coluna de horários */}
-              <div className="flex w-16 flex-col">
+              <div className="flex w-12 flex-col lg:w-16">
                 {timeSlots.map((time) => (
                   <div
                     key={time}
-                    className="flex items-center justify-center text-xs font-medium text-gray-600"
+                    className="text-muted-foreground flex items-center justify-center text-xs font-medium"
                     style={{ height: `${SLOT_HEIGHT}px` }}
                   >
-                    {time}
+                    <span className="hidden lg:inline">{time}</span>
+                    <span className="lg:hidden">{time.substring(0, 2)}</span>
                   </div>
                 ))}
               </div>
+
               {/* Coluna dos agendamentos */}
-              <div className="relative flex-1 overflow-y-auto">
+              <div className="relative flex-1 overflow-auto">
                 {/* Linhas de grade */}
                 {timeSlots.map((_, idx) => (
                   <div
                     key={idx}
-                    className="absolute right-0 left-0 border-b border-gray-200"
+                    className="border-border absolute right-0 left-0 border-b"
                     style={{ top: idx * SLOT_HEIGHT, height: 0 }}
                   />
                 ))}
+
                 {/* Cards de agendamento */}
                 {filteredAppointments.map((appointment) => {
                   const { top } = getAppointmentPosition(appointment.time);
@@ -270,21 +304,22 @@ export function SchedulingDashboard({
                   return (
                     <Card
                       key={appointment.id}
-                      className={`absolute mt-1 flex cursor-default items-center justify-center border-l-4 transition-shadow hover:shadow-md ${
+                      className={`absolute mt-1 flex cursor-default items-center justify-center border-l-4 transition-shadow hover:shadow-md lg:w-[200px] ${
                         isPast
-                          ? "border-green-300 bg-green-50"
-                          : "border-blue-300 bg-blue-50"
+                          ? "border-green-500/50 bg-green-500/10 dark:bg-green-500/5"
+                          : "border-primary/50 bg-primary/10 dark:bg-primary/5"
                       }`}
                       style={{
                         top: `${top}px`,
                         left: `${left}px`,
                         height: `${SLOT_HEIGHT - 8}px`,
-                        width: `230px`,
+                        width: `180px`,
+                        maxWidth: `calc(100vw - 80px)`,
                       }}
                     >
                       {/* Botão de edição */}
                       <button
-                        className="group absolute top-1 right-1 z-10 cursor-pointer rounded-full p-1"
+                        className="group hover:bg-background/80 absolute top-1 right-1 z-10 cursor-pointer rounded-full p-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingAppointmentId(appointment.id);
@@ -292,21 +327,22 @@ export function SchedulingDashboard({
                         title="Editar agendamento"
                         type="button"
                       >
-                        <Pencil className="text-muted-foreground h-3 w-3 transition-transform duration-150 group-hover:scale-145" />
+                        <Pencil className="text-muted-foreground h-3 w-3 transition-transform duration-150 group-hover:scale-110" />
                       </button>
+
                       <div className="flex w-full flex-col justify-center px-1.5 text-center">
-                        <h4 className="truncate text-xs font-semibold">
+                        <h4 className="text-foreground truncate text-xs font-semibold">
                           {appointment.service.name}
                         </h4>
                         <div className="flex items-center justify-center">
-                          <div className="flex items-center justify-center text-xs text-gray-600">
+                          <div className="text-muted-foreground flex items-center justify-center text-xs">
                             <span className="truncate text-xs">
                               {appointment.professional.name} -{" "}
                               {appointment.time.substring(0, 5)}
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center justify-center text-xs text-gray-600">
+                        <div className="text-muted-foreground flex items-center justify-center text-xs">
                           <span className="truncate text-xs">
                             {appointment.client.name} -{" "}
                             {appointment.client.phoneNumber.replace(
@@ -319,6 +355,7 @@ export function SchedulingDashboard({
                     </Card>
                   );
                 })}
+
                 {/* Dialog de edição */}
                 <Dialog
                   open={!!editingAppointmentId}

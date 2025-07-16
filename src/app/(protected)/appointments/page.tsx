@@ -2,15 +2,6 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import {
-  PageActions,
-  PageContainer,
-  PageContent,
-  PageDescription,
-  PageHeader,
-  PageHeaderContent,
-  PageTitle,
-} from "@/components/ui/page-container";
 import { db } from "@/db";
 import {
   appointmentsTable,
@@ -20,7 +11,6 @@ import {
 } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
-import AddAppointmentButton from "./_components/add-appointment-button";
 import { SchedulingDashboard } from "./_components/scheduling-dashboard";
 
 const AppointmentsPage = async () => {
@@ -58,41 +48,29 @@ const AppointmentsPage = async () => {
   ]);
 
   return (
-    <PageContainer>
-      <PageContent>
-        <PageHeader>
-          <PageHeaderContent>
-            <PageTitle>Agendamentos</PageTitle>
-            <PageDescription>
-              Acompanhe e gerencie os agendamentos diários de sua empresa.
-            </PageDescription>
-          </PageHeaderContent>
-        </PageHeader>
-        <SchedulingDashboard
-          professionals={professionals}
-          appointments={appointments.map((appointment) => ({
-            ...appointment,
-            client: {
-              id: appointment.client.id,
-              name: appointment.client.name,
-              phoneNumber: appointment.client.phoneNumber,
-            },
-            professional: {
-              id: appointment.professional.id,
-              name: appointment.professional.name,
-              specialty: appointment.professional.specialty,
-            },
-            service: {
-              id: appointment.service.id,
-              name: appointment.service.name,
-              servicePriceInCents: appointment.service.servicePriceInCents,
-            },
-          }))}
-          services={services}
-          clients={clients}
-        />
-      </PageContent>
-    </PageContainer>
+    <SchedulingDashboard
+      professionals={professionals}
+      appointments={appointments.map((appointment) => ({
+        ...appointment,
+        client: {
+          id: appointment.client.id,
+          name: appointment.client.name,
+          phoneNumber: appointment.client.phoneNumber,
+        },
+        professional: {
+          id: appointment.professional.id,
+          name: appointment.professional.name,
+          specialty: appointment.professional.specialty,
+        },
+        service: {
+          id: appointment.service.id,
+          name: appointment.service.name,
+          servicePriceInCents: appointment.service.servicePriceInCents,
+        },
+      }))}
+      services={services}
+      clients={clients}
+    />
   );
 };
 
