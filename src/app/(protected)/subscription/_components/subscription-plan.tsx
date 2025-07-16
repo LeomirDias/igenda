@@ -1,108 +1,131 @@
-"use client"
+"use client";
 
-import { loadStripe } from "@stripe/stripe-js"
-import { Check, Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useAction } from "next-safe-action/hooks"
+import { loadStripe } from "@stripe/stripe-js";
+import { Check, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
 
-import { createStripeCheckout } from "@/actions/create-stripe-checkout"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { createStripeCheckout } from "@/actions/create-stripe-checkout";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface SubscriptionPlanProps {
-    active?: boolean
-    className?: string
-    userEmail?: string
+  active?: boolean;
+  className?: string;
+  userEmail?: string;
 }
 
-export default function SubscriptionPlan({ active = false, userEmail }: SubscriptionPlanProps) {
+export default function SubscriptionPlan({
+  active = false,
+  userEmail,
+}: SubscriptionPlanProps) {
+  const router = useRouter();
 
-    const router = useRouter();
+  const createStripeCheckoutAction = useAction(createStripeCheckout, {
+    onSuccess: async ({ data }) => {
+      if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+        throw new Error("Stripe publishable key not found");
+      }
+      const stripe = await loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      );
 
-    const createStripeCheckoutAction = useAction(createStripeCheckout, {
-        onSuccess: async ({ data }) => {
-            if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-                throw new Error("Stripe publishable key not found")
-            }
-            const stripe = await loadStripe(
-                process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-            );
+      if (!stripe) {
+        throw new Error("Stripe not found");
+      }
+      if (!data?.sessionId) {
+        throw new Error("Session ID not found");
+      }
+      await stripe.redirectToCheckout({
+        sessionId: data?.sessionId,
+      });
+    },
+  });
 
-            if (!stripe) {
-                throw new Error("Stripe not found")
-            }
-            if (!data?.sessionId) {
-                throw new Error("Session ID not found")
-            }
-            await stripe.redirectToCheckout({
-                sessionId: data?.sessionId
-            })
-        },
-    })
+  const features = [
+    "Cadastro de profissionais",
+    "Agendamentos ilimitados",
+    "Métricas de agendamento, faturamento e mais",
+    "Cadastro de clientes",
+    "Agendamento via link para clientes",
+    "Suporte via e-mail e chat",
+  ];
 
-    const features = [
-        "Cadastro de até 3 profissionais",
-        "Agendamentos ilimitados",
-        "Métricas básicas",
-        "Cadastro de clientes",
-        "Confirmação manual",
-        "Suporte via e-mail",
-    ]
+  const handleSubscribeClick = () => {
+    createStripeCheckoutAction.execute();
+  };
 
-    const handleSubscribeClick = () => {
-        createStripeCheckoutAction.execute();
-    }
+  const handleManagePlanClick = () => {
+    router.push(
+      `${process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL}?prefilled_email=${userEmail}`,
+    );
+  };
 
-    const handleManagePlanClick = () => {
-        router.push(`${process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL}?prefilled_email=${userEmail}`);
-    }
+  return (
+    <Card className="w-full">
+      <CardHeader className="pb-4">
+        <div className="mb-2 flex items-center justify-between">
+          <CardTitle className="text-secondary-foreground text-xl font-bold sm:text-2xl">
+            iGenda | Acesso total
+          </CardTitle>
+          {active && (
+            <Badge className="text-primary bg-primary/10">Atual</Badge>
+          )}
+        </div>
+        <CardDescription className="text-muted-foreground mb-4 text-sm">
+          Para profissionais autônomos, pequenas, médias e grandes empresas.
+        </CardDescription>
+        <div className="flex items-baseline">
+          <span className="text-secondary-foreground text-2xl font-bold sm:text-3xl">
+            R$39,90
+          </span>
+          <span className="text-muted-foreground ml-1">/ mês</span>
+        </div>
+      </CardHeader>
 
-    return (
-        <Card className="w-[350px]">
-            <CardHeader className="pb-4">
-                <div className="flex items-center justify-between mb-2">
-                    <CardTitle className="text-2xl font-bold text-gray-900">Essential</CardTitle>
-                    {active && (
-                        <Badge className="text-primary bg-primary/10">
-                            Atual
-                        </Badge>
-                    )}
-                </div>
-                <CardDescription className="text-sm text-gray-600 mb-4">
-                    Para profissionais autônomos ou pequenas empresas
-                </CardDescription>
-                <div className="flex items-baseline">
-                    <span className="text-3xl font-bold text-gray-900">R$59,90</span>
-                    <span className="text-gray-600 ml-1">/ mês</span>
-                </div>
-            </CardHeader>
+      <CardContent className="pb-6">
+        <ul className="space-y-3">
+          {features.map((feature, index) => (
+            <li key={index} className="flex items-center gap-3">
+              <div className="bg-primary/10 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full">
+                <Check className="text-primary h-3 w-3" />
+              </div>
+              <span className="text-secondary-foreground text-sm">
+                {feature}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
 
-            <CardContent className="pb-6">
-                <ul className="space-y-3">
-                    {features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-5 h-5 bg-teal-100 rounded-full flex items-center justify-center">
-                                <Check className="w-3 h-3 text-primary" />
-                            </div>
-                            <span className="text-sm text-gray-700">{feature}</span>
-                        </li>
-                    ))}
-                </ul>
-            </CardContent>
-
-            <CardFooter>
-                <Button
-                    onClick={active ? handleManagePlanClick : handleSubscribeClick}
-                    disabled={createStripeCheckoutAction.isExecuting}
-                    variant="outline"
-                    className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
-
-                    {createStripeCheckoutAction.isExecuting ?
-                        (<Loader2 className="w-4 h-4 animate-spin mr-1" />) :
-                        (active ? "Gerenciar assinatura" : "Fazer assinatura")}
-                </Button>
-            </CardFooter>
-        </Card>
-    )
+      <CardFooter className="flex flex-col items-center justify-center gap-4 text-center">
+        <Button
+          onClick={active ? handleManagePlanClick : handleSubscribeClick}
+          disabled={createStripeCheckoutAction.isExecuting}
+          variant="default"
+          className="w-full"
+        >
+          {createStripeCheckoutAction.isExecuting ? (
+            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+          ) : active ? (
+            "Cancelar assinatura"
+          ) : (
+            "Assinar agora"
+          )}
+        </Button>
+        <p className="text-primary text-xs sm:text-sm">
+          Faça sua assinatura e teste gratuitamente por 14 dias sem cadastro
+          cartão de crédito!
+        </p>
+      </CardFooter>
+    </Card>
+  );
 }

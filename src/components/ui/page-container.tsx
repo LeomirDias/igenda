@@ -17,7 +17,11 @@ export const PageHeaderContent = ({
 };
 
 export const PageTitle = ({ children }: { children: React.ReactNode }) => {
-  return <div className="text-2xl font-bold">{children}</div>;
+  return (
+    <div className="text-secondary-foreground text-2xl font-bold">
+      {children}
+    </div>
+  );
 };
 
 export const PageDescription = ({
@@ -38,4 +42,12 @@ export const PageActions = ({ children }: { children: React.ReactNode }) => {
 
 export const PageContent = ({ children }: { children: React.ReactNode }) => {
   return <div className="space-y-6">{children}</div>;
+};
+
+export const PageFooter = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="flex items-center justify-center text-center">
+      {children}
+    </div>
+  );
 };
