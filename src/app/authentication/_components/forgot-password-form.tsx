@@ -63,12 +63,12 @@ export function ForgotPasswordForm({
   }
 
   return (
-    <Card>
+    <Card className="border-green-800/50 bg-green-950/30 backdrop-blur-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <CardHeader>
-            <CardTitle>Redefinir senha</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-green-50">Redefinir senha</CardTitle>
+            <CardDescription className="text-green-200/80">
               Digite seu e-mail para receber um link de redefinição de senha.
             </CardDescription>
           </CardHeader>
@@ -78,9 +78,13 @@ export function ForgotPasswordForm({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel className="text-green-100">E-mail</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite seu e-mail..." {...field} />
+                    <Input
+                      placeholder="Digite seu e-mail..."
+                      className="border-green-700/50 bg-green-900/20 text-green-50 placeholder:text-green-300/50 focus:border-green-500 focus:ring-green-500/20"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -91,7 +95,7 @@ export function ForgotPasswordForm({
             <div className="w-full space-y-2">
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full border-green-600 bg-green-600 text-white hover:border-green-700 hover:bg-green-700"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? (

@@ -83,12 +83,14 @@ const LoginForm = () => {
   };
 
   return (
-    <Card>
+    <Card className="border-[#424242] bg-[#191919] backdrop-blur-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-center text-2xl font-bold text-white">
+              Login
+            </CardTitle>
+            <CardDescription className="text-center text-white/80">
               Faça login na sua conta para continuar.
             </CardDescription>
           </CardHeader>
@@ -98,9 +100,13 @@ const LoginForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>E-mail</FormLabel>
+                  <FormLabel className="text-white">E-mail</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite seu e-mail..." {...field} />
+                    <Input
+                      placeholder="Digite seu e-mail..."
+                      className="border-[#424242] bg-[#191919] text-white placeholder:text-white/50 focus:border-[#424242] focus:ring-[#424242]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,11 +118,12 @@ const LoginForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel className="text-white">Senha</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Digite sua senha"
                       type="password"
+                      className="border-[#424242] bg-[#191919] text-white placeholder:text-white/50 focus:border-[#424242] focus:ring-[#424242]"
                       {...field}
                     />
                   </FormControl>
@@ -124,15 +131,18 @@ const LoginForm = () => {
                 </FormItem>
               )}
             />
-            <Link href="/authentication/forgot-password">
+            <Link
+              href="/authentication/forgot-password"
+              className="text-sm text-white transition-colors hover:text-green-600"
+            >
               Esqueceu sua senha?
             </Link>
           </CardContent>
           <CardFooter>
-            <div className="w-full space-y-2">
+            <div className="w-full space-y-3">
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full border-green-600 bg-green-600 text-white hover:border-green-900 hover:bg-green-900"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? (
@@ -143,7 +153,7 @@ const LoginForm = () => {
               </Button>
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full border-green-600 bg-green-600 text-white hover:border-green-900 hover:bg-green-900"
                 type="button"
                 onClick={handleGoogleLogin}
               >
