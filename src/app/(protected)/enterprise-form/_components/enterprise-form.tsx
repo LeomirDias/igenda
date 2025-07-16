@@ -31,8 +31,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PatternFormat } from "react-number-format";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { enterpriseSpecialty } from "../_constants";
+import { Span } from "next/dist/trace";
 
 const enterpriseFormSchema = z.object({
   name: z.string().trim().min(1, { message: "Nome da empresa é obrigatório." }),
@@ -70,6 +72,7 @@ const enterpriseFormSchema = z.object({
 
 const EnterpriseForm = () => {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const [isCepLoading, setIsCepLoading] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File>();
   const [avatarPreview, setAvatarPreview] = useState<string>();
@@ -93,6 +96,9 @@ const EnterpriseForm = () => {
   });
 
   const cep = form.watch("cep");
+
+  // Usar um valor padrão para evitar problemas de hidratação
+  const isMobileSafe = isMobile ?? false;
 
   useEffect(() => {
     const fetchAddressFromCep = async (cep: string) => {
@@ -198,9 +204,12 @@ const EnterpriseForm = () => {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="bg-muted relative h-24 w-24 overflow-hidden rounded-full">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={`${isMobileSafe ? "space-y-3" : "space-y-4"} pb-2`}
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="bg-muted relative mx-auto h-24 w-24 overflow-hidden rounded-full sm:mx-0">
               {avatarPreview ? (
                 <Image
                   src={avatarPreview}
@@ -237,10 +246,13 @@ const EnterpriseForm = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nome</FormLabel>
+                <FormLabel>
+                  Nome <span className="text-red-300">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Digite o nome da sua empresa"
+                    className="text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -253,13 +265,15 @@ const EnterpriseForm = () => {
             name="specialty"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Área de atuação</FormLabel>
+                <FormLabel>
+                  Área de atuação <span className="text-red-300">*</span>
+                </FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full text-sm">
                       <SelectValue placeholder="Selecione sua área de atuação..." />
                     </SelectTrigger>
                   </FormControl>
@@ -280,13 +294,16 @@ const EnterpriseForm = () => {
             name="phoneNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contato</FormLabel>
+                <FormLabel>
+                  Contato <span className="text-red-300">*</span>
+                </FormLabel>
                 <FormControl>
                   <PatternFormat
                     format="(##) #####-####"
                     mask="_"
                     placeholder="Digite o número de contato da sua empresa"
                     customInput={Input}
+                    className="text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -299,10 +316,13 @@ const EnterpriseForm = () => {
             name="register"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Registro (CPF ou CNPJ)</FormLabel>
+                <FormLabel>
+                  Registro (CPF ou CNPJ) <span className="text-red-300">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Digite o CNPJ ou CPF do responsável pela empresa"
+                    className="text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -315,10 +335,16 @@ const EnterpriseForm = () => {
             name="cep"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>CEP</FormLabel>
+                <FormLabel>
+                  CEP <span className="text-red-300">*</span>
+                </FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Input placeholder="Digite o CEP" {...field} />
+                    <Input
+                      placeholder="Digite o CEP"
+                      className="text-sm"
+                      {...field}
+                    />
                     {isCepLoading && (
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                         <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
@@ -330,16 +356,19 @@ const EnterpriseForm = () => {
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <FormField
               control={form.control}
               name="address"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>Logradouro</FormLabel>
+                <FormItem className="sm:col-span-2">
+                  <FormLabel>
+                    Logradouro <span className="text-red-300">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ex: Rua das Palmeiras"
+                      className="text-sm"
                       {...field}
                       disabled={isCepLoading}
                     />
@@ -353,9 +382,16 @@ const EnterpriseForm = () => {
               name="number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número</FormLabel>
+                  <FormLabel>
+                    Número <span className="text-red-300">*</span>
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: 123" {...field} id="number" />
+                    <Input
+                      placeholder="Ex: 123"
+                      className="text-sm"
+                      {...field}
+                      id="number"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -374,22 +410,29 @@ const EnterpriseForm = () => {
                   </span>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Ex: Apto 101, Bloco B" {...field} />
+                  <Input
+                    placeholder="Ex: Apto 101, Bloco B"
+                    className="text-sm"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Cidade</FormLabel>
+                  <FormLabel>
+                    Cidade <span className="text-red-300">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ex: São Paulo"
+                      className="text-sm"
                       {...field}
                       disabled={isCepLoading}
                     />
@@ -403,10 +446,13 @@ const EnterpriseForm = () => {
               name="state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Estado</FormLabel>
+                  <FormLabel>
+                    Estado <span className="text-red-300">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Ex: SP"
+                      className="text-sm"
                       {...field}
                       disabled={isCepLoading}
                     />
@@ -430,6 +476,7 @@ const EnterpriseForm = () => {
                 <FormControl>
                   <Input
                     placeholder="Cole aqui o link do Instagram da sua empresa..."
+                    className="text-sm"
                     {...field}
                   />
                 </FormControl>
@@ -437,10 +484,12 @@ const EnterpriseForm = () => {
               </FormItem>
             )}
           />
-          <DialogFooter>
+          <DialogFooter className="flex-col gap-3 pt-4 sm:flex-row sm:gap-2 sm:pt-0">
             <Button
               type="submit"
               disabled={form.formState.isSubmitting || isCepLoading}
+              className="w-full sm:w-auto"
+              variant="default"
             >
               {form.formState.isSubmitting || isCepLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
