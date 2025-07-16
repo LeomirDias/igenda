@@ -43,12 +43,9 @@ const formSchema = z
       .string()
       .trim()
       .min(1, { message: "Nome do profissional é obrigatório." }),
-    specialty: z
-      .string()
-      .trim()
-      .min(1, {
-        message: "Função ou especialidade do profissional é obrigatória.",
-      }),
+    specialty: z.string().trim().min(1, {
+      message: "Função ou especialidade do profissional é obrigatória.",
+    }),
     phoneNumber: z
       .string()
       .trim()
@@ -169,7 +166,7 @@ const CreateProfessionalForm = ({
   };
 
   return (
-    <DialogContent>
+    <DialogContent className="max-h-[90vh] max-w-[95vw] overflow-y-auto sm:max-w-md">
       <DialogTitle>
         {professional ? professional.name : "Adicionar profissional"}
       </DialogTitle>
@@ -180,8 +177,8 @@ const CreateProfessionalForm = ({
       </DialogDescription>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="bg-muted relative h-24 w-24 overflow-hidden rounded-full">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+            <div className="bg-muted relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full sm:h-24 sm:w-24">
               {avatarPreview ? (
                 <Image
                   src={avatarPreview}
@@ -191,22 +188,23 @@ const CreateProfessionalForm = ({
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
-                  <Upload className="text-muted-foreground h-8 w-8" />
+                  <Upload className="text-muted-foreground h-6 w-6 sm:h-8 sm:w-8" />
                 </div>
               )}
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex w-full flex-col gap-2 sm:w-auto">
               <FormLabel>Foto do Profissional</FormLabel>
               <Input
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarChange}
                 disabled={isUploadingAvatar}
+                className="text-xs sm:text-sm"
               />
               {isUploadingAvatar && (
                 <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span className="text-muted-foreground text-sm">
+                  <Loader2 className="h-3 w-3 animate-spin sm:h-4 sm:w-4" />
+                  <span className="text-muted-foreground text-xs sm:text-sm">
                     Enviando imagem...
                   </span>
                 </div>
@@ -353,7 +351,7 @@ const CreateProfessionalForm = ({
                       <SelectValue placeholder="Selecione um horário" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="max-h-[60vh] sm:max-h-[50vh]">
                     <SelectGroup>
                       <SelectLabel>Manhã</SelectLabel>
                       <SelectItem value="05:00:00">05:00</SelectItem>
@@ -422,7 +420,7 @@ const CreateProfessionalForm = ({
                       <SelectValue placeholder="Selecione um horário" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="max-h-[60vh] sm:max-h-[50vh]">
                     <SelectGroup>
                       <SelectLabel>Manhã</SelectLabel>
                       <SelectItem value="05:00:00">05:00</SelectItem>
