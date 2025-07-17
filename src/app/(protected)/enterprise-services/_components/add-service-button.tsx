@@ -12,7 +12,7 @@ const AddServiceButton = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="text-xs sm:text-sm md:text-base lg:text-lg">
+        <Button className="text-xs sm:text-sm">
           <Plus />
           <span className="hidden lg:inline">Adicionar serviço</span>
           <span className="lg:hidden">Adicionar</span>
