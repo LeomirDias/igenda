@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -8,19 +8,19 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import UpsertServiceForm from "./upsert-service-form";
 
 const AddServiceButton = () => {
-
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button>
-                    <Plus />
-                    Adicionar serviço
-                </Button>
-            </DialogTrigger>
-            <UpsertServiceForm onSuccess={() => setIsOpen(false)} />
-        </Dialog>
-    );
-}
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="text-xs sm:text-sm md:text-base lg:text-lg">
+          <Plus />
+          <span className="hidden lg:inline">Adicionar serviço</span>
+          <span className="lg:hidden">Adicionar</span>
+        </Button>
+      </DialogTrigger>
+      <UpsertServiceForm onSuccess={() => setIsOpen(false)} />
+    </Dialog>
+  );
+};
 
 export default AddServiceButton;
