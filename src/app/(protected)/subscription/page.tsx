@@ -1,39 +1,50 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/ui/page-container";
+import {
+  PageContainer,
+  PageContent,
+  PageDescription,
+  PageHeader,
+  PageHeaderContent,
+  PageTitle,
+} from "@/components/ui/page-container";
 import { auth } from "@/lib/auth";
 
 import SubscriptionPlan from "./_components/subscription-plan";
 
 const SubscriptionPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session?.user) {
+    redirect("/authentication");
+  }
+  if (!session.user.enterprise) {
+    redirect("/enterprise-form");
+  }
+  if (!session.user.plan) {
+    redirect("/subscription-plans");
+  }
 
-
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-    if (!session?.user) {
-        redirect("/authentication");
-    }
-    if (!session.user.enterprise) {
-        redirect("/enterprise-form");
-    }
-    if (!session.user.plan) {
-        redirect("/subscription-plans");
-    }
-
-    return (
-        <PageContainer>
-            <PageHeader>
-                <PageHeaderContent>
-                    <PageTitle>Planos</PageTitle>
-                    <PageDescription>Visualize e gerencie os planos disponíveis.</PageDescription>
-                </PageHeaderContent>
-            </PageHeader>
-            <PageContent>
-                <SubscriptionPlan className="w-[350px]" active={session.user.plan === "essential"} userEmail={session.user.email} />
-            </PageContent>
-        </PageContainer>
-    );
-}
+  return (
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle>Assinatura</PageTitle>
+          <PageDescription>
+            Visualize e gerencie sua assinatura.
+          </PageDescription>
+        </PageHeaderContent>
+      </PageHeader>
+      <PageContent>
+        <SubscriptionPlan
+          className="w-[350px]"
+          active={session.user.plan === "essential"}
+          userEmail={session.user.email}
+        />
+      </PageContent>
+    </PageContainer>
+  );
+};
 export default SubscriptionPage;

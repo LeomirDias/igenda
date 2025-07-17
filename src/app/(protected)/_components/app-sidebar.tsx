@@ -91,7 +91,7 @@ const itemsClients = [
 
 const othersItems = [
   {
-    title: "Planos",
+    title: "Assinatura",
     url: "/subscription",
     icon: CreditCard,
   },
