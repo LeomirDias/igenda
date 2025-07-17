@@ -2,7 +2,7 @@
 
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -57,7 +57,7 @@ export function BillingChart({ dailyBillingData }: BillingChartProps) {
     <Card>
       <CardHeader className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
-          <Calendar className="text-muted-foreground" />
+          <DollarSign className="text-muted-foreground" />
           <CardTitle className="text-lg sm:text-xl">Faturamento</CardTitle>
         </div>
         <CardDescription className="text-sm sm:text-base">
