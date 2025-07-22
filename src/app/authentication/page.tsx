@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Image from "next/image";
@@ -7,16 +10,12 @@ import { auth } from "@/lib/auth";
 
 import LoginForm from "./_components/login-form ";
 import SignUpForm from "./_components/sign-up-form";
-import Link from "next/link";
+import OpenTermsButton from "./_components/open-terms-button";
+import OpenPrivacyPoliciesButton from "./_components/open-privacy-policies-button";
 
-const AuthenticationPage = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (session?.user) {
-    redirect("/dashboard");
-  }
+const AuthenticationPage = () => {
+  const [tab, setTab] = useState("login");
+  const year = new Date().getFullYear();
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4">
@@ -34,7 +33,7 @@ const AuthenticationPage = async () => {
           />
         </div>
 
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 border border-[#202020] bg-[#202020]/5">
             <TabsTrigger value="login" className="cursor-pointer">
               Login
@@ -54,16 +53,24 @@ const AuthenticationPage = async () => {
         </Tabs>
       </div>
 
-      {/* Footer fixo na parte inferior */}
-      <footer className="text-muted-foreground absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-sm">
-        Ao acessar, você concorda com os{" "}
-        <Link href="/terms" className="text-primary" target="_blank">
-          Termos de uso
-        </Link>{" "}
+      <div className="text-muted-foreground mt-2 text-center text-xs">
+        {tab === "register"
+          ? "Ao se cadastrar, você concorda com os"
+          : "Ao utilizar, você concorda com os"}{" "}
+        <span className="inline">
+          <OpenTermsButton className="m-0 inline p-0 align-baseline text-xs" />
+        </span>{" "}
         e a{" "}
-        <Link href="/privacy" className="text-primary" target="_blank">
-          Política de privacidade
-        </Link>
+        <span className="inline">
+          <OpenPrivacyPoliciesButton className="m-0 inline p-0 align-baseline text-xs" />
+        </span>
+      </div>
+
+      <footer className="text-muted-foreground absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-xs">
+        <span className="inline">
+          © {year} Synqia. Todos os direitos reservados. iGenda é uma marca
+          registrada da Synqia.
+        </span>
       </footer>
     </div>
   );
