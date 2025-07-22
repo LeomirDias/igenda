@@ -94,7 +94,9 @@ export function ResetPasswordForm({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm sm:text-base">Senha</FormLabel>
+                  <FormLabel className="text-sm sm:text-base">
+                    Nova senha
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Digite sua senha"
@@ -113,7 +115,7 @@ export function ResetPasswordForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm sm:text-base">
-                    Confirmar senha
+                    Confirmar nova senha
                   </FormLabel>
                   <FormControl>
                     <Input
