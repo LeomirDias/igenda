@@ -66,10 +66,12 @@ const AppointmentsPage = async () => {
           id: appointment.service.id,
           name: appointment.service.name,
           servicePriceInCents: appointment.service.servicePriceInCents,
+          durationInMinutes: appointment.service.durationInMinutes,
         },
       }))}
       services={services}
       clients={clients}
+      enterpriseId={session.user.enterprise.id}
     />
   );
 };

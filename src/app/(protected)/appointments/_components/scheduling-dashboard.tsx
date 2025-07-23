@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Select,
@@ -11,9 +11,20 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, User, MapPin, Pencil, Menu } from "lucide-react";
+import {
+  Clock,
+  User,
+  Filter,
+  Expand,
+  ShoppingBag,
+  Users,
+  Phone,
+  SquareUser,
+  Edit2,
+  X,
+} from "lucide-react";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
 import isBetween from "dayjs/plugin/isBetween";
@@ -47,22 +58,9 @@ type AppointmentWithRelations = typeof appointmentsTable.$inferSelect & {
     id: string;
     name: string;
     servicePriceInCents: number;
+    durationInMinutes: number;
   };
 };
-
-// Gerar horários de 5h às 23h em intervalos de 30 minutos
-const timeSlots = Array.from({ length: (23 - 5) * 2 + 1 }, (_, i) => {
-  const hour = 5 + Math.floor(i / 2);
-  const minute = i % 2 === 0 ? "00" : "30";
-  return `${hour.toString().padStart(2, "0")}:${minute}`;
-});
-
-const SLOT_HEIGHT = 60; // Altura fixa para cada slot de 30 minutos
-
-function getWeekDays(date: Date) {
-  const startOfWeek = dayjs(date).weekday(0); // domingo
-  return Array.from({ length: 7 }, (_, i) => startOfWeek.add(i, "day"));
-}
 
 export function SchedulingDashboard({
   professionals,
@@ -74,6 +72,7 @@ export function SchedulingDashboard({
   appointments: AppointmentWithRelations[];
   services: (typeof servicesTable.$inferSelect)[];
   clients: (typeof clientsTable.$inferSelect)[];
+  enterpriseId: string;
 }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selectedProfessional, setSelectedProfessional] = useState<string>("");
@@ -83,14 +82,10 @@ export function SchedulingDashboard({
     string | null
   >(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // Função para calcular a posição do card na timeline
-  const getAppointmentPosition = (time: string) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    const startMinutes = (hours - 5) * 60 + minutes;
-    const top = (startMinutes / 30) * SLOT_HEIGHT;
-    return { top };
-  };
+  const [stats, setStats] = useState<{
+    totalAppointments: number;
+    totalRevenue: number | null;
+  }>({ totalAppointments: 0, totalRevenue: 0 });
 
   // Filtro dos agendamentos para o dia selecionado e filtros laterais
   const filteredAppointments = appointments.filter((appointment) => {
@@ -119,34 +114,12 @@ export function SchedulingDashboard({
     {} as Record<string, AppointmentWithRelations[]>,
   );
 
-  // Função para calcular a posição horizontal de cada card
-  const getHorizontalPosition = (appointment: AppointmentWithRelations) => {
-    const timeGroup = appointmentsByTime[appointment.time];
-    const index = timeGroup.findIndex((a) => a.id === appointment.id);
-    const totalInGroup = timeGroup.length;
-    const cardWidth = 180; // Largura base para mobile
-    const gap = 6;
-    const startX = 10;
-    return startX + index * (cardWidth + gap);
-  };
-
-  // Função para verificar se o agendamento é passado
-  const isAppointmentPast = (appointment: AppointmentWithRelations) => {
-    const now = dayjs();
-    const appointmentDateTime =
-      dayjs(appointment.date).format("YYYY-MM-DD") + " " + appointment.time;
-    const appointmentTime = dayjs(appointmentDateTime, "YYYY-MM-DD HH:mm:ss");
-    return appointmentTime.isBefore(now);
-  };
-
   // Componente da barra lateral
   const SidebarContent = () => (
-    <div className="flex h-full flex-col space-y-6 overflow-y-auto p-4">
+    <div className="flex h-full flex-col items-center space-y-6 p-4 text-center">
       {/* Calendário */}
       <div>
-        <h2 className="text-foreground mb-4 text-lg font-semibold">
-          Calendário
-        </h2>
+        <h2 className="text-foreground text-md mb-4">Calendário</h2>
         <Calendar
           mode="single"
           selected={date}
@@ -156,8 +129,8 @@ export function SchedulingDashboard({
       </div>
 
       {/* Filtros */}
-      <div className="space-y-4">
-        <h3 className="text-foreground text-lg font-semibold">Filtros</h3>
+      <div className="w-full space-y-4">
+        <h3 className="text-foreground text-md mb-4">Filtros</h3>
         <div className="space-y-2">
           <Label htmlFor="search">Cliente</Label>
           <Input
@@ -205,7 +178,7 @@ export function SchedulingDashboard({
           <Button
             type="button"
             variant="outline"
-            className="hover:border-destructive hover:bg-destructive/10 hover:text-destructive text-sm"
+            className="hover:border-destructive hover:bg-destructive/10 hover:text-destructive w-full text-sm"
             onClick={() => {
               setSearchTerm("");
               setSelectedProfessional("");
@@ -216,184 +189,342 @@ export function SchedulingDashboard({
           </Button>
         </div>
       </div>
-
-      <AddAppointmentButton
-        clients={clients}
-        professionals={professionals}
-        services={services}
-      />
     </div>
   );
 
   return (
     <div className="bg-background flex h-screen w-full">
-      {/* Barra Lateral - Desktop */}
-      <div className="lg:border-border hidden lg:flex lg:w-72 lg:flex-col lg:border-r">
-        <SidebarContent />
-      </div>
-
       {/* Área Principal - Timeline do Dia */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <div className="border-border flex items-center justify-between border-b p-4 lg:p-6">
-          <div className="flex items-center gap-4">
-            {/* Botão do menu mobile */}
+        <div className="flex items-center justify-between px-4">
+          <div>
+            <h1 className="text-foreground text-xl font-bold lg:text-2xl">
+              Agendamentos
+            </h1>
+            <p className="text-muted-foreground text-sm lg:text-base">
+              {date
+                ?.toLocaleDateString("pt-BR", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+                .replace(/^\w/, (c) => c.toUpperCase())}
+            </p>
+          </div>
+
+          <div className="flex flex-row gap-2">
+            <AddAppointmentButton
+              clients={clients}
+              professionals={professionals}
+              services={services}
+            />
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="lg:hidden">
-                  <Menu className="h-4 w-4" />
+                <Button variant="default" size="icon">
+                  <Filter className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-80 p-0">
+              <SheetContent side="right" className="w-80 p-0">
                 <SidebarContent />
               </SheetContent>
             </Sheet>
-
-            <div>
-              <h1 className="text-foreground text-xl font-bold lg:text-2xl">
-                Agendamentos
-              </h1>
-              <p className="text-muted-foreground text-sm lg:text-base">
-                {date
-                  ?.toLocaleDateString("pt-BR", {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })
-                  .replace(/^\w/, (c) => c.toUpperCase())}
-              </p>
-            </div>
           </div>
         </div>
 
-        {/* Timeline do dia */}
-        <div className="flex-1 overflow-auto">
-          <div className="relative">
-            <div className="flex">
-              {/* Coluna de horários */}
-              <div className="flex w-12 flex-col lg:w-16">
-                {timeSlots.map((time) => (
-                  <div
-                    key={time}
-                    className="text-muted-foreground flex items-center justify-center text-xs font-medium"
-                    style={{ height: `${SLOT_HEIGHT}px` }}
-                  >
-                    <span className="hidden lg:inline">{time}</span>
-                    <span className="lg:hidden">{time.substring(0, 2)}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Coluna dos agendamentos */}
-              <div className="relative flex-1 overflow-auto">
-                {/* Linhas de grade */}
-                {timeSlots.map((_, idx) => (
-                  <div
-                    key={idx}
-                    className="border-border absolute right-0 left-0 border-b"
-                    style={{ top: idx * SLOT_HEIGHT, height: 0 }}
-                  />
-                ))}
-
-                {/* Cards de agendamento */}
-                {filteredAppointments.map((appointment) => {
-                  const { top } = getAppointmentPosition(appointment.time);
-                  const left = getHorizontalPosition(appointment);
-                  const isPast = isAppointmentPast(appointment);
+        {/* Timeline do dia - Mobile*/}
+        <div className="lg:hidden">
+          <div className="flex flex-col gap-4 p-4">
+            {/* Container com scroll para os cards */}
+            <div
+              className="flex flex-col gap-4 overflow-y-auto"
+              style={{ maxHeight: "calc(100dvh - 110px)" }}
+            >
+              {filteredAppointments
+                .sort((a, b) => a.time.localeCompare(b.time))
+                .map((appointment) => {
+                  // Valor formatado
+                  const price = (
+                    appointment.service.servicePriceInCents / 100
+                  ).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  });
                   return (
                     <Card
                       key={appointment.id}
-                      className={`absolute mt-1 flex cursor-default items-center justify-center border-l-4 transition-shadow hover:shadow-md lg:w-[200px] ${
-                        isPast
-                          ? "border-green-500/50 bg-green-500/10 dark:bg-green-500/5"
-                          : "border-primary/50 bg-primary/10 dark:bg-primary/5"
-                      }`}
-                      style={{
-                        top: `${top}px`,
-                        left: `${left}px`,
-                        height: `${SLOT_HEIGHT - 8}px`,
-                        width: `180px`,
-                        maxWidth: `calc(100vw - 80px)`,
-                      }}
+                      className="bg-background border-border relative flex flex-col items-center justify-start shadow-sm"
                     >
-                      {/* Botão de edição */}
-                      <button
-                        className="group hover:bg-background/80 absolute top-1 right-1 z-10 cursor-pointer rounded-full p-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingAppointmentId(appointment.id);
-                        }}
-                        title="Editar agendamento"
-                        type="button"
-                      >
-                        <Pencil className="text-muted-foreground h-3 w-3 transition-transform duration-150 group-hover:scale-110" />
-                      </button>
+                      {/* Esquerda: Horário + Badge */}
+                      <div className="flex w-full flex-row items-center justify-between gap-2 px-4">
+                        <div className="flex min-w-[70px] flex-row items-center gap-2">
+                          <span className="bg-primary border-primary text-md rounded-sm p-2 leading-none font-bold text-white">
+                            {appointment.time.substring(0, 5)}
+                          </span>
+                          <Badge className="bg-primary/25 border-primary text-primary rounded-xl border-1">
+                            Agendado
+                          </Badge>
+                        </div>
+                        <span className="text-md text-primary font-bold">
+                          {price}
+                        </span>
+                      </div>
 
-                      <div className="flex w-full flex-col justify-center px-1.5 text-center">
-                        <h4 className="text-foreground truncate text-xs font-semibold">
-                          {appointment.service.name}
-                        </h4>
-                        <div className="flex items-center justify-center">
-                          <div className="text-muted-foreground flex items-center justify-center text-xs">
-                            <span className="truncate text-xs">
-                              {appointment.professional.name} -{" "}
-                              {appointment.time.substring(0, 5)}
+                      <div className="flex w-full flex-col px-4">
+                        <div className="mb-3 flex flex-col gap-2">
+                          <div className="text-foreground flex items-center gap-2">
+                            <SquareUser className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.client.name}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Cliente
+                              </p>
+                            </span>
+                          </div>
+                          <div className="text-foreground flex items-center gap-2">
+                            <Phone className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.client.phoneNumber}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Contato
+                              </p>
                             </span>
                           </div>
                         </div>
-                        <div className="text-muted-foreground flex items-center justify-center text-xs">
-                          <span className="truncate text-xs">
-                            {appointment.client.name} -{" "}
-                            {appointment.client.phoneNumber.replace(
-                              /^(\d{2})(\d{1})(\d{4})(\d{4})$/,
-                              "($1) $2 $3-$4",
-                            )}
-                          </span>
+
+                        <div className="mb-3 flex flex-col gap-2">
+                          <div className="text-foreground flex items-center gap-2">
+                            <User className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.professional.name}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Profissional
+                              </p>
+                            </span>
+                          </div>
+                          <div className="text-foreground flex items-center gap-2">
+                            <ShoppingBag className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.service.name}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Serviço
+                              </p>
+                            </span>
+                          </div>
                         </div>
+                      </div>
+
+                      {/* Botão de edição */}
+                      <div className="absolute right-2 bottom-2 flex flex-col">
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingAppointmentId(appointment.id);
+                          }}
+                          variant="link"
+                          className="cursor-pointer"
+                        >
+                          <Edit2 className="text-primary h-5 w-5" />
+                        </Button>
+                        <Button variant="link" className="cursor-pointer">
+                          <p className="text-red-500">
+                            <X className="h-5 w-5" />
+                          </p>
+                        </Button>
                       </div>
                     </Card>
                   );
                 })}
-
-                {/* Dialog de edição */}
-                <Dialog
-                  open={!!editingAppointmentId}
-                  onOpenChange={(open) => {
-                    if (!open) setEditingAppointmentId(null);
-                  }}
-                >
-                  <DialogContent className="sm:max-w-[500px]">
-                    {editingAppointmentId && (
-                      <UpsertAppointmentForm
-                        isOpen={!!editingAppointmentId}
-                        clients={clients}
-                        professionals={professionals}
-                        services={services}
-                        appointment={(() => {
-                          const a = appointments.find(
-                            (ap) => ap.id === editingAppointmentId,
-                          );
-                          if (!a) return undefined;
-                          return {
-                            id: a.id,
-                            clientId: a.client.id,
-                            professionalId: a.professional.id,
-                            serviceId: a.service.id,
-                            date:
-                              typeof a.date === "string"
-                                ? a.date
-                                : dayjs(a.date).format("YYYY-MM-DD"),
-                            time: a.time,
-                          };
-                        })()}
-                        onSuccess={() => setEditingAppointmentId(null)}
-                      />
-                    )}
-                  </DialogContent>
-                </Dialog>
-              </div>
             </div>
+
+            {/* Dialog de edição */}
+            <Dialog
+              open={!!editingAppointmentId}
+              onOpenChange={(open) => {
+                if (!open) setEditingAppointmentId(null);
+              }}
+            >
+              <DialogContent className="sm:max-w-[500px]">
+                {editingAppointmentId && (
+                  <UpsertAppointmentForm
+                    isOpen={!!editingAppointmentId}
+                    clients={clients}
+                    professionals={professionals}
+                    services={services}
+                    appointment={(() => {
+                      const a = appointments.find(
+                        (ap) => ap.id === editingAppointmentId,
+                      );
+                      if (!a) return undefined;
+                      return {
+                        id: a.id,
+                        clientId: a.client.id,
+                        professionalId: a.professional.id,
+                        serviceId: a.service.id,
+                        date:
+                          typeof a.date === "string"
+                            ? a.date
+                            : dayjs(a.date).format("YYYY-MM-DD"),
+                        time: a.time,
+                      };
+                    })()}
+                    onSuccess={() => setEditingAppointmentId(null)}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+
+        {/* Timeline do dia - PC*/}
+        <div className="mt-4 hidden lg:flex">
+          {/* Container com scroll para os cards */}
+          <div
+            className="grid w-full grid-cols-3 gap-4 overflow-y-auto px-4"
+            style={{ maxHeight: "calc(100dvh - 110px)" }}
+          >
+            {filteredAppointments
+              .sort((a, b) => a.time.localeCompare(b.time))
+              .map((appointment) => {
+                // Valor formatado
+                const price = (
+                  appointment.service.servicePriceInCents / 100
+                ).toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                });
+                return (
+                  <Card
+                    key={appointment.id}
+                    className="bg-background border-border hover:bg-muted/50 relative transition-colors"
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary rounded-md px-3 py-1 font-semibold text-white">
+                            {appointment.time.substring(0, 5)}
+                          </div>
+                          <Badge className="bg-primary/25 border-primary text-primary rounded-xl border-1">
+                            Agendado
+                          </Badge>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-semibold text-green-400">
+                            {price}
+                          </p>
+                          <p className="text-muted-foreground flex items-center gap-1 text-sm">
+                            <Clock className="h-3 w-3" />
+                            {appointment.service.durationInMinutes} min
+                          </p>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent>
+                      <div className="flex flex-row items-center justify-start gap-4">
+                        <div className="mb-3 flex flex-col gap-2">
+                          <div className="text-foreground flex items-center gap-2">
+                            <SquareUser className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.client.name}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Cliente
+                              </p>
+                            </span>
+                          </div>
+                          <div className="text-foreground flex items-center gap-2">
+                            <Phone className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.client.phoneNumber}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Contato
+                              </p>
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mb-3 flex flex-col gap-2">
+                          <div className="text-foreground flex items-center gap-2">
+                            <User className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.professional.name}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Profissional
+                              </p>
+                            </span>
+                          </div>
+                          <div className="text-foreground flex items-center gap-2">
+                            <ShoppingBag className="text-muted-foreground h-4 w-4" />
+                            <span className="flex items-center gap-1 text-sm font-medium">
+                              {appointment.service.name}{" "}
+                              <p className="text-muted-foreground text-xs">
+                                Serviço
+                              </p>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+
+                    {/* Botão de edição */}
+                    <div className="absolute right-2 bottom-2 flex flex-col">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingAppointmentId(appointment.id);
+                        }}
+                        variant="link"
+                        className="cursor-pointer"
+                      >
+                        <Edit2 className="text-primary h-5 w-5" />
+                      </Button>
+                      <Button variant="link" className="cursor-pointer">
+                        <p className="text-red-500">
+                          <X className="h-5 w-5" />
+                        </p>
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })}
+
+            {/* Dialog de edição */}
+            <Dialog
+              open={!!editingAppointmentId}
+              onOpenChange={(open) => {
+                if (!open) setEditingAppointmentId(null);
+              }}
+            >
+              <DialogContent className="sm:max-w-[500px]">
+                {editingAppointmentId && (
+                  <UpsertAppointmentForm
+                    isOpen={!!editingAppointmentId}
+                    clients={clients}
+                    professionals={professionals}
+                    services={services}
+                    appointment={(() => {
+                      const a = appointments.find(
+                        (ap) => ap.id === editingAppointmentId,
+                      );
+                      if (!a) return undefined;
+                      return {
+                        id: a.id,
+                        clientId: a.client.id,
+                        professionalId: a.professional.id,
+                        serviceId: a.service.id,
+                        date:
+                          typeof a.date === "string"
+                            ? a.date
+                            : dayjs(a.date).format("YYYY-MM-DD"),
+                        time: a.time,
+                      };
+                    })()}
+                    onSuccess={() => setEditingAppointmentId(null)}
+                  />
+                )}
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

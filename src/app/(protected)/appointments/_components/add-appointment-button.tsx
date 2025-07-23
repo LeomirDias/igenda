@@ -10,35 +10,35 @@ import { clientsTable, professionalsTable, servicesTable } from "@/db/schema";
 import UpsertAppointmentForm from "./upsert-appointment-form";
 
 interface AddAppointmentButtonProps {
-    clients: (typeof clientsTable.$inferSelect)[];
-    professionals: (typeof professionalsTable.$inferSelect)[];
-    services: (typeof servicesTable.$inferSelect)[];
+  clients: (typeof clientsTable.$inferSelect)[];
+  professionals: (typeof professionalsTable.$inferSelect)[];
+  services: (typeof servicesTable.$inferSelect)[];
 }
 
 const AddAppointmentButton = ({
-    clients,
-    professionals,
-    services,
+  clients,
+  professionals,
+  services,
 }: AddAppointmentButtonProps) => {
-    const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button>
-                    <Plus />
-                    Adicionar agendamento
-                </Button>
-            </DialogTrigger>
-            <UpsertAppointmentForm
-                isOpen={isOpen}
-                clients={clients}
-                professionals={professionals}
-                services={services}
-                onSuccess={() => setIsOpen(false)}
-            />
-        </Dialog>
-    );
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="text-xs sm:text-sm">
+          <Plus />
+          <span className="hidden lg:inline">Adicionar agendamento</span>
+        </Button>
+      </DialogTrigger>
+      <UpsertAppointmentForm
+        isOpen={isOpen}
+        clients={clients}
+        professionals={professionals}
+        services={services}
+        onSuccess={() => setIsOpen(false)}
+      />
+    </Dialog>
+  );
 };
 
 export default AddAppointmentButton;
