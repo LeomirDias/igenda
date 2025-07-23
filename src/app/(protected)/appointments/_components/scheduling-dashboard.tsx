@@ -126,12 +126,6 @@ export function SchedulingDashboard({
     setSelectedService("");
   };
 
-  // Função de exclusão (placeholder)
-  const handleDeleteAppointment = (id: string) => {
-    // TODO: Implementar exclusão
-    alert(`Excluir agendamento ${id}`);
-  };
-
   return (
     <div className="bg-background flex h-screen w-full">
       {/* Área Principal - Timeline do Dia */}
@@ -195,7 +189,6 @@ export function SchedulingDashboard({
               <AppointmentList
                 appointments={filteredAppointments}
                 onEdit={setEditingAppointmentId}
-                onDelete={handleDeleteAppointment}
                 isMobile
               />
             </div>
@@ -223,7 +216,6 @@ export function SchedulingDashboard({
             <AppointmentList
               appointments={filteredAppointments}
               onEdit={setEditingAppointmentId}
-              onDelete={handleDeleteAppointment}
             />
             <EditAppointmentDialog
               open={!!editingAppointmentId}

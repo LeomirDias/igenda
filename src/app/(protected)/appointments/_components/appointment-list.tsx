@@ -4,7 +4,7 @@ import { AppointmentCard, AppointmentWithRelations } from "./appointment-card";
 interface AppointmentListProps {
   appointments: AppointmentWithRelations[];
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
   isMobile?: boolean;
 }
 
