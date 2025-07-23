@@ -194,23 +194,6 @@ export function AppSidebar() {
       <SidebarFooter className="bg-background border-t py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuItem className="flex w-full justify-end">
-              <button
-                onClick={() =>
-                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                }
-                className="text-muted-foreground hover:bg-primary hover:text-primary-foreground flex items-center gap-2 rounded-full p-1 transition-colors"
-                aria-label="Alternar tema"
-              >
-                <span className="inline-block transition-transform duration-300 ease-in-out group-active:rotate-180">
-                  {resolvedTheme === "dark" ? (
-                    <Sun className="h-5 w-5" />
-                  ) : (
-                    <Moon className="h-5 w-5" />
-                  )}
-                </span>
-              </button>
-            </SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton size="lg">
@@ -233,6 +216,23 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() =>
+                    setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                  }
+                  className="flex items-center gap-2"
+                >
+                  <span className="inline-block transition-transform duration-300 ease-in-out group-active:rotate-180">
+                    {resolvedTheme === "dark" ? (
+                      <Sun className="h-5 w-5" />
+                    ) : (
+                      <Moon className="h-5 w-5" />
+                    )}
+                  </span>
+                  <span>
+                    {resolvedTheme === "dark" ? "Tema claro" : "Tema escuro"}
+                  </span>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/settings">
                     <SettingsIcon />
