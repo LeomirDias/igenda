@@ -259,7 +259,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar, state } = useSidebar();
+  const { toggleSidebar, state, isMobile } = useSidebar();
 
   return (
     <Button
@@ -277,7 +277,13 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      {state === "expanded" ? <X /> : <Menu />}
+      {isMobile ? (
+        <Menu className="h-6 w-6" />
+      ) : state === "expanded" ? (
+        <X />
+      ) : (
+        <Menu />
+      )}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
