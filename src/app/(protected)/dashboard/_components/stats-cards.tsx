@@ -39,7 +39,7 @@ const StatsCards = ({
       icon: CalendarDays,
     },
     {
-      title: "Cancelados",
+      title: "Cancelamentos",
       value: totalCanceledAppointments.toString(),
       icon: TicketX,
     },
