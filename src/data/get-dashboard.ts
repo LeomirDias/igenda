@@ -26,6 +26,7 @@ const getDashboard = async ({ session, from, to }: Params) => {
     [totalAppointments],
     [totalClients],
     [totalProfessionals],
+    [totalCanceledAppointments],
     topProfessionals,
     topServices,
     todayAppointments,
@@ -71,6 +72,20 @@ const getDashboard = async ({ session, from, to }: Params) => {
       .from(professionalsTable)
       .where(
         and(eq(professionalsTable.enterpriseId, session.user.enterprise.id)),
+      ),
+
+    db
+      .select({
+        total: count(appointmentsTable.id),
+      })
+      .from(appointmentsTable)
+      .where(
+        and(
+          eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
+          eq(appointmentsTable.status, "canceled"),
+          gte(appointmentsTable.date, new Date(from)),
+          lte(appointmentsTable.date, new Date(to)),
+        ),
       ),
 
     db
@@ -155,6 +170,7 @@ const getDashboard = async ({ session, from, to }: Params) => {
     totalAppointments,
     totalClients,
     totalProfessionals,
+    totalCanceledAppointments,
     topProfessionals,
     topServices,
     todayAppointments,

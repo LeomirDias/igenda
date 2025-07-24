@@ -2,7 +2,7 @@
 
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar } from "lucide-react";
+import { Calendar, CalendarDays } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -57,14 +57,14 @@ export function AppointmentsChart({
 
   return (
     <Card>
-      <CardHeader className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-2">
-          <Calendar className="text-muted-foreground" />
-          <CardTitle className="text-lg sm:text-xl">Agendamentos</CardTitle>
+      <CardHeader className="flex flex-row items-center gap-2">
+        <CalendarDays className="text-muted-foreground h-6 w-6" />
+        <div className="flex w-full flex-row items-center justify-between">
+          <CardTitle className="text-lg">Agendamentos</CardTitle>
+          <CardDescription className="text-xs">
+            Total de agendamentos para os últimos 21 dias
+          </CardDescription>
         </div>
-        <CardDescription className="text-sm sm:text-base">
-          Total de agendamentos para os últimos 21 dias
-        </CardDescription>
       </CardHeader>
       <CardContent className="overflow-hidden">
         <ChartContainer

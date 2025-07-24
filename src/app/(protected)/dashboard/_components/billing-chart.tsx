@@ -55,14 +55,14 @@ export function BillingChart({ dailyBillingData }: BillingChartProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-2">
-          <DollarSign className="text-muted-foreground" />
-          <CardTitle className="text-lg sm:text-xl">Faturamento</CardTitle>
+      <CardHeader className="flex flex-row items-center gap-2">
+        <DollarSign className="text-muted-foreground h-6 w-6" />
+        <div className="flex w-full flex-row items-center justify-between">
+          <CardTitle className="text-lg">Faturamento</CardTitle>
+          <CardDescription className="text-xs">
+            Faturamento total nos últimos 21 dias
+          </CardDescription>
         </div>
-        <CardDescription className="text-sm sm:text-base">
-          Total de faturamento para os últimos 21 dias
-        </CardDescription>
       </CardHeader>
       <CardContent className="overflow-hidden">
         <ChartContainer

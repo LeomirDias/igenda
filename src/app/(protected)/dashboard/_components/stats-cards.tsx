@@ -1,8 +1,12 @@
 import {
+  CalendarDays,
   CalendarIcon,
   DollarSignIcon,
+  TicketX,
   UserIcon,
+  UserPlus2,
   UsersIcon,
+  XCircleIcon,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +17,7 @@ interface StatsCardsProps {
   totalAppointments: number;
   totalClients: number;
   totalProfessionals: number;
+  totalCanceledAppointments: number;
 }
 
 const StatsCards = ({
@@ -20,6 +25,7 @@ const StatsCards = ({
   totalAppointments,
   totalClients,
   totalProfessionals,
+  totalCanceledAppointments,
 }: StatsCardsProps) => {
   const stats = [
     {
@@ -30,12 +36,17 @@ const StatsCards = ({
     {
       title: "Agendamentos",
       value: totalAppointments.toString(),
-      icon: CalendarIcon,
+      icon: CalendarDays,
+    },
+    {
+      title: "Cancelados",
+      value: totalCanceledAppointments.toString(),
+      icon: TicketX,
     },
     {
       title: "Clientes",
       value: totalClients.toString(),
-      icon: UserIcon,
+      icon: UserPlus2,
     },
     {
       title: "Profissionais",
@@ -45,7 +56,7 @@ const StatsCards = ({
   ];
 
   return (
-    <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-4">
+    <div className="grid w-full grid-cols-2 gap-4 sm:grid-cols-5">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (
