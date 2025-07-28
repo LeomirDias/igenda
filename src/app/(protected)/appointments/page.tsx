@@ -8,6 +8,7 @@ import {
   clientsTable,
   professionalsTable,
   servicesTable,
+  enterprisesTable,
 } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
@@ -27,25 +28,33 @@ const AppointmentsPage = async () => {
     redirect("/subscription-plans");
   }
 
-  const [clients, professionals, appointments, services] = await Promise.all([
-    db.query.clientsTable.findMany({
-      where: eq(clientsTable.enterpriseId, session.user.enterprise.id),
-    }),
-    db.query.professionalsTable.findMany({
-      where: eq(professionalsTable.enterpriseId, session.user.enterprise.id),
-    }),
-    db.query.appointmentsTable.findMany({
-      where: eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-      with: {
-        client: true,
-        professional: true,
-        service: true,
-      },
-    }),
-    db.query.servicesTable.findMany({
-      where: eq(servicesTable.enterpriseId, session.user.enterprise.id),
-    }),
-  ]);
+  const [clients, professionals, appointments, services, enterprise] =
+    await Promise.all([
+      db.query.clientsTable.findMany({
+        where: eq(clientsTable.enterpriseId, session.user.enterprise.id),
+      }),
+      db.query.professionalsTable.findMany({
+        where: eq(professionalsTable.enterpriseId, session.user.enterprise.id),
+      }),
+      db.query.appointmentsTable.findMany({
+        where: eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
+        with: {
+          client: true,
+          professional: true,
+          service: true,
+        },
+      }),
+      db.query.servicesTable.findMany({
+        where: eq(servicesTable.enterpriseId, session.user.enterprise.id),
+      }),
+      db.query.enterprisesTable.findFirst({
+        where: eq(enterprisesTable.id, session.user.enterprise.id),
+      }),
+    ]);
+
+  if (!enterprise) {
+    redirect("/enterprise-form");
+  }
 
   return (
     <SchedulingDashboard
@@ -71,10 +80,9 @@ const AppointmentsPage = async () => {
       }))}
       services={services}
       clients={clients}
-      enterpriseId={session.user.enterprise.id}
+      enterprise={enterprise}
     />
   );
 };
 
 export default AppointmentsPage;
-export const revalidate = 15;

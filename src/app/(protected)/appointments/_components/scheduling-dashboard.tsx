@@ -7,12 +7,14 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SidebarContent } from "./sidebar-content";
 import { AppointmentList } from "./appointment-list";
 import { EditAppointmentDialog } from "./edit-appointment-dialog";
+import { ConfirmationToggleButton } from "./confirmation-toggle-button";
 
 import {
   professionalsTable,
   appointmentsTable,
   servicesTable,
   clientsTable,
+  enterprisesTable,
 } from "@/db/schema";
 import AddAppointmentButton from "./add-appointment-button";
 import { Button } from "@/components/ui/button";
@@ -43,12 +45,13 @@ export function SchedulingDashboard({
   appointments,
   services,
   clients,
+  enterprise,
 }: {
   professionals: (typeof professionalsTable.$inferSelect)[];
   appointments: AppointmentWithRelations[];
   services: (typeof servicesTable.$inferSelect)[];
   clients: (typeof clientsTable.$inferSelect)[];
-  enterpriseId: string;
+  enterprise: typeof enterprisesTable.$inferSelect;
 }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selectedProfessional, setSelectedProfessional] = useState<string>("");
@@ -116,6 +119,12 @@ export function SchedulingDashboard({
           </div>
 
           <div className="flex flex-row gap-2">
+            <ConfirmationToggleButton
+              enterpriseId={enterprise.id}
+              currentConfirmation={
+                enterprise.confirmation as "manual" | "automatic"
+              }
+            />
             <AddAppointmentButton
               clients={clients}
               professionals={professionals}
