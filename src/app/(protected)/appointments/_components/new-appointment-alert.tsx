@@ -125,7 +125,7 @@ export function NewAppointmentAlert() {
       }
     };
 
-    const interval = setInterval(checkNewAppointments, 10000); // 10 segundos
+    const interval = setInterval(checkNewAppointments, 60000);
     return () => clearInterval(interval);
   }, [executeConfirm]);
 
