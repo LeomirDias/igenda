@@ -5,7 +5,12 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/db";
-import { appointmentsTable, servicesTable } from "@/db/schema";
+import {
+  appointmentsTable,
+  enterprisesTable,
+  servicesTable,
+  usersTable,
+} from "@/db/schema";
 import { actionClient } from "@/lib/next-safe-action";
 
 import { getAvailableTimes } from "../get-available-times";
@@ -40,6 +45,17 @@ export const createAppointment = actionClient
       throw new Error("Service not found");
     }
 
+    const enterprise = await db.query.enterprisesTable.findFirst({
+      where: eq(enterprisesTable.id, parsedInput.enterpriseId),
+    });
+
+    //if (!enterprise) {
+    //throw new Error("Enterprise not found");
+    //}
+
+    //const appointmentStatus =
+    //enterprise.confirmation === "automatic" ? "scheduled" : "not-confirmed";
+
     const appointmentDateTime = dayjs(parsedInput.date)
       .set("hour", parseInt(parsedInput.time.split(":")[0]))
       .set("minute", parseInt(parsedInput.time.split(":")[1]))
@@ -53,9 +69,6 @@ export const createAppointment = actionClient
       date: appointmentDateTime,
       enterpriseId: parsedInput.enterpriseId,
       appointmentPriceInCents: service.servicePriceInCents,
-      status: "scheduled",
+      status: "not-confirmed",
     });
-
-    revalidatePath("/appointments");
-    revalidatePath("/dashboard");
   });

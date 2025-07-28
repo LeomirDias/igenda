@@ -116,6 +116,7 @@ export const enterprisesTable = pgTable("enterprises", {
   register: text("register").notNull(),
   slug: text("slug").notNull().unique(),
   avatarImageURL: text("avatar_image_url"),
+  confirmation: text("confirmation").notNull().default("manual"),
   createdAT: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

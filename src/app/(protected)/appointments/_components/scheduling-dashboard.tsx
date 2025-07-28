@@ -1,42 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Clock,
-  User,
-  Filter,
-  Expand,
-  ShoppingBag,
-  Users,
-  Phone,
-  SquareUser,
-  Edit2,
-  X,
-} from "lucide-react";
+import { useState } from "react";
+import { Filter } from "lucide-react";
 import dayjs from "dayjs";
-import weekday from "dayjs/plugin/weekday";
-import isBetween from "dayjs/plugin/isBetween";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import UpsertAppointmentForm from "./upsert-appointment-form";
-import { AppointmentCard } from "./appointment-card";
 import { SidebarContent } from "./sidebar-content";
 import { AppointmentList } from "./appointment-list";
 import { EditAppointmentDialog } from "./edit-appointment-dialog";
-dayjs.extend(weekday);
-dayjs.extend(isBetween);
 
 import {
   professionalsTable,
@@ -46,6 +16,7 @@ import {
 } from "@/db/schema";
 import AddAppointmentButton from "./add-appointment-button";
 import { Button } from "@/components/ui/button";
+import { NewAppointmentAlert } from "./new-appointment-alert";
 
 // Definição do tipo AppointmentWithRelations
 export type AppointmentWithRelations = typeof appointmentsTable.$inferSelect & {
@@ -87,10 +58,6 @@ export function SchedulingDashboard({
     string | null
   >(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [stats, setStats] = useState<{
-    totalAppointments: number;
-    totalRevenue: number | null;
-  }>({ totalAppointments: 0, totalRevenue: 0 });
 
   // Filtro dos agendamentos para o dia selecionado e filtros laterais
   const filteredAppointments = appointments.filter((appointment) => {
@@ -229,6 +196,7 @@ export function SchedulingDashboard({
               services={services}
               onSuccess={() => setEditingAppointmentId(null)}
             />
+            <NewAppointmentAlert />
           </div>
         </div>
       </div>

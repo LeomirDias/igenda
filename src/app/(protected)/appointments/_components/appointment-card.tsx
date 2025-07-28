@@ -9,6 +9,7 @@ import {
   Edit2,
   X,
   Clock,
+  Check,
 } from "lucide-react";
 import dayjs from "dayjs";
 import { AppointmentWithRelations } from "./scheduling-dashboard";
@@ -25,7 +26,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { useAction } from "next-safe-action/hooks";
-import { cancelAppointment } from "@/actions/cancel-appoitment";
+import { cancelAppointment } from "@/actions/cancel-appointment";
 import { toast } from "sonner";
 
 interface AppointmentCardProps {
@@ -49,18 +50,21 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
     },
   );
 
-  // Função utilitária para determinar status e cor da badge
   const getStatusBadge = () => {
-    // status pode ser 'scheduled' ou 'canceled' (por padrão do banco)
-    // Se status for 'canceled', sempre mostrar Cancelado (vermelho)
     if (appointment.status === "canceled") {
       return {
         label: "Cancelado",
         className: "bg-red-100 border-red-500 text-red-700 border-2 rounded-xl",
       };
     }
-    // Se status for 'scheduled', verificar se a data já passou
-    // appointment.date é um Date ou string ISO
+
+    if (appointment.status === "not-confirmed") {
+      return {
+        label: "Não confirmado",
+        className:
+          "bg-orange-100 border-orange-500 text-orange-700 border-2 rounded-xl animate-bounce",
+      };
+    }
     const isPast = dayjs(appointment.date).isBefore(dayjs(), "minute");
     if (isPast) {
       return {
@@ -69,7 +73,6 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
           "bg-green-100 border-green-500 text-green-700 border-1 rounded-xl",
       };
     }
-    // Default: agendado (azul)
     return {
       label: "Agendado",
       className:
