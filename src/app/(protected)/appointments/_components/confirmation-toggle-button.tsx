@@ -82,9 +82,9 @@ export function ConfirmationToggleButton({
           </svg>
         </span>
       ) : isAutomatic ? (
-        <MonitorCheck className="mr-2" />
+        <MonitorCheck />
       ) : (
-        <Hand className="mr-2" />
+        <Hand />
       )}
       <span className="hidden lg:inline">
         {isAutomatic ? "Confirmação: Automática" : "Confirmação: Manual"}
