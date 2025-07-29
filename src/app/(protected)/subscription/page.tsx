@@ -23,9 +23,6 @@ const SubscriptionPage = async () => {
   if (!session.user.enterprise) {
     redirect("/enterprise-form");
   }
-  if (!session.user.plan) {
-    redirect("/subscription-plans");
-  }
 
   return (
     <PageContainer>

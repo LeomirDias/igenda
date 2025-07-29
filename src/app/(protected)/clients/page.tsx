@@ -17,6 +17,7 @@ import { auth } from "@/lib/auth";
 
 import AddClientButton from "./_components/add-client-button";
 import { ClientsTable } from "./_components/clients-table";
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 
 const ClientsPage = async () => {
   const session = await auth.api.getSession({
@@ -29,7 +30,7 @@ const ClientsPage = async () => {
     redirect("/enterprise-form");
   }
   if (!session.user.plan) {
-    redirect("/subscription-plans");
+    return <AccessWhitoutPlan />;
   }
 
   const clients = await db.query.clientsTable.findMany({

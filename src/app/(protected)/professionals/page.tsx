@@ -17,6 +17,7 @@ import { auth } from "@/lib/auth";
 
 import AddProfessionalButton from "./_components/add-professional-button";
 import ProfessionalCard from "./_components/profesisonal-card";
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 
 const ProfessionalsPage = async () => {
   const session = await auth.api.getSession({
@@ -29,7 +30,7 @@ const ProfessionalsPage = async () => {
     redirect("/enterprise-form");
   }
   if (!session.user.plan) {
-    redirect("/subscription-plans");
+    return <AccessWhitoutPlan />;
   }
 
   const professionals = await db.query.professionalsTable.findMany({

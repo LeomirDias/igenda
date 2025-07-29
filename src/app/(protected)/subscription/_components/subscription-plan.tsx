@@ -74,7 +74,7 @@ export default function SubscriptionPlan({
       <CardHeader className="pb-4">
         <div className="mb-2 flex items-center justify-between">
           <CardTitle className="text-secondary-foreground text-xl font-bold sm:text-2xl">
-            iGenda | Acesso total
+            iGenda Pro | Acesso total
           </CardTitle>
           {active && (
             <Badge className="text-primary bg-primary/10">Atual</Badge>
@@ -85,7 +85,7 @@ export default function SubscriptionPlan({
         </CardDescription>
         <div className="flex items-baseline">
           <span className="text-secondary-foreground text-2xl font-bold sm:text-3xl">
-            R$39,90
+            R$49,90
           </span>
           <span className="text-muted-foreground ml-1">/ mês</span>
         </div>

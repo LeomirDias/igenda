@@ -17,6 +17,7 @@ import { auth } from "@/lib/auth";
 
 import AddServiceButton from "./_components/add-service-button";
 import ServiceCard from "./_components/service-card";
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 
 const EnterpriseServicesPage = async () => {
   const session = await auth.api.getSession({
@@ -29,7 +30,7 @@ const EnterpriseServicesPage = async () => {
     redirect("/enterprise-form");
   }
   if (!session.user.plan) {
-    redirect("/subscription-plans");
+    return <AccessWhitoutPlan />;
   }
 
   const services = await db.query.servicesTable.findMany({

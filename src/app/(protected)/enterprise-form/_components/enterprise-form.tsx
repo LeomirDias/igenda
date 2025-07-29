@@ -44,10 +44,14 @@ const enterpriseFormSchema = z.object({
   phoneNumber: z
     .string()
     .trim()
-    .min(1, { message: "Telefone da empresa é obrigatório." }),
-  register: z.string().trim().min(1, {
-    message: "CPF do responsável ou CNPJ da empresa é obrigatório.",
-  }),
+    .min(11, { message: "Telefone da empresa é obrigatório." }),
+  register: z
+    .string()
+    .trim()
+    .min(11, {
+      message: "CPF do responsável ou CNPJ da empresa é obrigatório.",
+    })
+    .max(14, { message: "CNPJ deve conter no máximo 14 caracteres." }),
   instagramURL: z
     .string()
     .trim()
@@ -62,11 +66,9 @@ const enterpriseFormSchema = z.object({
   number: z.string().trim().min(1, { message: "Número é obrigatório." }),
   complement: z.string().trim().optional(),
   city: z.string().trim().min(1, { message: "Cidade é obrigatória." }),
-  state: z
-    .string()
-    .trim()
-    .min(2, { message: "Estado é obrigatório e deve ter 2 caracteres." })
-    .max(2, { message: "Estado deve ter 2 caracteres." }),
+  state: z.string().trim().min(2, {
+    message: "Estado é obrigatório e deve ter no mínimo 2 caracteres.",
+  }),
 });
 
 const EnterpriseForm = () => {
@@ -173,24 +175,24 @@ const EnterpriseForm = () => {
         data.state,
       );
 
-      // Se houver um arquivo de avatar, faz o upload após criar a empresa
+      // Se houver um arquivo de avatar, faz o upload de forma assíncrona
       if (avatarFile) {
         setIsUploadingAvatar(true);
-        try {
-          const formData = new FormData();
-          formData.append("photo", avatarFile);
-          await uploadEnterpriseProfilePicture(formData, result.enterpriseId);
-        } catch (error) {
-          console.error("Erro ao fazer upload da imagem:", error);
-          toast.error(
-            "Erro ao fazer upload da imagem. A empresa foi criada, mas a imagem não foi salva.",
-          );
-        } finally {
-          setIsUploadingAvatar(false);
-        }
+        const formData = new FormData();
+        formData.append("photo", avatarFile);
+        uploadEnterpriseProfilePicture(formData, result.enterpriseId)
+          .catch((error) => {
+            console.error("Erro ao fazer upload da imagem:", error);
+            toast.error(
+              "Erro ao fazer upload da imagem. A empresa foi criada, mas a imagem não foi salva.",
+            );
+          })
+          .finally(() => {
+            setIsUploadingAvatar(false);
+          });
       }
 
-      router.push(result.redirect);
+      router.push("/subscription");
     } catch (error) {
       if (isRedirectError(error)) {
         return;

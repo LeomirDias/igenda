@@ -13,6 +13,7 @@ import {
 import { auth } from "@/lib/auth";
 
 import { SchedulingDashboard } from "./_components/scheduling-dashboard";
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 
 const AppointmentsPage = async () => {
   const session = await auth.api.getSession({
@@ -25,7 +26,7 @@ const AppointmentsPage = async () => {
     redirect("/enterprise-form");
   }
   if (!session.user.plan) {
-    redirect("/subscription-plans");
+    return <AccessWhitoutPlan />;
   }
 
   const [clients, professionals, appointments, services, enterprise] =

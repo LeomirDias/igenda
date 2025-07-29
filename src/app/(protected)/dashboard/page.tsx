@@ -20,6 +20,7 @@ import TopProfessionals from "./_components/top-professionals";
 import TopServices from "./_components/top-services";
 import { getDailyBillingData } from "@/data/get-dashboard";
 import { BillingChart } from "./_components/billing-chart";
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 
 interface DashboardPageProps {
   searchParams: Promise<{
@@ -39,7 +40,7 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     redirect("/enterprise-form");
   }
   if (!session.user.plan) {
-    redirect("/subscription-plans");
+    return <AccessWhitoutPlan />;
   }
 
   const { from, to } = await searchParams;
