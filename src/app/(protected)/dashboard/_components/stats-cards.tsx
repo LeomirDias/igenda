@@ -1,12 +1,9 @@
 import {
   CalendarDays,
-  CalendarIcon,
   DollarSignIcon,
   TicketX,
-  UserIcon,
   UserPlus2,
   UsersIcon,
-  XCircleIcon,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

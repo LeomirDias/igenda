@@ -5,7 +5,6 @@ import { auth } from "@/lib/auth";
 
 import ForgotPasswordForm from "../_components/forgot-password-form";
 import Image from "next/image";
-import Link from "next/link";
 
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({

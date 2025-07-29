@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import Image from "next/image";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { auth } from "@/lib/auth";
 
 import LoginForm from "./_components/login-form ";
 import SignUpForm from "./_components/sign-up-form";
@@ -19,9 +16,7 @@ const AuthenticationPage = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4">
-      {/* Container centralizado */}
       <div className="relative z-10 flex w-full max-w-md flex-col items-center">
-        {/* Logo */}
         <div className="mb-8 flex justify-center">
           <Image
             src="/LogoiGenda.png"

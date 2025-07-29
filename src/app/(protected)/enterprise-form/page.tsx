@@ -22,9 +22,6 @@ const EnterpriseFormPage = async () => {
   if (session.user.enterprise) {
     redirect("/dashboard");
   }
-  // if (!session.user.plan) {
-  //     redirect("/subscription-plans");
-  // }
 
   return (
     <Dialog open>

@@ -9,7 +9,6 @@ import {
   Edit2,
   X,
   Clock,
-  Check,
 } from "lucide-react";
 import dayjs from "dayjs";
 import { AppointmentWithRelations } from "./scheduling-dashboard";

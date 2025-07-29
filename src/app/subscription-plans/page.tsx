@@ -1,13 +1,3 @@
-import {
-  PageActions,
-  PageContainer,
-  PageContent,
-  PageDescription,
-  PageFooter,
-  PageHeader,
-  PageHeaderContent,
-  PageTitle,
-} from "@/components/ui/page-container";
 import SubscriptionPlan from "@/app/(protected)/subscription/_components/subscription-plan";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";

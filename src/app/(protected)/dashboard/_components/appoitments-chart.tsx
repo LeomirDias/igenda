@@ -2,7 +2,7 @@
 
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
-import { Calendar, CalendarDays } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {

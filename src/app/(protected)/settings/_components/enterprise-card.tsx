@@ -37,20 +37,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { enterprisesTable } from "@/db/schema";
 
-// const formSchema = z.object({
-//     name: z.string().trim().min(1, { message: "Nome da empresa é obrigatório." }),
-//     specialty: z.string().trim().min(1, { message: "Área de atuação é obrigatória." }),
-//     phoneNumber: z.string().trim().min(1, { message: "Telefone da empresa é obrigatório." }),
-//     register: z.string().trim().min(1, { message: "Registro da empresa é obrigatório." }),
-//     instagramURL: z.string().trim().url({ message: "URL do Instagram inválida." }),
-//     cep: z.string().trim().min(1, { message: "CEP da empresa é obrigatório." }),
-//     address: z.string().trim().min(1, { message: "Endereço da empresa é obrigatório." }),
-//     number: z.string().trim().min(1, { message: "Número da empresa é obrigatório." }),
-//     complement: z.string().trim().optional(),
-//     city: z.string().trim().min(1, { message: "Cidade da empresa é obrigatória." }),
-//     state: z.string().trim().min(1, { message: "Estado da empresa é obrigatório." }),
-// })
-
 interface EnterpriseCardProps {
   enterprise?: typeof enterprisesTable.$inferSelect;
 }

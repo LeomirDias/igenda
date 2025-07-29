@@ -34,7 +34,6 @@ import { PatternFormat } from "react-number-format";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import { enterpriseSpecialty } from "../_constants";
-import { Span } from "next/dist/trace";
 
 const enterpriseFormSchema = z.object({
   name: z.string().trim().min(1, { message: "Nome da empresa é obrigatório." }),

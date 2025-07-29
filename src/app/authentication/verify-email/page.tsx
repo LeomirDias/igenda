@@ -4,8 +4,6 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
 import EmailVerification from "./components/email-verification";
-import Image from "next/image";
-import Link from "next/link";
 
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({

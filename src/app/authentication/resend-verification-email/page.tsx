@@ -5,7 +5,6 @@ import { auth } from "@/lib/auth";
 
 import ResendEmailVerificationForm from "./components/resend-email-verifiy-form";
 import Image from "next/image";
-import Link from "next/link";
 
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({
