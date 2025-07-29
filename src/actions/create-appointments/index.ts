@@ -2,14 +2,12 @@
 
 import dayjs from "dayjs";
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 
 import { db } from "@/db";
 import {
   appointmentsTable,
   enterprisesTable,
   servicesTable,
-  usersTable,
 } from "@/db/schema";
 import { actionClient } from "@/lib/next-safe-action";
 
@@ -36,7 +34,6 @@ export const createAppointment = actionClient
       throw new Error("Time not available");
     }
 
-    // Busca o preço do serviço selecionado
     const service = await db.query.servicesTable.findFirst({
       where: eq(servicesTable.id, parsedInput.serviceId),
     });
@@ -48,13 +45,6 @@ export const createAppointment = actionClient
     const enterprise = await db.query.enterprisesTable.findFirst({
       where: eq(enterprisesTable.id, parsedInput.enterpriseId),
     });
-
-    //if (!enterprise) {
-    //throw new Error("Enterprise not found");
-    //}
-
-    //const appointmentStatus =
-    //enterprise.confirmation === "automatic" ? "scheduled" : "not-confirmed";
 
     const appointmentDateTime = dayjs(parsedInput.date)
       .set("hour", parseInt(parsedInput.time.split(":")[0]))

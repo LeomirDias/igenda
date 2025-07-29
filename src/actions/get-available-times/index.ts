@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { appointmentsTable, professionalsTable } from "@/db/schema";
+import { professionalsTable } from "@/db/schema";
 import { generateTimeSlots } from "@/helpers/time";
 import { actionClient } from "@/lib/next-safe-action";
 
