@@ -19,7 +19,7 @@ export const LauchingSoon = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.push("/subscription");
+      router.push("/dashboard");
     }, 10000);
 
     return () => clearTimeout(timeout);

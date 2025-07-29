@@ -12,7 +12,7 @@ export const AccessWhitoutPlan = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.push("/subscription");
+      router.push("/dashboard");
     }, 8000);
 
     return () => clearTimeout(timeout);
@@ -45,7 +45,7 @@ export const AccessWhitoutPlan = () => {
         </div>
 
         <div className="flex justify-center">
-          <a href="/subscription">
+          <a href="/dashboard">
             <Button variant="default">
               <MousePointerClick />
               Redirecionar agora
