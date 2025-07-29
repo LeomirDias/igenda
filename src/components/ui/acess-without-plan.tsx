@@ -49,7 +49,7 @@ export const AccessWhitoutPlan = () => {
         <div className="flex justify-center">
           <a href="/subscription">
             <Button variant="default">
-              <SmilePlus className="mr-1" />
+              <SmilePlus />
               Assinar agora
             </Button>
           </a>

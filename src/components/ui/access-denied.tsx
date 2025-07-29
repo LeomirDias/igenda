@@ -47,7 +47,7 @@ export const AccessWhitoutPlan = () => {
         <div className="flex justify-center">
           <a href="/subscription">
             <Button variant="default">
-              <MousePointerClick className="mr-1" />
+              <MousePointerClick />
               Redirecionar agora
             </Button>
           </a>

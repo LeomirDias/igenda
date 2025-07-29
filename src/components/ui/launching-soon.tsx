@@ -56,7 +56,7 @@ export const LauchingSoon = () => {
         <div className="flex justify-center">
           <a href="/dashboard">
             <Button variant="default">
-              <MousePointerClick className="mr-1" />
+              <MousePointerClick />
               Redirecionar agora
             </Button>
           </a>
