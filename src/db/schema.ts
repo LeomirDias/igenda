@@ -69,6 +69,7 @@ export const verificationsTable = pgTable("verifications", {
 //Users table relationships
 export const usersTableRelations = relations(usersTable, ({ many }) => ({
   usersToEnterprises: many(usersToEnterprisesTable),
+  ownedEnterprises: many(enterprisesTable),
 }));
 
 //Mid Table for relation N-N Users & Enterprises
@@ -117,6 +118,9 @@ export const enterprisesTable = pgTable("enterprises", {
   slug: text("slug").notNull().unique(),
   avatarImageURL: text("avatar_image_url"),
   confirmation: text("confirmation").notNull().default("manual"),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
   createdAT: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -126,11 +130,15 @@ export const enterprisesTable = pgTable("enterprises", {
 //Enteprises tables relationships whit professionals, clients, appointments and users
 export const enterpriseTablesRelations = relations(
   enterprisesTable,
-  ({ many }) => ({
+  ({ many, one }) => ({
     professionals: many(professionalsTable),
     clients: many(clientsTable),
     appointments: many(appointmentsTable),
     usersToEnterprises: many(usersToEnterprisesTable),
+    owner: one(usersTable, {
+      fields: [enterprisesTable.ownerId],
+      references: [usersTable.id],
+    }),
   }),
 );
 
