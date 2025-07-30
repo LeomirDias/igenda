@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "iGenda | Autenticação",
+  title: "iGenda - Autenticação",
 };
 
 export default function AuthenticationLayout({
