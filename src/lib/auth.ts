@@ -2,18 +2,18 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { customSession } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
+import { Resend } from "resend";
 
+import ForgotPasswordEmail from "@/components/emails/reset-password";
+import VerifyEmail from "@/components/emails/verify-email";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { usersTable } from "@/db/schema";
-import { Resend } from "resend";
-import ForgotPasswordEmail from "@/components/emails/reset-password";
-import VerifyEmail from "@/components/emails/verify-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
 
 export const auth = betterAuth({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_APP_URL,
   basePath: "/api/auth",
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -23,15 +23,15 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       resend.emails.send({
-        from: "onboarding@resend.dev", //Em produção: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`
+        from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
         to: user.email,
-        subject: "Verifique seu e-mail",
+        subject: "Verifique seu e-mail - iGenda App",
         react: VerifyEmail({ username: user.name, verifyUrl: url }),
       });
     },
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
-    expiresIn: 3600, // 1 hour
+    expiresIn: 86400, // 1 day
   },
   socialProviders: {
     google: {
@@ -61,10 +61,10 @@ export const auth = betterAuth({
           plan: userData?.plan,
           enterprise: enterprise?.enterpriseId
             ? {
-                id: enterprise?.enterpriseId,
-                name: enterprise?.enterprise?.name,
-                avatarImageURL: enterprise?.enterprise?.avatarImageURL,
-              }
+              id: enterprise?.enterpriseId,
+              name: enterprise?.enterprise?.name,
+              avatarImageURL: enterprise?.enterprise?.avatarImageURL,
+            }
             : undefined,
         },
         session,
@@ -104,9 +104,9 @@ export const auth = betterAuth({
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
       resend.emails.send({
-        from: "onboarding@resend.dev", //Em produção: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`
+        from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
         to: user.email,
-        subject: "Redefina sua senha - iGenda",
+        subject: "Redefina sua senha - iGenda App",
         react: ForgotPasswordEmail({
           username: user.name,
           resetUrl: url,

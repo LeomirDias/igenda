@@ -1,15 +1,15 @@
-import * as React from "react";
 import {
-  Html,
-  Head,
   Body,
-  Container,
-  Section,
-  Text,
   Button,
+  Container,
+  Head,
   Hr,
+  Html,
+  Section,
   Tailwind,
+  Text,
 } from "@react-email/components";
+import * as React from "react";
 
 interface VerifyEmailProps {
   username: string;

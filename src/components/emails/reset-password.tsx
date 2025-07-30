@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Body,
   Button,
@@ -8,9 +7,10 @@ import {
   Html,
   Preview,
   Section,
-  Text,
   Tailwind,
+  Text,
 } from "@react-email/components";
+import * as React from "react";
 
 interface ForgotPasswordEmailProps {
   username: string;
@@ -22,7 +22,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
   const { username, resetUrl, userEmail } = props;
 
   return (
-    <Html lang="en" dir="ltr">
+    <Html lang="pt-BR" dir="ltr">
       <Tailwind>
         <Head />
         <Preview>Redefina sua senha - Ação necessária</Preview>
@@ -41,7 +41,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
             {/* Main Content */}
             <Section className="mb-[32px]">
               <Text className="m-0 mb-[16px] text-[16px] leading-[24px] text-gray-700">
-                Olá, {username}
+                Olá, {username}!
               </Text>
               <Text className="m-0 mb-[16px] text-[16px] leading-[24px] text-gray-700">
                 Recebemos uma solicitação para redefinir a senha da sua conta
