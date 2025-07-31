@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 import {
   PageActions,
   PageContainer,
@@ -11,16 +12,15 @@ import {
   PageTitle,
 } from "@/components/ui/page-container";
 import getDashboard from "@/data/get-dashboard";
+import { getDailyBillingData } from "@/data/get-dashboard";
 import { auth } from "@/lib/auth";
 
 import { AppointmentsChart } from "./_components/appoitments-chart";
+import { BillingChart } from "./_components/billing-chart";
 import { DatePicker } from "./_components/date-picker";
 import StatsCards from "./_components/stats-cards";
 import TopProfessionals from "./_components/top-professionals";
 import TopServices from "./_components/top-services";
-import { getDailyBillingData } from "@/data/get-dashboard";
-import { BillingChart } from "./_components/billing-chart";
-import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 
 interface DashboardPageProps {
   searchParams: Promise<{

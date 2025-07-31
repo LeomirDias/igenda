@@ -52,7 +52,7 @@ export const POST = async (request: Request) => {
                 .set({
                     stripeSubscriptionId: subscription,
                     stripeCustomerId: customer,
-                    plan: "essential",
+                    plan: "basic",
                 })
                 .where(eq(usersTable.id, userId));
             break;

@@ -1,11 +1,11 @@
 "use client";
 
+import { Frown, Link, SmilePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { Card } from "./card";
-import { Frown, SmilePlus } from "lucide-react";
 import { Button } from "./button";
+import { Card } from "./card";
 
 export const AccessWhitoutPlan = () => {
   const router = useRouter();
@@ -47,12 +47,12 @@ export const AccessWhitoutPlan = () => {
         </div>
 
         <div className="flex justify-center">
-          <a href="/subscription">
+          <Link href="/subscription">
             <Button variant="default">
               <SmilePlus />
               Assinar agora
             </Button>
-          </a>
+          </Link>
         </div>
       </Card>
 

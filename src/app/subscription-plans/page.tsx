@@ -1,8 +1,9 @@
+import { headers } from "next/headers";
+import Image from "next/image";
+import { redirect } from "next/navigation";
+
 import SubscriptionPlan from "@/app/(protected)/subscription/_components/subscription-plan";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import Image from "next/image";
 
 const SubscriptionPage = async () => {
   const session = await auth.api.getSession({

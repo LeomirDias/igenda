@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -30,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PatternFormat } from "react-number-format";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import { enterpriseSpecialty } from "../_constants";

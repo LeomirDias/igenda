@@ -51,12 +51,19 @@ export default function SubscriptionPlan({
   });
 
   const features = [
-    "Cadastro de profissionais",
+    "Cadastro de profissionais ilimitados",
+    "Telas de acesso para usuários",
+    "Cadastro de clientes ilimitados",
     "Agendamentos ilimitados",
-    "Métricas de agendamento, faturamento e mais",
-    "Cadastro de clientes",
     "Agendamento via link para clientes",
-    "Suporte via e-mail e chat",
+    "Link de agendamento personalizado",
+    "Gestão de estoque de produtos e equipamentos",
+    "Métricas de agendamento, faturamento e mais",
+    "Integração com WhatsApp",
+    "Mensagens automáticas para clientes",
+    "Cadastro de mensagens promocionais",
+    "Suporte via 24/7 via WhatsApp",
+    "Acesso integral a todas as novidades e atualizações",
   ];
 
   const handleSubscribeClick = () => {
@@ -74,10 +81,10 @@ export default function SubscriptionPlan({
       <CardHeader className="pb-4">
         <div className="mb-2 flex items-center justify-between">
           <CardTitle className="text-secondary-foreground text-xl font-bold sm:text-2xl">
-            iGenda Pro | Acesso total
+            Assinatura iGenda | Acesso total
           </CardTitle>
           {active && (
-            <Badge className="text-primary bg-primary/10">Atual</Badge>
+            <Badge className="text-primary bg-primary/10">Assinatura ativa</Badge>
           )}
         </div>
         <CardDescription className="text-muted-foreground mb-4 text-sm">
@@ -85,7 +92,7 @@ export default function SubscriptionPlan({
         </CardDescription>
         <div className="flex items-baseline">
           <span className="text-secondary-foreground text-2xl font-bold sm:text-3xl">
-            R$49,90
+            R$39,90
           </span>
           <span className="text-muted-foreground ml-1">/ mês</span>
         </div>
@@ -121,10 +128,6 @@ export default function SubscriptionPlan({
             "Assinar agora"
           )}
         </Button>
-        <p className="text-primary text-xs sm:text-sm">
-          Faça sua assinatura e teste gratuitamente por 14 dias sem cadastro
-          cartão de crédito!
-        </p>
       </CardFooter>
     </Card>
   );
