@@ -1,10 +1,11 @@
 "use server";
 
-import { actionClient } from "@/lib/next-safe-action";
-import { db } from "@/db";
-import { clientsTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+
+import { db } from "@/db";
+import { clientsTable } from "@/db/schema";
+import { actionClient } from "@/lib/next-safe-action";
 
 const validatePhoneSchema = z.object({
   phoneNumber: z.string().min(1, { message: "Telefone é obrigatório" }),

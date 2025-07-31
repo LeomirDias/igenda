@@ -60,19 +60,22 @@ const ClientLoginForm = () => {
     onSuccess: async ({ data }) => {
       if (data?.success && data.client) {
         try {
+          // Normaliza o telefone para formato internacional
+          const normalizedPhone = data.client.phoneNumber.replace(/\D/g, "");
+          const phoneNumberIntl = normalizedPhone.startsWith("55") ? normalizedPhone : `55${normalizedPhone}`;
           // Gera o código de verificação
           const result = await generateCode({
-            phoneNumber: data.client.phoneNumber,
+            phoneNumber: phoneNumberIntl,
             clientData: {
               name: data.client.name,
-              phoneNumber: data.client.phoneNumber,
+              phoneNumber: phoneNumberIntl,
             },
           });
 
           if (result?.data?.success) {
             setClientData({
               name: data.client.name,
-              phoneNumber: data.client.phoneNumber,
+              phoneNumber: phoneNumberIntl,
             });
             setShowVerification(true);
             toast.success("Código de verificação enviado para seu Whatsapp!");
@@ -90,7 +93,7 @@ const ClientLoginForm = () => {
       } else {
         toast.error(
           data?.message ||
-            "Erro ao validar telefone. Por favor, tente novamente.",
+          "Erro ao validar telefone. Por favor, tente novamente.",
         );
       }
     },

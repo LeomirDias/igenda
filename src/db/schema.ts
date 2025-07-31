@@ -369,3 +369,13 @@ export const prductsTableRelations = relations(productsTable, ({ one }) => ({
     references: [enterprisesTable.id],
   }),
 }));
+
+// Table to store client verification codes (WhatsApp)
+export const verificationCodesTable = pgTable("verification_codes", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  phoneNumber: text("phone_number").notNull(),
+  code: text("code").notNull(),
+  clientData: text("client_data"), // JSON string
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

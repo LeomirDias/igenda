@@ -4,11 +4,7 @@ import dayjs from "dayjs";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import {
-  appointmentsTable,
-  enterprisesTable,
-  servicesTable,
-} from "@/db/schema";
+import { appointmentsTable, servicesTable } from "@/db/schema";
 import { actionClient } from "@/lib/next-safe-action";
 
 import { getAvailableTimes } from "../get-available-times";
@@ -41,10 +37,6 @@ export const createAppointment = actionClient
     if (!service) {
       throw new Error("Service not found");
     }
-
-    const enterprise = await db.query.enterprisesTable.findFirst({
-      where: eq(enterprisesTable.id, parsedInput.enterpriseId),
-    });
 
     const appointmentDateTime = dayjs(parsedInput.date)
       .set("hour", parseInt(parsedInput.time.split(":")[0]))

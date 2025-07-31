@@ -1,29 +1,46 @@
 "use server";
 
-import { actionClient } from "@/lib/next-safe-action";
-import { db } from "@/db";
-import { clientsTable, enterprisesTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { verificationCodes, verifyCodeSchema, VerifyResponse } from "./types";
-import { upsertClientSession } from "../upsert-client-session";
 import { cookies } from "next/headers";
+
+import { db } from "@/db";
+import { clientsTable, enterprisesTable, verificationCodesTable } from "@/db/schema";
+import { actionClient } from "@/lib/next-safe-action";
+
+import { upsertClientSession } from "../upsert-client-session";
+import { verifyCodeSchema, VerifyResponse } from "./types";
 
 export const verifyCode = actionClient
   .schema(verifyCodeSchema)
   .action(async ({ parsedInput }): Promise<VerifyResponse> => {
     try {
-      const storedData = verificationCodes.get(parsedInput.phoneNumber);
+      // Buscar código no banco
+      console.log("Buscando código para:", parsedInput.phoneNumber);
+      const codeRow = await db.query.verificationCodesTable.findFirst({
+        where: eq(verificationCodesTable.phoneNumber, parsedInput.phoneNumber),
+      });
 
-      if (!storedData) {
+      if (!codeRow) {
         return {
           success: false,
           message: "Nenhum código de verificação encontrado",
         };
       }
 
-      if (storedData.code !== parsedInput.code) {
+      if (codeRow.code !== parsedInput.code) {
         return { success: false, message: "Código de verificação inválido" };
       }
+
+      if (codeRow.expiresAt < new Date()) {
+        // Código expirado
+        await db.delete(verificationCodesTable).where(
+          eq(verificationCodesTable.phoneNumber, parsedInput.phoneNumber)
+        );
+        return { success: false, message: "Código expirado, solicite um novo." };
+      }
+
+      // Parse dos dados do cliente
+      const clientData = JSON.parse(codeRow.clientData ?? '{}');
 
       // Get enterprise by slug
       const enterprise = await db.query.enterprisesTable.findFirst({
@@ -38,8 +55,8 @@ export const verifyCode = actionClient
       const [client] = await db
         .insert(clientsTable)
         .values({
-          name: storedData.clientData.name,
-          phoneNumber: storedData.clientData.phoneNumber,
+          name: String(clientData.name ?? ''),
+          phoneNumber: String(clientData.phoneNumber ?? ''),
           enterpriseId: enterprise.id,
         })
         .returning();
@@ -67,8 +84,10 @@ export const verifyCode = actionClient
         expires: sessionResult.data.expiresAt,
       });
 
-      // Clean up verification code
-      verificationCodes.delete(parsedInput.phoneNumber);
+      // Remover código após uso
+      await db.delete(verificationCodesTable).where(
+        eq(verificationCodesTable.phoneNumber, parsedInput.phoneNumber)
+      );
 
       return { success: true, client };
     } catch (error) {

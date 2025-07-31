@@ -70,12 +70,18 @@ const VerificationForm = ({ clientData, isLogin }: VerificationFormProps) => {
         return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
     };
 
+    const normalizedPhone = clientData.phoneNumber.replace(/\D/g, "");
+    const phoneNumberIntl = normalizedPhone.startsWith("55") ? normalizedPhone : `55${normalizedPhone}`;
+
     const handleResendCode = async () => {
         try {
             setIsResending(true);
             const result = await generateCode({
-                phoneNumber: clientData.phoneNumber,
-                clientData: clientData,
+                phoneNumber: phoneNumberIntl,
+                clientData: {
+                    ...clientData,
+                    phoneNumber: phoneNumberIntl,
+                },
             });
 
             if (result?.data?.success) {
@@ -167,7 +173,7 @@ const VerificationForm = ({ clientData, isLogin }: VerificationFormProps) => {
 
     const onSubmit = (values: z.infer<typeof verificationSchema>) => {
         verifyCodeAction.execute({
-            phoneNumber: clientData.phoneNumber,
+            phoneNumber: phoneNumberIntl,
             code: values.code,
             enterpriseSlug,
         });

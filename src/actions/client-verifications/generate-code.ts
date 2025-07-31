@@ -1,14 +1,16 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+
+import { db } from "@/db";
+import { clientsTable, enterprisesTable, verificationCodesTable } from "@/db/schema";
 import { actionClient } from "@/lib/next-safe-action";
+import { sendWhatsappMessage } from "@/lib/zapi-service";
+
 import {
   generateCodeSchema,
-  verificationCodes,
   VerificationResponse,
 } from "./types";
-import { db } from "@/db";
-import { clientsTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
 
 // Generate random 6-digit code
 const generateVerificationCode = () => {
@@ -35,25 +37,50 @@ export const generateCode = actionClient
 
       // Generate verification code
       const verificationCode = generateVerificationCode();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutos
 
-      // Store the code and client data
-      verificationCodes.set(parsedInput.phoneNumber, {
+      // Remove any previous code for this phone
+      await db.delete(verificationCodesTable).where(
+        eq(verificationCodesTable.phoneNumber, parsedInput.phoneNumber)
+      );
+
+      // Store the code and client data in the database
+      await db.insert(verificationCodesTable).values({
+        phoneNumber: parsedInput.phoneNumber,
         code: verificationCode,
-        clientData: parsedInput.clientData,
+        clientData: JSON.stringify(parsedInput.clientData),
+        expiresAt,
       });
 
-      // Delete verification code after 5 minutes
-      setTimeout(
-        () => {
-          verificationCodes.delete(parsedInput.phoneNumber);
-        },
-        1000 * 60 * 5,
-      );
+      // Buscar nome da empresa pelo slug
+      const enterpriseSlug = parsedInput.clientData?.enterpriseSlug;
+      let enterpriseName = "sua empresa";
+      if (enterpriseSlug) {
+        const enterprise = await db
+          .select()
+          .from(enterprisesTable)
+          .where(eq(enterprisesTable.slug, enterpriseSlug))
+          .limit(1);
+        if (enterprise.length > 0) {
+          enterpriseName = enterprise[0].name;
+        }
+      }
 
-      // In production, send via WhatsApp. For now, log to console
-      console.log(
-        `Verification code for ${parsedInput.phoneNumber}: ${verificationCode}`,
+      // Enviar mensagem personalizada
+      await sendWhatsappMessage(
+        parsedInput.phoneNumber,
+        `Olá, ${parsedInput.clientData?.name || ""}!
+Esta é uma mensagem automática da iGenda de ${enterpriseName}. 💚
+
+Seu código de verificação para acesso ao iGenda é: *${verificationCode}*
+
+⚠️ Atenção: 
+
+O código é válido por 5 minutos. ⏳ 
+
+Caso não tenha solicitado, desconsidere esta mensagem.`
       );
+      console.log("Código enviado para:", parsedInput.phoneNumber);
 
       return { success: true, message: "Verification code sent" };
     } catch (error) {

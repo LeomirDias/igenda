@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { appointmentsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+
 import { UpdateAppoitmentSchema } from "./schema";
 
 export const confirmAppointment = actionClient
