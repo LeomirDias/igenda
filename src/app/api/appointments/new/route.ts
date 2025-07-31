@@ -1,5 +1,6 @@
-import { db } from "@/db";
 import { NextResponse } from "next/server";
+
+import { db } from "@/db";
 
 export async function GET() {
   const newAppointment = await db.query.appointmentsTable.findFirst({
@@ -29,33 +30,33 @@ export async function GET() {
     createdAT: newAppointment.createdAT.toISOString(),
     client: newAppointment.client
       ? {
-          id: newAppointment.client.id,
-          name: newAppointment.client.name,
-          phoneNumber: newAppointment.client.phoneNumber,
-        }
+        id: newAppointment.client.id,
+        name: newAppointment.client.name,
+        phoneNumber: newAppointment.client.phoneNumber,
+      }
       : null,
     professional: newAppointment.professional
       ? {
-          id: newAppointment.professional.id,
-          name: newAppointment.professional.name,
-          specialty: newAppointment.professional.specialty,
-        }
+        id: newAppointment.professional.id,
+        name: newAppointment.professional.name,
+        specialty: newAppointment.professional.specialty,
+      }
       : null,
     service: newAppointment.service
       ? {
-          id: newAppointment.service.id,
-          name: newAppointment.service.name,
-          servicePriceInCents: newAppointment.service.servicePriceInCents,
-          durationInMinutes: newAppointment.service.durationInMinutes,
-        }
+        id: newAppointment.service.id,
+        name: newAppointment.service.name,
+        servicePriceInCents: newAppointment.service.servicePriceInCents,
+        durationInMinutes: newAppointment.service.durationInMinutes,
+      }
       : null,
     enterprise: newAppointment.enterprise
       ? {
-          id: newAppointment.enterprise.id,
-          name: newAppointment.enterprise.name,
-          slug: newAppointment.enterprise.slug,
-          confirmation: newAppointment.enterprise.confirmation,
-        }
+        id: newAppointment.enterprise.id,
+        name: newAppointment.enterprise.name,
+        slug: newAppointment.enterprise.slug,
+        confirmation: newAppointment.enterprise.confirmation,
+      }
       : null,
   };
 

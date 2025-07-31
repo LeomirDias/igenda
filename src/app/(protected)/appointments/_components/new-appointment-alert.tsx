@@ -1,8 +1,25 @@
 "use client";
 
+import "dayjs/locale/pt-br";
+
+import dayjs from "dayjs";
+import {
+  AlertCircle,
+  CalendarIcon,
+  Clock,
+  CreditCard,
+  Phone,
+  Tags,
+  User,
+} from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { cancelAppointment } from "@/actions/cancel-appointment";
+import { confirmAppointment } from "@/actions/confirm-appointment";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -11,22 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  CalendarIcon,
-  Clock,
-  User,
-  CreditCard,
-  AlertCircle,
-  Phone,
-  Tags,
-} from "lucide-react";
-import { useAction } from "next-safe-action/hooks";
-import { confirmAppointment } from "@/actions/confirm-appointment";
-import { cancelAppointment } from "@/actions/cancel-appointment";
 import { formatCurrencyInCents } from "@/helpers/currency";
-import dayjs from "dayjs";
-import "dayjs/locale/pt-br";
 
 dayjs.locale("pt-br");
 
@@ -74,7 +76,7 @@ export function NewAppointmentAlert() {
       onError: (error) => {
         toast.error(
           "Erro ao confirmar agendamento: " +
-            (error.error?.serverError || "Erro desconhecido"),
+          (error.error?.serverError || "Erro desconhecido"),
         );
       },
     },
@@ -91,7 +93,7 @@ export function NewAppointmentAlert() {
       onError: (error) => {
         toast.error(
           "Erro ao cancelar agendamento: " +
-            (error.error?.serverError || "Erro desconhecido"),
+          (error.error?.serverError || "Erro desconhecido"),
         );
       },
     },
