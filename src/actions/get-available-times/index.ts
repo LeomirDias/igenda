@@ -26,7 +26,7 @@ export const getAvailableTimes = actionClient
       where: eq(professionalsTable.id, parsedInput.professionalId),
     });
     if (!professional) {
-      throw new Error("Médico não encontrado");
+      throw new Error("Profissional não encontrado");
     }
     const selectedDayOfWeek = dayjs(parsedInput.date).day();
     const professionalIsAvailable =
@@ -70,7 +70,7 @@ export const getAvailableTimes = actionClient
 
       return (
         date.format("HH:mm:ss") >=
-          professionalAvailableFrom.format("HH:mm:ss") &&
+        professionalAvailableFrom.format("HH:mm:ss") &&
         date.format("HH:mm:ss") <= professionalAvailableTo.format("HH:mm:ss")
       );
     });
