@@ -14,11 +14,9 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -42,21 +40,32 @@ const clientRegisterSchema = z.object({
     .string()
     .trim()
     .length(11, { message: "Telefone deve ter 11 dígitos (DDD + número, ex: 11999999999)" }),
+  acceptTerms: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar os termos de uso e privacidade",
+  }),
 });
 
 type ClientFormData = z.infer<typeof clientRegisterSchema>;
+
+// Tipo para os dados que serão enviados para a action
+type ClientDataForAction = {
+  name: string;
+  phoneNumber: string;
+  enterpriseSlug: string;
+};
 
 const ClientSignUpForm = () => {
   const params = useParams();
   const enterpriseSlug = params?.slug as string;
   const [showVerification, setShowVerification] = useState(false);
-  const [clientData, setClientData] = useState<ClientFormData | null>(null);
+  const [clientData, setClientData] = useState<ClientDataForAction | null>(null);
 
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientRegisterSchema),
     defaultValues: {
       name: "",
       phoneNumber: "",
+      acceptTerms: false,
     },
   });
 
@@ -81,17 +90,16 @@ const ClientSignUpForm = () => {
   });
 
   const onSubmit = (values: ClientFormData) => {
-    setClientData({
-      ...values,
-      phoneNumber: values.phoneNumber.replace(/\D/g, ""),
-    });
-    generateCodeAction.execute({
+    const formattedValues: ClientDataForAction = {
+      name: values.name,
       phoneNumber: `55${values.phoneNumber.replace(/\D/g, "")}`,
-      clientData: {
-        ...values,
-        phoneNumber: `55${values.phoneNumber.replace(/\D/g, "")}`,
-        enterpriseSlug,
-      },
+      enterpriseSlug,
+    };
+
+    setClientData(formattedValues);
+    generateCodeAction.execute({
+      phoneNumber: formattedValues.phoneNumber,
+      clientData: formattedValues,
     });
   };
 
@@ -103,10 +111,6 @@ const ClientSignUpForm = () => {
     <Card>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <CardHeader>
-            <CardTitle>Cadastro</CardTitle>
-            <CardDescription>Crie uma conta para continuar.</CardDescription>
-          </CardHeader>
           <CardContent className="space-y-4">
             <FormField
               control={form.control}
@@ -147,12 +151,34 @@ const ClientSignUpForm = () => {
                 </FormItem>
               )}
             />
+
+            <div className="space-y-3">
+              <FormField
+                control={form.control}
+                name="acceptTerms"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center space-x-1">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="text-sm font-normal">
+                        Aceito os termos de uso e a política de privacidade
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
           </CardContent>
           <CardFooter>
             <Button
               type="submit"
               className="w-full"
-              disabled={generateCodeAction.isPending}
+              disabled={generateCodeAction.isPending || !form.watch("acceptTerms")}
             >
               {generateCodeAction.isPending ? (
                 <>
@@ -160,7 +186,7 @@ const ClientSignUpForm = () => {
                   código...
                 </>
               ) : (
-                "Criar conta"
+                "Cadastrar"
               )}
             </Button>
           </CardFooter>

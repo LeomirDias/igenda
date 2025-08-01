@@ -23,7 +23,7 @@ export const upsertClient = actionClient
 
         const { id, name, phoneNumber } = parsedInput;
 
-        // Se `id` estiver presente, atualiza o serviço existente
+        // Se `id` estiver presente, atualiza o cliente existente
         let clientId = id;
 
         if (clientId) {
@@ -41,6 +41,12 @@ export const upsertClient = actionClient
                 .values({
                     name,
                     phoneNumber,
+                    termsAccepted: true,
+                    termsAcceptedAt: new Date(),
+                    termsVersionAccepted: "v1.0.0",
+                    privacyAccepted: true,
+                    privacyAcceptedAt: new Date(),
+                    privacyVersionAccepted: "v1.0.0",
                     enterpriseId: session?.user.enterprise?.id ?? "",
                 })
                 .returning({ id: clientsTable.id });

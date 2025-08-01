@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const Forms = () => {
+const ClientsForms = () => {
   return (
     <DialogContent>
       <DialogHeader>
@@ -24,14 +24,16 @@ const Forms = () => {
           <li>
             <b>Definições</b>
             <br />
-            “Serviço” refere-se ao software disponibilizado por <b>Synqia</b>,
-            acessível via navegador ou aplicativo, que permite gerenciar
-            agendamentos online, estoque, clientes, serviços, etc.
+            “Serviço” refere-se ao software disponibilizado pelo <b> Grupo Synqia </b>
+            e utilizado pelo “Usuário” ou “Empresa” ao qual o “Cliente” realiza um agendamento de prestação de serviços.
             <br />
-            “Usuário” ou “Você” refere-se à pessoa física ou jurídica que acessa
-            ou utiliza o Serviço.
+            “Usuário” ou “Empresa” refere-se à pessoa física ou jurídica que, assina, acessa
+            e utiliza os Serviço disponibilizado.
             <br />
-            “Nós”, “Nosso” ou “Empresa” refere-se ao <b>Grupo Synqia</b>, responsável
+            “Cliente” ou “Você” refere-se à pessoa física que utiliza a funcionalidade de agendamento online
+            do Serviço para agendar uma prestação de serviços com a Empresa
+            <br />
+            “Nós”, “Nosso” refere-se ao <b>Grupo Synqia</b>, responsável
             pela oferta do Serviço.
           </li>
           <li>
@@ -42,14 +44,15 @@ const Forms = () => {
             concordar, não utilize o Serviço.
           </li>
           <li>
-            <b>Conta de Usuário</b>
+            <b>Cadastro de Cliente</b>
             <br />
-            Para utilizar o Serviço, é necessário criar uma conta, fornecendo
-            informações verdadeiras e atualizadas.
+            Para utilizar o Serviço, é necessário cadastrar-se, fornecendo
+            informações verdadeiras e atualizadas. O seu cadastro é vinculado ao dados da Empresa ao qual Você
+            realizou o agendamento da prestação de serviços.
             <br />
             Você é responsável por manter a confidencialidade de suas
             credenciais de acesso.
-            <br />A Empresa não se responsabiliza por atividades realizadas com
+            <br />Nós ou a Empresa não nos responsabilizaremos por atividades realizadas com
             sua conta caso suas credenciais sejam comprometidas.
           </li>
           <li>
@@ -64,42 +67,31 @@ const Forms = () => {
             </ul>
           </li>
           <li>
-            <b>Planos e Pagamentos</b>
-            <br />
-            Alguns recursos podem estar disponíveis somente por meio de planos
-            pagos.
-            <br />
-            O pagamento deve ser realizado conforme os termos especificados no
-            momento da contratação.
-            <br />O não pagamento poderá resultar na suspensão ou encerramento
-            da sua conta.
-          </li>
-          <li>
             <b>Cancelamento e Encerramento</b>
             <br />
-            Você pode encerrar sua conta a qualquer momento através do painel do
-            usuário.
-            <br />A Empresa reserva-se o direito de encerrar ou suspender contas
+            Você pode solicitar a exclusão do seu cadastro no Serviço a qualquer momento entrando em contato com a Empresa ao qual
+            você agendou a prestação de serviços.
+            <br />A Nós e/ou a Empresa reservam-se o direito de encerrar ou suspender cadastros
             que violem estes Termos, sem aviso prévio.
           </li>
           <li>
             <b>Propriedade Intelectual</b>
             <br />
             Todo o conteúdo e tecnologia utilizados no Serviço são de
-            propriedade da Empresa ou de seus licenciadores e são protegidos por
+            propriedade do <b> Grupo Synqia</b> ou de seus licenciadores e são protegidos por
             leis de direitos autorais, marcas e outras legislações aplicáveis.
           </li>
           <li>
             <b>Limitação de Responsabilidade</b>
             <br />O Serviço é fornecido “como está”, sem garantias de
-            funcionamento ininterrupto ou livre de erros. A Empresa não será
-            responsável por danos diretos, indiretos, incidentais ou
+            funcionamento ininterrupto ou livre de erros. Nós não seremos
+            responsáveis por danos diretos, indiretos, incidentais ou
             consequenciais resultantes do uso ou da incapacidade de uso do
             Serviço.
           </li>
           <li>
             <b>Modificações nos Termos</b>
-            <br />A Empresa pode atualizar estes Termos a qualquer momento. Você
+            <br />Nós podemos atualizar estes Termos a qualquer momento. Você
             será notificado sobre alterações relevantes e o uso contínuo do
             Serviço após tal notificação constituirá aceitação dos novos Termos.
           </li>
@@ -127,4 +119,4 @@ const Forms = () => {
   );
 };
 
-export default Forms;
+export default ClientsForms;

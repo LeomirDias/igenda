@@ -57,6 +57,12 @@ export const verifyCode = actionClient
         .values({
           name: String(clientData.name ?? ''),
           phoneNumber: String(clientData.phoneNumber ?? ''),
+          termsAccepted: true,
+          termsAcceptedAt: new Date(),
+          termsVersionAccepted: "v1.0.0",
+          privacyAccepted: true,
+          privacyAcceptedAt: new Date(),
+          privacyVersionAccepted: "v1.0.0",
           enterpriseId: enterprise.id,
         })
         .returning();

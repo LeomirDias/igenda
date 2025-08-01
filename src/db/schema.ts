@@ -241,6 +241,12 @@ export const clientsTable = pgTable("clients", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   phoneNumber: text("phone_number").notNull().unique(),
+  termsAccepted: boolean("terms_accepted").notNull().default(false),
+  termsAcceptedAt: timestamp("terms_accepted_at"),
+  termsVersionAccepted: text("terms_version_accepted"),
+  privacyAccepted: boolean("privacy_accepted").notNull().default(false),
+  privacyAcceptedAt: timestamp("privacy_accepted_at"),
+  privacyVersionAccepted: text("privacy_version_accepted"),
   createdAT: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -378,4 +384,22 @@ export const verificationCodesTable = pgTable("verification_codes", {
   clientData: text("client_data"), // JSON string
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+//Table to store clients terms
+export const ClientstermsTable = pgTable("clients_terms", {
+  id: text("id").primaryKey(),
+  version: text("version").notNull(),
+  content: text("content").notNull(),
+  type: text("type").notNull(), // "terms_of_service" | "privacy_policy"
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+//Table to store user terms
+export const UserstermsTable = pgTable("users_terms", {
+  id: text("id").primaryKey(),
+  version: text("version").notNull(),
+  content: text("content").notNull(),
+  type: text("type").notNull(), // "terms_of_service" | "privacy_policy"
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });

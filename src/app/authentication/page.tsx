@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
+import { useState } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import LoginForm from "./_components/login-form ";
-import SignUpForm from "./_components/sign-up-form";
-import OpenTermsButton from "./_components/open-terms-button";
 import OpenPrivacyPoliciesButton from "./_components/open-privacy-policies-button";
+import OpenTermsButton from "./_components/open-terms-button";
+import SignUpForm from "./_components/sign-up-form";
 
 const AuthenticationPage = () => {
   const [tab, setTab] = useState("login");
@@ -63,8 +63,8 @@ const AuthenticationPage = () => {
 
       <footer className="text-muted-foreground absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-xs">
         <span className="inline">
-          © {year} Synqia. Todos os direitos reservados. iGenda é uma marca
-          registrada da Synqia.
+          © {year} Grupo Synqia. Todos os direitos reservados. iGenda é uma marca
+          registrada do Grupo Synqia.
         </span>
       </footer>
     </div>

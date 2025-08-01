@@ -67,9 +67,10 @@ export const generateCode = actionClient
       }
 
       // Enviar mensagem personalizada
-      await sendWhatsappMessage(
-        parsedInput.phoneNumber,
-        `Olá, ${parsedInput.clientData?.name || ""}!
+      try {
+        await sendWhatsappMessage(
+          parsedInput.phoneNumber,
+          `Olá, ${parsedInput.clientData?.name || ""}!
 Esta é uma mensagem automática da iGenda de ${enterpriseName}. 💚
 
 Seu código de verificação para acesso ao iGenda é: *${verificationCode}*
@@ -79,8 +80,20 @@ Seu código de verificação para acesso ao iGenda é: *${verificationCode}*
 O código é válido por 5 minutos. ⏳ 
 
 Caso não tenha solicitado, desconsidere esta mensagem.`
-      );
-      console.log("Código enviado para:", parsedInput.phoneNumber);
+        );
+        console.log("Código enviado para:", parsedInput.phoneNumber);
+      } catch (whatsappError) {
+        console.error("Erro no envio via WhatsApp:", whatsappError);
+        console.log("🚨 CÓDIGO DE VERIFICAÇÃO (envio WhatsApp falhou):", verificationCode);
+        console.log("📱 Número:", parsedInput.phoneNumber);
+        console.log("👤 Cliente:", parsedInput.clientData?.name || "N/A");
+        console.log("🏢 Empresa:", enterpriseName);
+        console.log("⏰ Expira em:", expiresAt.toLocaleString());
+        console.log("=".repeat(50));
+
+        // Retorna sucesso mesmo com erro no WhatsApp para não bloquear o fluxo
+        return { success: true, message: "Verification code generated (WhatsApp delivery failed)" };
+      }
 
       return { success: true, message: "Verification code sent" };
     } catch (error) {

@@ -52,7 +52,6 @@ export default function SubscriptionPlan({
 
   const features = [
     "Cadastro de profissionais ilimitados",
-    "Telas de acesso para usuários",
     "Cadastro de clientes ilimitados",
     "Agendamentos ilimitados",
     "Agendamento via link para clientes",

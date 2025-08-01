@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const PrivacyPolicies = () => {
+const ClientsPrivacyPolicies = () => {
   return (
     <DialogContent>
       <DialogHeader>
@@ -17,7 +17,7 @@ const PrivacyPolicies = () => {
       <div className="text-muted-foreground max-h-[60vh] space-y-4 overflow-y-auto px-4 py-2 text-sm">
         <p>
           No <b>Grupo Synqia</b>, a privacidade e segurança dos dados dos nossos
-          usuários são prioridades. Esta Política de Privacidade explica como
+          usuários e seus clientes são prioridades. Esta Política de Privacidade explica como
           coletamos, usamos, armazenamos, protegemos e compartilhamos suas
           informações ao utilizar nossa plataforma SaaS <b>iGenda</b>.
         </p>
@@ -29,12 +29,8 @@ const PrivacyPolicies = () => {
                 <b>1.1. Informações fornecidas por você:</b>
                 <ul className="ml-4 list-inside list-disc">
                   <li>Nome completo</li>
-                  <li>E-mail</li>
-                  <li>Dados de pagamento (através do Stripe)</li>
-                  <li>
-                    Informações inseridas em formulários ou interações com o
-                    sistema
-                  </li>
+                  <li>Data de nascimento</li>
+                  <li>Número de telefone</li>
                 </ul>
               </li>
               <li>
@@ -51,9 +47,8 @@ const PrivacyPolicies = () => {
           <li>
             <b>Finalidade do Uso dos Dados</b>
             <ul className="ml-4 list-inside list-disc space-y-1">
-              <li>Criar e gerenciar sua conta;</li>
+              <li>Criar e gerenciar seu cadastro em empresas que forneçem prestações de serviço a partir do nosso sistema;</li>
               <li>Fornecer suporte técnico e atendimento;</li>
-              <li>Processar pagamentos e emitir cobranças;</li>
               <li>Melhorar a experiência do usuário na plataforma;</li>
               <li>
                 Enviar notificações e comunicações relacionadas ao serviço;
@@ -69,8 +64,11 @@ const PrivacyPolicies = () => {
                 informações:
               </li>
               <li>
+                Com a empresa a qual você realizou o agendamento de prestação de serviços;
+              </li>
+              <li>
                 Com prestadores de serviços que auxiliam na operação da
-                plataforma (ex: hospedagem, meios de pagamento);
+                plataforma (ex: hospedagem);
               </li>
               <li>Quando exigido por lei ou ordem judicial;</li>
               <li>Com consentimento explícito do usuário.</li>
@@ -138,4 +136,4 @@ const PrivacyPolicies = () => {
   );
 };
 
-export default PrivacyPolicies;
+export default ClientsPrivacyPolicies;
