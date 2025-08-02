@@ -10,13 +10,13 @@ import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
 
 interface PageProps {
-    params: Promise<{
+    params: {
         slug: string;
-    }>;
+    };
 }
 
 const EnterpriseInfosPage = async ({ params }: PageProps) => {
-    const { slug } = await params;
+    const { slug } = params;
 
     const enterprise = await db.query.enterprisesTable.findFirst({
         where: eq(enterprisesTable.slug, slug),
