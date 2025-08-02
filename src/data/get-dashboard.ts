@@ -1,12 +1,13 @@
+import dayjs from "dayjs";
+import { and, count, desc, eq, gte, lte, sql, sum } from "drizzle-orm";
+
+import { db } from "@/db";
 import {
   appointmentsTable,
-  professionalsTable,
   clientsTable,
+  professionalsTable,
   servicesTable,
 } from "@/db/schema";
-import { and, count, desc, eq, gte, lte, sql, sum } from "drizzle-orm";
-import { db } from "@/db";
-import dayjs from "dayjs";
 
 interface Params {
   from: string;

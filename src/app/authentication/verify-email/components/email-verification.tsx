@@ -1,6 +1,9 @@
 "use client";
 
-import { Mail, CheckCircle, RefreshCw } from "lucide-react";
+import { CheckCircle, Mail, RefreshCw } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,8 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useRouter } from "next/navigation";
 
 export default function Component() {
   const router = useRouter();

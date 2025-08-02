@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -26,17 +27,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
 
 const formSchema = z.object({
   password: z.string().min(8),
   confirmPassword: z.string().min(8),
 });
 
-export function ResetPasswordForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function ResetPasswordForm({ }: React.ComponentProps<"div">) {
   const searchParams = useSearchParams();
   const router = useRouter();
 

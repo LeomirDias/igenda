@@ -2,11 +2,11 @@ import "./globals.css";
 
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { Toaster } from "@/components/ui/sonner";
 import { ReactQueryProvider } from "@/providers/react-query";
-import { ThemeProvider } from "next-themes";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],

@@ -1,9 +1,10 @@
-import { db } from "@/db";
-import { clientSessionsTable, clientsTable } from "@/db/schema";
-import { and, eq, gt } from "drizzle-orm";
+
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import { db } from "@/db";
+
 
 export async function getClientFromToken(token: string) {
     const now = new Date();

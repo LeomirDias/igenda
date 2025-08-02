@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -25,16 +26,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email(),
 });
 
-export function ForgotPasswordForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({

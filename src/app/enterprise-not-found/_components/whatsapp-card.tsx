@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function WhatsappCard() {
     // Número de WhatsApp (substitua pelo número desejado)
-    const phoneNumber = "5564992214800"
+    const phoneNumber = "5564992834346"
     // Mensagem pré-definida (opcional)
     const message = "Olá! Preciso de ajuda com a aplicação."
 

@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-import SubscriptionPlan from "@/app/(protected)/subscription/_components/subscription-plan";
+import SubscriptionPlan from "@/app/(protected-administrator)/subscription/_components/subscription-plan";
 import { auth } from "@/lib/auth";
 
 const SubscriptionPage = async () => {

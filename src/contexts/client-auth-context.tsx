@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createContext, useContext, useState } from "react";
+
 import { clientsTable } from "@/db/schema";
 
 type Client = typeof clientsTable.$inferSelect;
@@ -27,7 +28,7 @@ export function ClientAuthProvider({
 }: ClientAuthProviderProps) {
   const router = useRouter();
   const [client, setClient] = useState<Client | null>(initialClient);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const signOut = () => {
     document.cookie =

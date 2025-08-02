@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
     // Em uma implementação real, você processaria o 'request.formData()'
     // para obter o arquivo, faria o upload para um serviço de armazenamento
     // (ex: Vercel Blob, AWS S3, Cloudinary) e então retornaria a URL do arquivo.

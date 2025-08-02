@@ -1,10 +1,10 @@
 import { headers } from "next/headers";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 
 import ResendEmailVerificationForm from "./components/resend-email-verifiy-form";
-import Image from "next/image";
 
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({
