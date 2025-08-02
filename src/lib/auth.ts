@@ -17,7 +17,6 @@ export const auth = betterAuth({
   basePath: "/api/auth",
   database: drizzleAdapter(db, {
     provider: "pg",
-    usePlural: true,
     schema: {
       users: schema.usersTable,
       sessions: schema.sessionsTable,
