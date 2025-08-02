@@ -1,11 +1,12 @@
 "use client";
 
+import { MousePointerClick, ShieldClose } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { Card } from "./card";
-import { Frown, MousePointerClick, ShieldClose, SmilePlus } from "lucide-react";
 import { Button } from "./button";
+import { Card } from "./card";
 
 export const AccessWhitoutPlan = () => {
   const router = useRouter();
@@ -45,12 +46,12 @@ export const AccessWhitoutPlan = () => {
         </div>
 
         <div className="flex justify-center">
-          <a href="/dashboard">
+          <Link href="/dashboard">
             <Button variant="default">
               <MousePointerClick />
               Redirecionar agora
             </Button>
-          </a>
+          </Link>
         </div>
       </Card>
 
