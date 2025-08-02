@@ -1,18 +1,15 @@
 "use client";
 
+import {
+  Construction,
+  MousePointerClick,
+} from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { Card } from "./card";
-import {
-  Construction,
-  Frown,
-  Heart,
-  MousePointerClick,
-  Smile,
-  SmilePlus,
-} from "lucide-react";
 import { Button } from "./button";
+import { Card } from "./card";
 
 export const LauchingSoon = () => {
   const router = useRouter();
@@ -54,12 +51,12 @@ export const LauchingSoon = () => {
         </div>
 
         <div className="flex justify-center">
-          <a href="/dashboard">
+          <Link href="/dashboard">
             <Button variant="default">
               <MousePointerClick />
               Redirecionar agora
             </Button>
-          </a>
+          </Link>
         </div>
       </Card>
 
