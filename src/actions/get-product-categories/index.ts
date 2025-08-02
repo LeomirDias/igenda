@@ -1,12 +1,12 @@
 "use server";
 
+import { asc, eq } from "drizzle-orm";
+import { headers } from "next/headers";
+
 import { db } from "@/db";
 import { productsTable } from "@/db/schema";
-import { asc, eq } from "drizzle-orm";
-
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
-import { headers } from "next/headers";
 
 
 export const getProductCategories = actionClient

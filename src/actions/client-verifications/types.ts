@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Store verification codes temporarily (in production, use Redis or similar)
-export const verificationCodes = new Map<string, { code: string, clientData: any }>();
+export const verificationCodes = new Map<string, { code: string, clientData: z.infer<typeof generateCodeSchema> }>();
 
 // Response schemas
 export const verificationResponseSchema = z.object({

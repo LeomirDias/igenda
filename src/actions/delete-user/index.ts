@@ -1,12 +1,12 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { actionClient } from "@/lib/next-safe-action";
+
 import { db } from "@/db";
-import { usersTable, enterprisesTable } from "@/db/schema";
+import { enterprisesTable, usersTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { actionClient } from "@/lib/next-safe-action";
 
 export const deleteUser = actionClient.action(async () => {
   const session = await auth.api.getSession({

@@ -7,12 +7,11 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/db";
-
+import { productsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
 import { upsertProductSchema } from "./schema";
-import { productsTable } from "@/db/schema";
 
 dayjs.extend(utc);
 

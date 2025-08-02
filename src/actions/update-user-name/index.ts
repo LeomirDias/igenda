@@ -1,6 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/db";
@@ -9,7 +10,6 @@ import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
 
 import { schema } from "./schema";
-import { revalidatePath } from "next/cache";
 
 export const updateUserName = actionClient
   .schema(schema)

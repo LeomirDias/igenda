@@ -6,10 +6,9 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 import { db } from "@/db";
-
+import { clientsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
-import { clientsTable } from "@/db/schema";
 
 export const deleteClient = actionClient
     .schema(
