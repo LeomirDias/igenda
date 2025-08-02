@@ -19,6 +19,7 @@ export const usersTable = pgTable("users", {
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   plan: text("plan"),
+  role: text("role").notNull().default("administrator"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
@@ -162,6 +163,7 @@ export const professionalsTable = pgTable("professionals", {
   enterpriseId: uuid("enterprise_id")
     .notNull()
     .references(() => enterprisesTable.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
 });
 
 //Professionals tables relationships whit relations whit enterprises and appointments
