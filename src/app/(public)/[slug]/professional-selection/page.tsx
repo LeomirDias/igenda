@@ -10,13 +10,13 @@ import PublicPagesHeader from "../../_components/public-pages-header";
 import ProfessionalCard from "./_components/professional-card";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 }
 
 const ProfessionalSelectionPage = async ({ params }: PageProps) => {
-    const { slug } = params;
+    const { slug } = await params;
 
     const enterprise = await db.query.enterprisesTable.findFirst({
         where: eq(enterprisesTable.slug, slug),
