@@ -2,18 +2,18 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 import { db } from "@/db";
 import {
   appointmentsTable,
   clientsTable,
+  enterprisesTable,
   professionalsTable,
   servicesTable,
-  enterprisesTable,
 } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import { SchedulingDashboard } from "./_components/scheduling-dashboard";
-import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 
 const AppointmentsPage = async () => {
   const session = await auth.api.getSession({
