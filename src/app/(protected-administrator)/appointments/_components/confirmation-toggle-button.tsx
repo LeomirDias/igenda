@@ -25,8 +25,7 @@ export function ConfirmationToggleButton({
   const { execute } = useAction(updateEnterprise, {
     onSuccess: () => {
       toast.success(
-        `Confirmação de agendamentos alterada para: ${confirmation === "automatic" ? "automática" : "manual"
-        }`,
+        `Confirmação de agendamentos alterada!`,
       );
     },
     onError: (error) => {
