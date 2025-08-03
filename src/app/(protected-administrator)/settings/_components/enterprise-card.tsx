@@ -169,11 +169,14 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
         try {
           const formData = new FormData();
           formData.append("photo", avatarFile);
-          await uploadEnterpriseProfilePicture(formData, enterprise?.id || "");
+
+          // Faz upload e atualiza avatar direto no banco
+          const { url } = await uploadEnterpriseProfilePicture(formData, enterprise?.id || "");
+          setAvatarPreview(url);
         } catch (error) {
           console.error("Erro ao fazer upload da imagem:", error);
           toast.error(
-            "Erro ao fazer upload da imagem. A empresa foi atualizada, mas a imagem não foi salva.",
+            "Erro ao enviar imagem. As outras informações foram salvas com sucesso."
           );
         } finally {
           setIsUploadingAvatar(false);
@@ -434,8 +437,8 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
               />
             </div>
             <div className="flex justify-end">
-              <Button type="submit" disabled={upsertEnterpriseAction.isPending}>
-                {upsertEnterpriseAction.isPending ? (
+              <Button type="submit" disabled={upsertEnterpriseAction.isPending || isUploadingAvatar}>
+                {upsertEnterpriseAction.isPending || isUploadingAvatar ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
                     Salvando...

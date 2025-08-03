@@ -105,19 +105,25 @@ const UpdateProfessionalForm = ({
         try {
           const formData = new FormData();
           formData.append("photo", avatarFile);
-          await uploadProfessionalProfilePicture(
+
+          // Faz upload e atualiza avatar direto no banco
+          const { url } = await uploadProfessionalProfilePicture(
             formData,
-            professional?.id || "",
+            professional?.id || ""
           );
+
+          setAvatarPreview(url);
         } catch (error) {
           console.error("Erro ao fazer upload da imagem:", error);
           toast.error(
-            "Erro ao fazer upload da imagem. O profissional foi atualizado, mas a imagem não foi salva.",
+            "Erro ao enviar imagem. As outras informações foram salvas com sucesso."
           );
         } finally {
           setIsUploadingAvatar(false);
         }
       }
+
+
 
       toast.success("Profissional atualizado com sucesso!");
       form.reset();

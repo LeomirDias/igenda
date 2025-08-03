@@ -175,21 +175,23 @@ const EnterpriseForm = () => {
         data.state,
       );
 
-      // Se houver um arquivo de avatar, faz o upload de forma assíncrona
+      // Se houver um arquivo de avatar, faz o upload
       if (avatarFile) {
         setIsUploadingAvatar(true);
-        const formData = new FormData();
-        formData.append("photo", avatarFile);
-        uploadEnterpriseProfilePicture(formData, result.enterpriseId)
-          .catch((error) => {
-            console.error("Erro ao fazer upload da imagem:", error);
-            toast.error(
-              "Erro ao fazer upload da imagem. A empresa foi criada, mas a imagem não foi salva.",
-            );
-          })
-          .finally(() => {
-            setIsUploadingAvatar(false);
-          });
+        try {
+          const formData = new FormData();
+          formData.append("photo", avatarFile);
+
+          // Faz upload e atualiza avatar direto no banco
+          await uploadEnterpriseProfilePicture(formData, result.enterpriseId);
+        } catch (error) {
+          console.error("Erro ao fazer upload da imagem:", error);
+          toast.error(
+            "Erro ao enviar imagem. A empresa foi criada com sucesso."
+          );
+        } finally {
+          setIsUploadingAvatar(false);
+        }
       }
 
       router.push("/subscription");
@@ -488,11 +490,11 @@ const EnterpriseForm = () => {
           <DialogFooter className="flex-col gap-3 pt-4 sm:flex-row sm:gap-2 sm:pt-0">
             <Button
               type="submit"
-              disabled={form.formState.isSubmitting || isCepLoading}
+              disabled={form.formState.isSubmitting || isCepLoading || isUploadingAvatar}
               className="w-full sm:w-auto"
               variant="default"
             >
-              {form.formState.isSubmitting || isCepLoading ? (
+              {form.formState.isSubmitting || isCepLoading || isUploadingAvatar ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 "Cadastrar empresa"
