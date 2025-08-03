@@ -17,6 +17,7 @@ import { db } from "@/db";
 import { productsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
+import AddMovementStockButton from "./_components/add-movement-button";
 import AddProductButton from "./_components/add-product-button";
 import { productsTableColumns } from "./_components/table-columns";
 
@@ -49,6 +50,7 @@ const ProductsPage = async () => {
         </PageHeaderContent>
         <PageActions>
           <AddProductButton />
+          <AddMovementStockButton products={products} />
         </PageActions>
       </PageHeader>
       <PageContent>

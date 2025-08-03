@@ -2,25 +2,31 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 
-import { Badge } from "@/components/ui/badge"
 import { productsTable } from "@/db/schema"
 
 import TableProductActions from "./table-actions"
 
 type Product = typeof productsTable.$inferSelect;
 
-const getStatusBadgeVariant = (status: string): "default" | "destructive" | "secondary" | "outline" => {
+const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-        case "em estoque":
-            return "default"
-        case "em falta":
-            return "destructive"
-        case "estoque baixo":
-            return "secondary"
+        case "in_stock":
+            return {
+                label: "Em estoque",
+                className: "bg-green-100 text-green-700 border-1 rounded-2xl p-1.5 text-xs",
+            };
+        case "out_of_stock":
+            return {
+                label: "Sem estoque",
+                className: "bg-red-100 text-red-700 border-2 rounded-2xl p-1.5 text-xs",
+            };
         default:
-            return "outline"
+            return {
+                label: status,
+                className: "bg-gray-100 border-gray-500 text-gray-700 border-2 rounded-2xl p-1.5 text-xs",
+            };
     }
-}
+};
 
 export const productsTableColumns: ColumnDef<Product>[] = [
     {
@@ -41,16 +47,11 @@ export const productsTableColumns: ColumnDef<Product>[] = [
     {
         id: "price",
         accessorKey: "productPriceInCents",
-        header: "Preço",
+        header: "Preço de custo",
         cell: ({ row }) => {
             const price = row.original.productPriceInCents / 100;
             return `R$ ${price.toFixed(2)}`;
         }
-    },
-    {
-        id: "quantity",
-        accessorKey: "quantity",
-        header: "Quantidade",
     },
     {
         id: "quantity_in_stock",
@@ -63,11 +64,14 @@ export const productsTableColumns: ColumnDef<Product>[] = [
         header: "Status do estoque",
         cell: ({ row }) => {
             const status = row.original.stock_status;
-            return status ? (
-                <Badge variant={getStatusBadgeVariant(status)}>
-                    {status}
-                </Badge>
-            ) : null;
+            if (!status) return null;
+
+            const badge = getStatusBadge(status);
+            return (
+                <span className={badge.className}>
+                    {badge.label}
+                </span>
+            );
         }
     },
     {

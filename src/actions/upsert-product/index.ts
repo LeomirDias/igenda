@@ -61,8 +61,10 @@ export const upsertProduct = actionClient
                     category,
                     brand,
                     quantity,
+                    quantity_in_stock: quantity,
                     productPriceInCents,
                     is_consumable,
+                    stock_status: "in_stock",
                     enterpriseId: session.user.enterprise.id,
                 })
                 .returning({ id: productsTable.id });

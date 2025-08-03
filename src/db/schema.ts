@@ -378,6 +378,20 @@ export const prductsTableRelations = relations(productsTable, ({ one }) => ({
   }),
 }));
 
+export const stockMovements = pgTable("stock_movements", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  productId: uuid("product_id")
+    .notNull()
+    .references(() => productsTable.id, { onDelete: "cascade" }),
+  enterpriseId: uuid("enterprise_id")
+    .notNull()
+    .references(() => enterprisesTable.id, { onDelete: "cascade" }),
+  movementType: text("movement_type", { enum: ["entry", "exit"] }).notNull(),
+  quantity: integer("quantity").notNull(),
+  reason: text("reason"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Table to store client verification codes (WhatsApp)
 export const verificationCodesTable = pgTable("verification_codes", {
   id: uuid("id").defaultRandom().primaryKey(),
