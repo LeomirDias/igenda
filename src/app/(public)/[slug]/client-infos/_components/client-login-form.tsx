@@ -6,7 +6,6 @@ import { useParams } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -63,12 +62,14 @@ const ClientLoginForm = () => {
           // Normaliza o telefone para formato internacional
           const normalizedPhone = data.client.phoneNumber.replace(/\D/g, "");
           const phoneNumberIntl = normalizedPhone.startsWith("55") ? normalizedPhone : `55${normalizedPhone}`;
+
           // Gera o código de verificação
           const result = await generateCode({
             phoneNumber: phoneNumberIntl,
             clientData: {
               name: data.client.name,
               phoneNumber: phoneNumberIntl,
+              enterpriseSlug,
             },
           });
 
@@ -93,7 +94,7 @@ const ClientLoginForm = () => {
       } else {
         toast.error(
           data?.message ||
-          "Erro ao validar telefone. Por favor, tente novamente.",
+          "Cliente não encontrado com este número de telefone. Por favor, cadastre-se.",
         );
       }
     },
@@ -107,7 +108,7 @@ const ClientLoginForm = () => {
 
   const onSubmit = (values: z.infer<typeof clientLoginSchema>) => {
     validatePhoneAction.execute({
-      phoneNumber: values.phoneNumber.replace(/\D/g, ""),
+      phoneNumber: `55${values.phoneNumber.replace(/\D/g, "")}`,
       enterpriseSlug,
     });
   };
@@ -134,16 +135,19 @@ const ClientLoginForm = () => {
                 <FormItem>
                   <FormLabel>Telefone</FormLabel>
                   <FormControl>
-                    <PatternFormat
-                      format="(##) #####-####"
-                      mask="_"
-                      customInput={Input}
-                      placeholder="Digite seu telefone..."
-                      value={field.value}
-                      onValueChange={(values) => {
-                        field.onChange(values.value);
-                      }}
-                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground select-none">+55</span>
+                      <Input
+                        type="tel"
+                        placeholder="11999999999"
+                        value={field.value}
+                        onChange={(e) => {
+                          // Aceita apenas números
+                          field.onChange(e.target.value.replace(/\D/g, ""));
+                        }}
+                        maxLength={11}
+                      />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

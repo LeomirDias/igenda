@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { generateCode } from "@/actions/client-verifications";
+import { validatePhone } from "@/actions/client-verifications/validate-phone";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -69,37 +70,84 @@ const ClientSignUpForm = () => {
     },
   });
 
-  const generateCodeAction = useAction(generateCode, {
-    onSuccess: ({ data }) => {
-      if (data?.success) {
-        setShowVerification(true);
-        toast.success("Código de verificação enviado! Verifique seu Whatsapp.");
+  const validatePhoneAction = useAction(validatePhone, {
+    onSuccess: async ({ data }) => {
+      if (data?.success && data.client) {
+        // Cliente existe, gera código para login
+        try {
+          const result = await generateCode({
+            phoneNumber: `55${form.getValues("phoneNumber").replace(/\D/g, "")}`,
+            clientData: {
+              name: data.client.name,
+              phoneNumber: `55${form.getValues("phoneNumber").replace(/\D/g, "")}`,
+              enterpriseSlug,
+            },
+          });
+
+          if (result?.data?.success) {
+            setClientData({
+              name: data.client.name,
+              phoneNumber: `55${form.getValues("phoneNumber").replace(/\D/g, "")}`,
+              enterpriseSlug,
+            });
+            setShowVerification(true);
+            toast.success("Código de verificação enviado! Verifique seu Whatsapp.");
+          } else {
+            toast.error(
+              result?.data?.message ||
+              "Erro ao enviar código de verificação. Por favor, tente novamente.",
+            );
+          }
+        } catch (error) {
+          console.error("Erro ao enviar código:", error);
+          toast.error(
+            "Erro ao enviar código de verificação. Por favor, tente novamente.",
+          );
+        }
       } else {
-        toast.error(
-          data?.message ||
-          "Erro ao enviar código de verificação. Por favor, tente novamente.",
-        );
+        // Cliente não existe, gera código para cadastro
+        try {
+          const formattedValues: ClientDataForAction = {
+            name: form.getValues("name"),
+            phoneNumber: `55${form.getValues("phoneNumber").replace(/\D/g, "")}`,
+            enterpriseSlug,
+          };
+
+          const result = await generateCode({
+            phoneNumber: formattedValues.phoneNumber,
+            clientData: formattedValues,
+          });
+
+          if (result?.data?.success) {
+            setClientData(formattedValues);
+            setShowVerification(true);
+            toast.success("Código de verificação enviado! Verifique seu Whatsapp.");
+          } else {
+            toast.error(
+              result?.data?.message ||
+              "Erro ao enviar código de verificação. Por favor, tente novamente.",
+            );
+          }
+        } catch (error) {
+          console.error("Erro ao enviar código:", error);
+          toast.error(
+            "Erro ao enviar código de verificação. Por favor, tente novamente.",
+          );
+        }
       }
     },
     onError: (error) => {
-      console.error("Erro ao enviar código:", error);
+      console.error("Erro ao validar telefone:", error);
       toast.error(
-        "Erro ao enviar código de verificação. Por favor, tente novamente.",
+        "Erro ao validar telefone. Por favor, tente novamente.",
       );
     },
   });
 
   const onSubmit = (values: ClientFormData) => {
-    const formattedValues: ClientDataForAction = {
-      name: values.name,
+    validatePhoneAction.execute({
       phoneNumber: `55${values.phoneNumber.replace(/\D/g, "")}`,
       enterpriseSlug,
-    };
-
-    setClientData(formattedValues);
-    generateCodeAction.execute({
-      phoneNumber: formattedValues.phoneNumber,
-      clientData: formattedValues,
     });
   };
 
@@ -178,12 +226,11 @@ const ClientSignUpForm = () => {
             <Button
               type="submit"
               className="w-full"
-              disabled={generateCodeAction.isPending || !form.watch("acceptTerms")}
+              disabled={validatePhoneAction.isPending || !form.watch("acceptTerms")}
             >
-              {generateCodeAction.isPending ? (
+              {validatePhoneAction.isPending ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando
-                  código...
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validando...
                 </>
               ) : (
                 "Cadastrar"

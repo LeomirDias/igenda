@@ -51,27 +51,42 @@ export const verifyCode = actionClient
         return { success: false, message: "Empresa não encontrada" };
       }
 
-      // Cria o cliente diretamente no banco
-      const [client] = await db
-        .insert(clientsTable)
-        .values({
-          name: String(clientData.name ?? ''),
-          phoneNumber: String(clientData.phoneNumber ?? ''),
-          termsAccepted: true,
-          termsAcceptedAt: new Date(),
-          termsVersionAccepted: "v1.0.0",
-          privacyAccepted: true,
-          privacyAcceptedAt: new Date(),
-          privacyVersionAccepted: "v1.0.0",
-          enterpriseId: enterprise.id,
-        })
-        .returning();
+      // Verificar se o cliente já existe
+      const existingClient = await db.query.clientsTable.findFirst({
+        where: eq(clientsTable.phoneNumber, parsedInput.phoneNumber),
+      });
 
-      if (!client) {
-        return { success: false, message: "Erro ao criar cliente" };
+      let client = existingClient;
+
+      // Se o cliente não existe, cria um novo
+      if (!existingClient) {
+        const [newClient] = await db
+          .insert(clientsTable)
+          .values({
+            name: String(clientData.name ?? ''),
+            phoneNumber: String(clientData.phoneNumber ?? ''),
+            termsAccepted: true,
+            termsAcceptedAt: new Date(),
+            termsVersionAccepted: "v1.0.0",
+            privacyAccepted: true,
+            privacyAcceptedAt: new Date(),
+            privacyVersionAccepted: "v1.0.0",
+            enterpriseId: enterprise.id,
+          })
+          .returning();
+
+        if (!newClient) {
+          return { success: false, message: "Erro ao criar cliente" };
+        }
+
+        client = newClient;
       }
 
       // Cria ou atualiza a sessão do cliente
+      if (!client) {
+        return { success: false, message: "Erro ao processar cliente" };
+      }
+
       const sessionResult = await upsertClientSession({
         clientId: client.id,
         enterpriseId: enterprise.id,

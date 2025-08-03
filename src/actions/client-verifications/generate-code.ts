@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { clientsTable, enterprisesTable, verificationCodesTable } from "@/db/schema";
+import { enterprisesTable, verificationCodesTable } from "@/db/schema";
 import { actionClient } from "@/lib/next-safe-action";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
 
@@ -21,20 +21,6 @@ export const generateCode = actionClient
   .schema(generateCodeSchema)
   .action(async ({ parsedInput }): Promise<VerificationResponse> => {
     try {
-      // Check if phone number already exists in database
-      const existingClient = await db
-        .select()
-        .from(clientsTable)
-        .where(eq(clientsTable.phoneNumber, parsedInput.phoneNumber))
-        .limit(1);
-
-      if (existingClient.length > 0) {
-        return {
-          success: false,
-          message: "Este número de telefone já está cadastrado",
-        };
-      }
-
       // Generate verification code
       const verificationCode = generateVerificationCode();
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutos

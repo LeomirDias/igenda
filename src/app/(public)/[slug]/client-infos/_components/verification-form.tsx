@@ -11,8 +11,6 @@ import z from "zod";
 
 import { verifyCode } from "@/actions/client-verifications";
 import { generateCode } from "@/actions/client-verifications/generate-code";
-import { upsertClient } from "@/actions/upsert-client";
-import { upsertClientSession } from "@/actions/upsert-client-session";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -81,6 +79,7 @@ const VerificationForm = ({ clientData, isLogin }: VerificationFormProps) => {
                 clientData: {
                     ...clientData,
                     phoneNumber: phoneNumberIntl,
+                    enterpriseSlug,
                 },
             });
 
@@ -101,66 +100,11 @@ const VerificationForm = ({ clientData, isLogin }: VerificationFormProps) => {
 
     const verifyCodeAction = useAction(verifyCode, {
         onSuccess: async ({ data }) => {
-            if (data?.success) {
-                try {
-                    if (isLogin) {
-                        // Cria uma nova sessão para o cliente
-                        const sessionResult = await upsertClientSession({
-                            clientId: data.client?.id ?? "",
-                            enterpriseId: data.client?.enterpriseId ?? "",
-                        });
-
-                        if (!sessionResult) {
-                            throw new Error("Erro ao criar sessão");
-                        }
-
-                        if (sessionResult.data?.success) {
-                            toast.success("Código verificado com sucesso!");
-                            setClientId(data.client?.id ?? "");
-                            console.log(useAppointmentStore.getState());
-                            router.push(`/${enterpriseSlug}/confirm-appoitment`);
-                        } else {
-                            throw new Error(sessionResult.data?.message ?? "Erro ao criar sessão");
-                        }
-                    } else {
-                        // Cria ou atualiza o cliente
-                        const clientResult = await upsertClient({
-                            id: data.client?.id,
-                            name: clientData.name,
-                            phoneNumber: clientData.phoneNumber,
-                        });
-
-                        if (!clientResult) {
-                            throw new Error("Erro ao criar/atualizar cliente");
-                        }
-
-                        if (clientResult.data?.success) {
-                            // Cria uma nova sessão para o cliente
-                            const sessionResult = await upsertClientSession({
-                                clientId: clientResult.data.clientId,
-                                enterpriseId: data.client?.enterpriseId ?? "",
-                            });
-
-                            if (!sessionResult) {
-                                throw new Error("Erro ao criar sessão");
-                            }
-
-                            if (sessionResult.data?.success) {
-                                toast.success("Código verificado com sucesso!");
-                                setClientId(clientResult.data.clientId);
-                                console.log(useAppointmentStore.getState());
-                                router.push(`/${enterpriseSlug}/confirm-appoitment`);
-                            } else {
-                                throw new Error(sessionResult.data?.message ?? "Erro ao criar sessão");
-                            }
-                        } else {
-                            throw new Error("Falha ao criar/atualizar cliente");
-                        }
-                    }
-                } catch (error) {
-                    console.error("Erro ao processar verificação:", error);
-                    toast.error("Erro ao processar verificação. Por favor, tente novamente.");
-                }
+            if (data?.success && data.client) {
+                toast.success("Código verificado com sucesso!");
+                setClientId(data.client.id);
+                console.log(useAppointmentStore.getState());
+                router.push(`/${enterpriseSlug}/confirm-appoitment`);
             } else {
                 toast.error(data?.message || "Código inválido. Por favor, tente novamente.");
             }
