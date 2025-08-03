@@ -31,7 +31,7 @@ interface VerificationFormProps {
 
 const EXPIRATION_TIME = 5 * 60; // 5 minutos em segundos
 
-const VerificationForm = ({ clientData, isLogin }: VerificationFormProps) => {
+const VerificationForm = ({ clientData }: VerificationFormProps) => {
     const router = useRouter();
     const params = useParams();
     const enterpriseSlug = params?.slug as string;
