@@ -23,9 +23,9 @@ const AddMovementStockButton = ({ products }: AddMovementStockButtonProps) => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button>
-                    <ArrowLeftRight />
-                    Adicionar movimento de estoque
+                <Button className="text-xs sm:text-sm">
+                    <ArrowLeftRight className="h-4 w-4" />
+                    <span className="hidden lg:inline">Adicionar movimento</span>
                 </Button>
             </DialogTrigger>
             <UpsertMovementStockForm products={products} onSuccess={() => setIsOpen(false)} />

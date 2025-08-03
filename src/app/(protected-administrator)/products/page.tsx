@@ -49,8 +49,8 @@ const ProductsPage = async () => {
           </PageDescription>
         </PageHeaderContent>
         <PageActions>
-          <AddProductButton />
           <AddMovementStockButton products={products} />
+          <AddProductButton />
         </PageActions>
       </PageHeader>
       <PageContent>
