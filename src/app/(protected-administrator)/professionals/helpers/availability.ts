@@ -3,32 +3,26 @@ import "dayjs/locale/pt-br";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import utc from "dayjs/plugin/utc";
 
 import { professionalsTable } from "@/db/schema";
 
-dayjs.extend(utc);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 dayjs.locale("pt-br");
 
 export const getAvailability = (professional: typeof professionalsTable.$inferSelect) => {
-    // Converte os horários do banco (UTC) para horário local
+    // Lê os horários diretamente do banco (sem conversão UTC)
     const from = dayjs()
-        .utc()
         .day(professional.availableFromWeekDay)
         .set("hour", Number(professional.availableFromTime.split(":")[0]))
         .set("minute", Number(professional.availableFromTime.split(":")[1]))
-        .set("second", Number(professional.availableFromTime.split(":")[2] || 0))
-        .local();
+        .set("second", Number(professional.availableFromTime.split(":")[2] || 0));
 
     const to = dayjs()
-        .utc()
         .day(professional.availableToWeekDay)
         .set("hour", Number(professional.availableToTime.split(":")[0]))
         .set("minute", Number(professional.availableToTime.split(":")[1]))
-        .set("second", Number(professional.availableToTime.split(":")[2] || 0))
-        .local();
+        .set("second", Number(professional.availableToTime.split(":")[2] || 0));
 
     return { from, to };
 };
