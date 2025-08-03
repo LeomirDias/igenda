@@ -1,6 +1,8 @@
 "use server";
 
 import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { eq } from "drizzle-orm";
@@ -13,6 +15,8 @@ import { actionClient } from "@/lib/next-safe-action";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 
 export const getAvailableTimes = actionClient
   .schema(
@@ -49,30 +53,31 @@ export const getAvailableTimes = actionClient
       .map((appointment) => dayjs(appointment.date).format("HH:mm:ss"));
     const timeSlots = generateTimeSlots();
 
+    // Converte os horários do banco (UTC) para horário local
     const professionalAvailableFrom = dayjs()
       .utc()
       .set("hour", Number(professional.availableFromTime.split(":")[0]))
       .set("minute", Number(professional.availableFromTime.split(":")[1]))
       .set("second", 0)
       .local();
+
     const professionalAvailableTo = dayjs()
       .utc()
       .set("hour", Number(professional.availableToTime.split(":")[0]))
       .set("minute", Number(professional.availableToTime.split(":")[1]))
       .set("second", 0)
       .local();
-    const professionalTimeSlots = timeSlots.filter((time) => {
-      const date = dayjs()
-        .utc()
-        .set("hour", Number(time.split(":")[0]))
-        .set("minute", Number(time.split(":")[1]))
-        .set("second", 0);
 
-      return (
-        date.format("HH:mm:ss") >=
-        professionalAvailableFrom.format("HH:mm:ss") &&
-        date.format("HH:mm:ss") <= professionalAvailableTo.format("HH:mm:ss")
-      );
+    const professionalTimeSlots = timeSlots.filter((time) => {
+      const timeHour = Number(time.split(":")[0]);
+      const timeMinute = Number(time.split(":")[1]);
+
+      // Compara diretamente os horários
+      const slotTime = timeHour * 60 + timeMinute;
+      const fromTime = professionalAvailableFrom.hour() * 60 + professionalAvailableFrom.minute();
+      const toTime = professionalAvailableTo.hour() * 60 + professionalAvailableTo.minute();
+
+      return slotTime >= fromTime && slotTime <= toTime;
     });
     return professionalTimeSlots.map((time) => {
       return {

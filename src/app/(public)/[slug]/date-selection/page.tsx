@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ptBR } from "date-fns/locale";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { getProfessional } from "@/actions/get-professional";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAppointmentStore } from "@/stores/appointment-store";
 
 import NotificationTag from "../../_components/notification-tag";
@@ -26,6 +27,8 @@ const DataPicker = () => {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
+  const isMobile = useIsMobile();
+  const timePickerRef = useRef<HTMLDivElement>(null);
 
   const [date, setDate] = useState<Date | undefined>(undefined);
 
@@ -61,6 +64,16 @@ const DataPicker = () => {
     if (selectedDate) {
       setStoreDate(selectedDate.toISOString());
       console.log(useAppointmentStore.getState());
+
+      // Scroll automático para mobile quando uma data for selecionada
+      if (isMobile && timePickerRef.current) {
+        setTimeout(() => {
+          timePickerRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100); // Pequeno delay para garantir que o componente foi renderizado
+      }
     }
   };
 
@@ -92,7 +105,7 @@ const DataPicker = () => {
               disabled={(date) => !isDateAvailable(date)}
             />
           </div>
-          <div className="px-4">
+          <div className="px-4" ref={timePickerRef}>
             {date === undefined ? (
               <NotificationTag itemForSelection="data" itemForShow="horários" />
             ) : (
