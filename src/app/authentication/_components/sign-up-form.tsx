@@ -86,7 +86,7 @@ const SignUpForm = () => {
   };
 
   return (
-    <Card className="border-[#424242] bg-[#191919] backdrop-blur-sm">
+    <Card className="border-none bg-gradient-to-br from-[#347d61] to-[#88b94d] backdrop-blur-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <CardHeader className="pb-4">
@@ -107,7 +107,7 @@ const SignUpForm = () => {
                   <FormControl>
                     <Input
                       placeholder="Digite seu nome..."
-                      className="border-[#424242] bg-[#191919] text-white placeholder:text-white/50 focus:border-[#424242] focus:ring-[#424242]"
+                      className="border-none bg-[#191919] text-white placeholder:text-white/70 focus:border-[#424242] focus:ring-[#424242]"
                       {...field}
                     />
                   </FormControl>
@@ -125,7 +125,7 @@ const SignUpForm = () => {
                   <FormControl>
                     <Input
                       placeholder="Digite seu e-mail..."
-                      className="border-[#424242] bg-[#191919] text-white placeholder:text-white/50 focus:border-[#424242] focus:ring-[#424242]"
+                      className="border-none bg-[#191919] text-white placeholder:text-white/70 focus:border-[#424242] focus:ring-[#424242]"
                       {...field}
                     />
                   </FormControl>
@@ -144,7 +144,7 @@ const SignUpForm = () => {
                     <Input
                       placeholder="Digite sua senha..."
                       type="password"
-                      className="border-[#424242] bg-[#191919] text-white placeholder:text-white/50 focus:border-[#424242] focus:ring-[#424242]"
+                      className="border-none bg-[#191919] text-white placeholder:text-white/70 focus:border-[#424242] focus:ring-[#424242]"
                       {...field}
                     />
                   </FormControl>

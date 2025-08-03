@@ -58,14 +58,14 @@ export function ResendEmailVerificationForm({ }: React.ComponentProps<"div">) {
   }
 
   return (
-    <Card className="w-full max-w-md border-[#424242] bg-[#191919] backdrop-blur-sm sm:max-w-lg md:max-w-xl">
+    <Card className="w-full max-w-md border-transparent bg-gradient-to-br from-[#347d61] to-[#88b94d] backdrop-blur-sm sm:max-w-lg md:max-w-xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <CardHeader className="pb-4">
             <CardTitle className="text-xl sm:text-2xl">
               Reenviar Email de Verificação
             </CardTitle>
-            <CardDescription className="text-sm sm:text-base">
+            <CardDescription className="text-sm sm:text-base text-white">
               Digite seu e-mail para receber um novo link de verificação.
             </CardDescription>
           </CardHeader>
@@ -80,7 +80,7 @@ export function ResendEmailVerificationForm({ }: React.ComponentProps<"div">) {
                     <Input
                       placeholder="Digite seu e-mail..."
                       {...field}
-                      className="h-10 text-sm sm:h-11 sm:text-base"
+                      className="h-10 text-sm sm:h-11 sm:text-base placeholder:text-white/70"
                     />
                   </FormControl>
                   <FormMessage />

@@ -17,19 +17,19 @@ const AuthenticationPage = () => {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4">
       <div className="relative z-10 flex w-full max-w-md flex-col items-center">
-        <div className="mb-8 flex justify-center">
+        <div className="flex justify-center">
           <Image
-            src="/LogoiGenda.png"
+            src="/LogoCompletaiGenda.png"
             alt="iGenda Logo"
-            width={300}
+            width={400}
             height={80}
-            className="h-24 w-auto"
+            className="h-42 w-auto"
             priority
           />
         </div>
 
         <Tabs value={tab} onValueChange={setTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 border border-[#202020] bg-[#202020]/5">
+          <TabsList className="grid w-full grid-cols-2 border bg-gradient-to-br from-[#347d61] to-[#88b94d]">
             <TabsTrigger value="login" className="cursor-pointer">
               Login
             </TabsTrigger>
@@ -48,7 +48,7 @@ const AuthenticationPage = () => {
         </Tabs>
       </div>
 
-      <div className="text-muted-foreground mt-2 text-center text-xs">
+      <div className="text-white mt-2 text-center text-xs">
         {tab === "register"
           ? "Ao se cadastrar, você concorda com os"
           : "Ao utilizar, você concorda com os"}{" "}
@@ -61,7 +61,7 @@ const AuthenticationPage = () => {
         </span>
       </div>
 
-      <footer className="text-muted-foreground absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-xs">
+      <footer className="text-white absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-xs">
         <span className="inline">
           © {year} Grupo Synqia. Todos os direitos reservados. iGenda é uma marca
           registrada do Grupo Synqia.

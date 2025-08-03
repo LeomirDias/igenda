@@ -20,11 +20,11 @@ const AuthenticationPage = async () => {
       <div className="flex w-full max-w-md flex-col items-center sm:max-w-lg md:max-w-xl">
         <div className="mb-6 flex justify-center sm:mb-8">
           <Image
-            src="/LogoiGenda.png"
+            src="/LogoCompletaiGenda.png"
             alt="iGenda Logo"
-            width={300}
+            width={400}
             height={80}
-            className="h-20 w-auto sm:h-24"
+            className="h-42 w-auto"
             priority
           />
         </div>

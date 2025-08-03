@@ -15,7 +15,7 @@ const OpenPrivacyPoliciesButton = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="link" className={`text-primary ${className}`}>
+        <Button variant="link" className={`text-green-900 ${className}`}>
           Política de privacidade
         </Button>
       </DialogTrigger>

@@ -83,7 +83,7 @@ const LoginForm = () => {
   };
 
   return (
-    <Card className="border-[#424242] bg-[#191919] backdrop-blur-sm">
+    <Card className="border-none bg-gradient-to-br from-[#347d61] to-[#88b94d] backdrop-blur-sm">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <CardHeader className="pb-4">
@@ -104,7 +104,7 @@ const LoginForm = () => {
                   <FormControl>
                     <Input
                       placeholder="Digite seu e-mail..."
-                      className="border-[#424242] bg-[#191919] text-white placeholder:text-white/50 focus:border-[#424242] focus:ring-[#424242]"
+                      className="border-none bg-[#191919] text-white placeholder:text-white/70 focus:border-[#424242] focus:ring-[#424242]"
                       {...field}
                     />
                   </FormControl>
@@ -123,7 +123,7 @@ const LoginForm = () => {
                     <Input
                       placeholder="Digite sua senha"
                       type="password"
-                      className="border-[#424242] bg-[#191919] text-white placeholder:text-white/50 focus:border-[#424242] focus:ring-[#424242]"
+                      className="border-none bg-[#191919] text-white placeholder:text-white/70 focus:border-[#424242] focus:ring-[#424242]"
                       {...field}
                     />
                   </FormControl>
@@ -133,7 +133,7 @@ const LoginForm = () => {
             />
             <Link
               href="/authentication/forgot-password"
-              className="text-sm text-white transition-colors hover:text-green-600"
+              className="text-sm text-white transition-colors hover:text-green-900"
             >
               Esqueceu sua senha?
             </Link>
