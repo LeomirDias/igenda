@@ -71,7 +71,7 @@ const TableClientActions = ({ client }: ClientTableActionsProps) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <a
-                href={`https://wa.me/55${client.phoneNumber.replace(/\D/g, "")}`}
+                href={`https://wa.me/${client.phoneNumber.replace(/\D/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2"
