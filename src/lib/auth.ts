@@ -63,6 +63,8 @@ export const auth = betterAuth({
         user: {
           ...user,
           plan: userData?.plan,
+          stripeCustomerId: userData?.stripeCustomerId,
+          stripeSubscriptionId: userData?.stripeSubscriptionId,
           enterprise: enterprise?.enterpriseId
             ? {
               id: enterprise?.enterpriseId,

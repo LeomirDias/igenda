@@ -7,6 +7,7 @@ import { useAction } from "next-safe-action/hooks";
 
 import { cancelSubscription } from "@/actions/cancel-stripe-subscription";
 import { createStripeCheckout } from "@/actions/create-stripe-checkout";
+import { createStripePortal } from "@/actions/create-stripe-portal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +38,7 @@ interface SubscriptionPlanProps {
 
 export default function SubscriptionPlan({
   active = false,
-  userEmail,
+
 }: SubscriptionPlanProps) {
   const router = useRouter();
 
@@ -57,6 +58,14 @@ export default function SubscriptionPlan({
   const cancelSubscriptionAction = useAction(cancelSubscription, {
     onSuccess: () => {
       router.refresh();
+    },
+  });
+
+  const createStripePortalAction = useAction(createStripePortal, {
+    onSuccess: ({ data }) => {
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
     },
   });
 
@@ -84,9 +93,7 @@ export default function SubscriptionPlan({
   };
 
   const handleManagePortalClick = () => {
-    router.push(
-      `${process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL}?prefilled_email=${userEmail}`,
-    );
+    createStripePortalAction.execute();
   };
 
   return (
@@ -178,9 +185,13 @@ export default function SubscriptionPlan({
         {active && (
           <Button
             onClick={handleManagePortalClick}
+            disabled={createStripePortalAction.isExecuting}
             variant="ghost"
             className="w-full sm:w-auto"
           >
+            {createStripePortalAction.isExecuting && (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            )}
             Gerenciar dados da assinatura
           </Button>
         )}
