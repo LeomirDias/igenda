@@ -25,12 +25,12 @@ export default function WhatsappCard() {
             </CardHeader>
             <CardContent className="flex-grow">
                 <p className="text-sm text-muted-foreground">
-                    Atendimento rápido e personalizado. Nossa equipe está disponível de segunda a sexta, das 9h às 18h.
+                    Atendimento rápido e personalizado. Nossa equipe está disponível 24/7 para atender você!
                 </p>
             </CardContent>
             <CardFooter>
                 <Button className="w-full bg-primary hover:bg-green-800" onClick={() => window.open(whatsappUrl, "_blank")}>
-                    <MessageCircle className="mr-2 h-4 w-4" />
+                    <MessageCircle className="h-4 w-4" />
                     Conversar no WhatsApp
                 </Button>
             </CardFooter>
