@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 import { LauchingSoon } from "@/components/ui/launching-soon";
 import { auth } from "@/lib/auth";
 
@@ -19,6 +20,9 @@ const SupportPage = async () => {
   }
   if (!session.user.enterprise) {
     redirect("/enterprise-form");
+  }
+  if (session.user.plan !== "active") {
+    return <AccessWhitoutPlan />;
   }
 
   return (

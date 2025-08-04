@@ -29,7 +29,7 @@ const ClientsPage = async () => {
   if (!session.user.enterprise) {
     redirect("/enterprise-form");
   }
-  if (!session.user.plan) {
+  if (session.user.plan !== "active") {
     return <AccessWhitoutPlan />;
   }
 

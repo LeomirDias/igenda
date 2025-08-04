@@ -52,7 +52,7 @@ export const POST = async (request: Request) => {
                 .set({
                     stripeSubscriptionId: subscription,
                     stripeCustomerId: customer,
-                    plan: "basic",
+                    plan: "active",
                 })
                 .where(eq(usersTable.id, userId));
             break;
@@ -79,6 +79,62 @@ export const POST = async (request: Request) => {
                     plan: null,
                 })
                 .where(eq(usersTable.id, userId));
+        }
+        case "invoice.payment_failed": {
+            if (!event.data.object.id) {
+                throw new Error("Invoice ID not found");
+            }
+            const invoice = event.data.object as unknown as {
+                customer: string;
+                subscription: string;
+            };
+
+            if (!invoice.subscription) {
+                throw new Error("Subscription not found in invoice");
+            }
+
+            const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+            const userId = subscription.metadata.userId;
+
+            if (!userId) {
+                throw new Error("User ID not found");
+            }
+
+            await db
+                .update(usersTable)
+                .set({
+                    plan: "pending",
+                })
+                .where(eq(usersTable.id, userId));
+            break;
+        }
+        case "invoice.payment_succeeded": {
+            if (!event.data.object.id) {
+                throw new Error("Invoice ID not found");
+            }
+            const invoice = event.data.object as unknown as {
+                customer: string;
+                subscription: string;
+            };
+
+            if (!invoice.subscription) {
+                throw new Error("Subscription not found in invoice");
+            }
+
+            const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+            const userId = subscription.metadata.userId;
+
+            if (!userId) {
+                throw new Error("User ID not found");
+            }
+
+            await db
+                .update(usersTable)
+                .set({
+                    plan: "active",
+                })
+                .where(eq(usersTable.id, userId));
+            break;
         }
     }
     return NextResponse.json({
