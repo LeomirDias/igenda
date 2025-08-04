@@ -12,7 +12,6 @@ import SignUpForm from "./_components/sign-up-form";
 
 const AuthenticationPage = () => {
   const [tab, setTab] = useState("login");
-  const year = new Date().getFullYear();
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4">
@@ -53,20 +52,10 @@ const AuthenticationPage = () => {
           ? "Ao se cadastrar, você concorda com os"
           : "Ao utilizar, você concorda com os"}{" "}
         <span className="inline">
-          <OpenTermsButton className="m-0 inline p-0 align-baseline text-xs" />
-        </span>{" "}
-        e a{" "}
-        <span className="inline">
+          <OpenTermsButton className="m-0 inline p-0 align-baseline text-xs" /> e {" "}
           <OpenPrivacyPoliciesButton className="m-0 inline p-0 align-baseline text-xs" />
         </span>
       </div>
-
-      <footer className="text-white absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-xs">
-        <span className="inline">
-          © {year} Grupo Synqia. Todos os direitos reservados. iGenda é uma marca
-          registrada do Grupo Synqia.
-        </span>
-      </footer>
     </div>
   );
 };
