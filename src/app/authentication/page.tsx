@@ -47,12 +47,9 @@ const AuthenticationPage = () => {
         </Tabs>
       </div>
 
-      <div className="text-white mt-2 text-center text-xs">
-        {tab === "register"
-          ? "Ao se cadastrar, você concorda com os"
-          : "Ao utilizar, você concorda com os"}{" "}
-        <span className="inline">
-          <OpenTermsButton className="m-0 inline p-0 align-baseline text-xs" /> e {" "}
+      <div className="mt-2 text-center text-xs">
+        <span className="inline text-white">
+          <OpenTermsButton className="m-0 inline p-0 align-baseline text-xs" />{" "}e{" "}
           <OpenPrivacyPoliciesButton className="m-0 inline p-0 align-baseline text-xs" />
         </span>
       </div>
