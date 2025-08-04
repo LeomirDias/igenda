@@ -1,5 +1,6 @@
 import "./globals.css";
 
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { ThemeProvider } from "next-themes";
@@ -30,6 +31,7 @@ export default function RootLayout({
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               {children}
             </ThemeProvider>
+            <SpeedInsights />
           </NuqsAdapter>
         </ReactQueryProvider>
         <Toaster position="bottom-center" richColors theme="light" />
