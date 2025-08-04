@@ -79,6 +79,7 @@ export const POST = async (request: Request) => {
                     plan: null,
                 })
                 .where(eq(usersTable.id, userId));
+            break;
         }
         case "invoice.payment_failed": {
             if (!event.data.object.id) {
@@ -86,11 +87,13 @@ export const POST = async (request: Request) => {
             }
             const invoice = event.data.object as unknown as {
                 customer: string;
-                subscription: string;
+                subscription?: string;
             };
 
             if (!invoice.subscription) {
-                throw new Error("Subscription not found in invoice");
+                // Se não há subscription no invoice, não podemos processar
+                console.log("No subscription found in invoice, skipping payment_failed event");
+                break;
             }
 
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
@@ -114,11 +117,13 @@ export const POST = async (request: Request) => {
             }
             const invoice = event.data.object as unknown as {
                 customer: string;
-                subscription: string;
+                subscription?: string;
             };
 
             if (!invoice.subscription) {
-                throw new Error("Subscription not found in invoice");
+                // Se não há subscription no invoice, não podemos processar
+                console.log("No subscription found in invoice, skipping payment_succeeded event");
+                break;
             }
 
             const subscription = await stripe.subscriptions.retrieve(invoice.subscription);

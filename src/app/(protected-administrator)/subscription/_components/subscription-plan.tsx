@@ -5,7 +5,19 @@ import { Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 
+import { cancelSubscription } from "@/actions/cancel-stripe-subscription";
 import { createStripeCheckout } from "@/actions/create-stripe-checkout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,22 +43,20 @@ export default function SubscriptionPlan({
 
   const createStripeCheckoutAction = useAction(createStripeCheckout, {
     onSuccess: async ({ data }) => {
-      if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-        throw new Error("Stripe publishable key not found");
-      }
-      const stripe = await loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-      );
+      const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+      if (!stripeKey) throw new Error("Stripe publishable key not found");
 
-      if (!stripe) {
-        throw new Error("Stripe not found");
-      }
-      if (!data?.sessionId) {
-        throw new Error("Session ID not found");
-      }
-      await stripe.redirectToCheckout({
-        sessionId: data?.sessionId,
-      });
+      const stripe = await loadStripe(stripeKey);
+      if (!stripe) throw new Error("Stripe not found");
+      if (!data?.sessionId) throw new Error("Session ID not found");
+
+      await stripe.redirectToCheckout({ sessionId: data.sessionId });
+    },
+  });
+
+  const cancelSubscriptionAction = useAction(cancelSubscription, {
+    onSuccess: () => {
+      router.refresh();
     },
   });
 
@@ -69,7 +79,11 @@ export default function SubscriptionPlan({
     createStripeCheckoutAction.execute();
   };
 
-  const handleManagePlanClick = () => {
+  const handleCancelClick = () => {
+    cancelSubscriptionAction.execute();
+  };
+
+  const handleManagePortalClick = () => {
     router.push(
       `${process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_URL}?prefilled_email=${userEmail}`,
     );
@@ -104,29 +118,72 @@ export default function SubscriptionPlan({
               <div className="bg-primary/10 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full">
                 <Check className="text-primary h-3 w-3" />
               </div>
-              <span className="text-secondary-foreground text-sm">
-                {feature}
-              </span>
+              <span className="text-secondary-foreground text-sm">{feature}</span>
             </li>
           ))}
         </ul>
       </CardContent>
 
-      <CardFooter className="flex flex-col items-center justify-center gap-4 text-center">
-        <Button
-          onClick={active ? handleManagePlanClick : handleSubscribeClick}
-          disabled={createStripeCheckoutAction.isExecuting}
-          variant="default"
-          className="w-full"
-        >
-          {createStripeCheckoutAction.isExecuting ? (
-            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-          ) : active ? (
-            "Cancelar assinatura"
-          ) : (
-            "Assinar agora"
-          )}
-        </Button>
+      <CardFooter className="flex flex-col gap-4 text-center sm:flex-row sm:justify-between">
+        {active ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                disabled={cancelSubscriptionAction.isExecuting}
+                variant="default"
+                className="w-full sm:w-auto"
+              >
+                {cancelSubscriptionAction.isExecuting && (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                )}
+                Cancelar assinatura
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="max-w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-base md:text-lg lg:text-xl">
+                  Tem certeza que deseja cancelar sua assinatura?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-sm md:text-base lg:text-lg">
+                  Essa ação irá cancelar sua assinatura atual. Você perderá acesso a todos os recursos premium após o período atual.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="text-sm md:text-base">
+                  Cancelar
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleCancelClick}
+                  className="text-sm md:text-base"
+                >
+                  Confirmar cancelamento
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <Button
+            onClick={handleSubscribeClick}
+            disabled={createStripeCheckoutAction.isExecuting}
+            variant="default"
+            className="w-full sm:w-auto"
+          >
+            {createStripeCheckoutAction.isExecuting && (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            )}
+            Assinar agora
+          </Button>
+        )}
+
+        {active && (
+          <Button
+            onClick={handleManagePortalClick}
+            variant="ghost"
+            className="w-full sm:w-auto"
+          >
+            Gerenciar dados da assinatura
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
