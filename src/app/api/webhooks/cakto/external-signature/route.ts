@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 import NewSubscriptionEmail from "@/components/emails/new-subscriptions";
+import RenewSubscriptionEmail from "@/components/emails/renewed subscriptions";
 import { db } from "@/db";
 import { usersSubscriptionTable } from "@/db/schema";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
@@ -67,24 +68,23 @@ export async function POST(req: NextRequest) {
             await resend.emails.send({
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
                 to: customer.email,
-                subject: "Bem-vindo de volta à iGenda!",
-                html: `<p>Olá, ${customer.name}!<br/> 
-                Que bom ter você de volta na iGenda! 💚 <br/>
-                Sua assinatura foi ativada com sucesso.<br/>
-                Acesse sua conta: <a href="https://igendaapp.com.br/authentication">Entrar na iGenda</a></p>`,
+                subject: "Acesse novamente sua iGenda!",
+                react: RenewSubscriptionEmail({
+                    customerName: customer.name || "",
+                }),
             });
 
             // Mensagem WhatsApp para usuários existentes
             await sendWhatsappMessage(customer.phone,
                 `Olá, ${customer.name || ""}! 👋
 
-Que bom ter você de volta na iGenda! 💚
+Que bom ter você de volta na iGenda! 🎉
 
 Sua assinatura foi ativada com sucesso! 
 
 Acesse sua conta: https://igendaapp.com.br/authentication
 
-Obrigado por continuar conosco! 🎉`
+Obrigado por continuar conosco!💚 `
             );
 
         } else {
@@ -98,7 +98,7 @@ Obrigado por continuar conosco! 🎉`
             await resend.emails.send({
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
                 to: customer.email,
-                subject: "Complete seu cadastro na iGenda",
+                subject: "Complete seu cadastro na iGenda!",
                 react: NewSubscriptionEmail({
                     customerName: customer.name || "",
                 }),
@@ -106,16 +106,15 @@ Obrigado por continuar conosco! 🎉`
 
             // Mensagem WhatsApp para novos usuários
             await sendWhatsappMessage(customer.phone,
-                `Olá, ${customer.name || ""}!
-Agradecemos por escolher a iGenda. 💚 
+                `Olá, ${customer.name || ""}! 👋
+
+Agradecemos por escolher a iGenda. 🎉
+
+Sua assinatura foi ativada com sucesso! 
 
 Clique neste link para cadastrar sua conta: https://igendaapp.com.br/authentication/sign-up
 
-⚠️ Atenção: 
-
-O link é válido por 24 horas. ⏳ 
-
-Caso não tenha solicitado, desconsidere esta mensagem.`
+Atenciosamente, equipe iGenda! 💚 `
             );
         }
     }

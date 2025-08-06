@@ -12,17 +12,17 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface NewSubscriptionEmailProps {
+interface RenewedSubscriptionEmailProps {
     customerName: string;
 }
 
-const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
+const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
     const { customerName } = props;
 
     return (
         <Html lang="pt-BR">
             <Head>
-                <title>Complete seu cadastro na iGenda</title>
+                <title>Acesse sua iGenda</title>
             </Head>
             <Preview>Bem-vindo (a) de volta à iGenda! Seu pagamento foi efetivado.</Preview>
             <Tailwind>
@@ -74,7 +74,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.5
                                 }}>
-                                    Bem-vindo (a) à iGenda! Estamos muito felizes em tê-lo conosco.
+                                    Bem-vindo (a) de volta à iGenda! Estamos muito felizes em tê-lo conosco.
                                 </Text>
                             </div>
 
@@ -100,7 +100,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.6
                                 }}>
-                                    Para começar a usar todos os recursos da nossa plataforma, você precisa completar seu cadastro clicando no botão abaixo:
+                                    Para continuar a usar todos os recursos da nossa plataforma, você precisa acessar sua conta clicando no botão abaixo:
                                 </Text>
                             </div>
 
@@ -119,7 +119,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                         display: "inline-block"
                                     }}
                                 >
-                                    ✨ Cadastrar Minha Conta
+                                    ✨ Acessar Minha Conta
                                 </Button>
                             </div>
 
@@ -144,7 +144,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                     fontSize: "14px",
                                     lineHeight: 1.5
                                 }}>
-                                    Após completar seu cadastro, você terá acesso a todas as funcionalidades da iGenda, incluindo agendamento inteligente, lembretes automáticos e muito mais!
+                                    Após acessar sua conta, você terá acesso a todas as funcionalidades da iGenda, incluindo agendamento inteligente, lembretes automáticos e muito mais!
                                 </Text>
                             </div>
 
@@ -210,7 +210,7 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
                                 lineHeight: 1.4
                             }}>
                                 © 2025 iGenda. Todos os direitos reservados.<br />
-                                Este email foi enviado para você porque assinou nossos serviços.
+                                Este email foi enviado para você porque você renovou sua assinatura em nossos serviços.
                             </Text>
                         </Section>
 
@@ -221,4 +221,4 @@ const NewSubscriptionEmail = (props: NewSubscriptionEmailProps) => {
     );
 };
 
-export default NewSubscriptionEmail;
+export default RenewSubscriptionEmail;
