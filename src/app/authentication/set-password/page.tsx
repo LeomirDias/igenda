@@ -9,11 +9,11 @@ import { auth } from "@/lib/auth";
 
 import SetPassworForm from "./_components/set-password-form";
 
-const AuthenticationPage = async ({
-  searchParams,
-}: {
-  searchParams: { token?: string };
-}) => {
+interface SetPasswordPageProps {
+  searchParams: Promise<{ token?: string }>;
+}
+
+const AuthenticationPage = async ({ searchParams }: SetPasswordPageProps) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -22,8 +22,10 @@ const AuthenticationPage = async ({
     redirect("/dashboard");
   }
 
+  const { token } = await searchParams;
+
   // Verificar se o token existe na URL
-  if (!searchParams.token) {
+  if (!token) {
     redirect("/authentication?error=token-missing");
   }
 
@@ -33,7 +35,7 @@ const AuthenticationPage = async ({
     .from(verificationsTable)
     .where(
       and(
-        eq(verificationsTable.value, searchParams.token),
+        eq(verificationsTable.value, token),
         gt(verificationsTable.expiresAt, new Date())
       )
     )
