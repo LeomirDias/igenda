@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
                 //Cancelamento
                 canceledAt: null,
             })
-            .where(eq(usersTable.docNumber, data.customer.docNumber));
+            .where(eq(usersSubscriptionTable.docNumber, data.customer.docNumber));
 
         await db
             .update(usersTable)
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
                 //Cancelamento
                 canceledAt: null,
             })
-            .where(eq(usersTable.docNumber, data.customer.docNumber));
+            .where(eq(usersSubscriptionTable.docNumber, data.customer.docNumber));
 
         await db
             .update(usersTable)
