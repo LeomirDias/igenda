@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 import { db } from "@/db";
-import { usersSubscriptionTable, usersTable } from "@/db/schema";
+import { usersSubscriptionTable } from "@/db/schema";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 const CAKTO_WEBHOOK_SECRET = process.env.CAKTO_WEBHOOK_SECRET_EXTERNAL_SIGNATURES!;
@@ -61,28 +61,7 @@ export async function POST(req: NextRequest) {
             await db.update(usersSubscriptionTable)
                 .set(subscriptionData)
                 .where(eq(usersSubscriptionTable.docNumber, customer.docNumber));
-        } else {
-            // Insere um novo registro
-            await db.insert(usersSubscriptionTable).values({
-                ...subscriptionData,
-                createdAt: new Date(),
-            });
-        }
 
-        // Busca usuário existente pelo email
-        const existingUserWithEmail = await db.query.usersTable.findFirst({
-            where: eq(usersTable.email, customer.email),
-        });
-
-        // Busca usuário existente pelo nome
-        const existingUserWithName = await db.query.usersTable.findFirst({
-            where: eq(usersTable.name, customer.name),
-        });
-
-        // Verifica se o usuário já existe
-        const isExistingUser = existingUserWithEmail || existingUserWithName;
-
-        if (isExistingUser) {
             // Mensagem para usuários existentes
             await resend.emails.send({
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
@@ -106,7 +85,14 @@ Acesse sua conta: https://igendaapp.com.br/authentication
 
 Obrigado por continuar conosco! 🎉`
             );
+
         } else {
+            // Insere um novo registro
+            await db.insert(usersSubscriptionTable).values({
+                ...subscriptionData,
+                createdAt: new Date(),
+            });
+
             // Mensagem para novos usuários
             await resend.emails.send({
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
