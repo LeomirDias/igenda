@@ -75,7 +75,7 @@ export const verifyTokenAndSetPassword = actionClient
             await db.insert(accountsTable).values({
                 id: crypto.randomUUID(),
                 providerId: "credentials",
-                accountId: userData.email,
+                providerAccountId: userData.email,
                 userId: userData.id,
                 password: hashedPassword, // Senha hasheada
                 createdAt: new Date(),
