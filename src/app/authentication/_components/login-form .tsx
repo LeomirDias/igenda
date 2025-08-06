@@ -88,10 +88,10 @@ const LoginForm = () => {
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <CardHeader className="pb-4">
             <CardTitle className="text-center text-2xl font-bold text-white">
-              Login
+              Seja bem vindo (a) de volta!
             </CardTitle>
             <CardDescription className="text-center text-white/80">
-              Faça login na sua conta para continuar.
+              Faça login na sua conta.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

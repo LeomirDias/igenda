@@ -41,7 +41,7 @@ export default function Home() {
               className="w-full h-12 bg-primary hover:bg-emerald-600 text-white font-medium text-base rounded-md"
               size="lg"
             >
-              Já sou assinante
+              Já sou cliente iGenda
             </Button>
           </Link>
 

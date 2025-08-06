@@ -64,9 +64,12 @@ export async function POST(req: NextRequest) {
 
         } else {
             // Cliente não existe, cria um novo registro
+            // Gera um ID único se customer.id não estiver disponível
+            const userId = customer.id || crypto.randomUUID();
+
             await db.insert(usersTable).values({
                 // Cliente
-                id: customer.id,
+                id: userId,
                 name: customer.name,
                 email: customer.email,
                 emailVerified: false,

@@ -15,13 +15,13 @@ const SubscriptionPage = async () => {
       title: "Assinatura Trimestral",
       price: "R$104,90",
       paymentUrl: "https://pay.cakto.com.br/5aqjg9q_513522",
-      savings: "Economia de R$14,80",
+      savings: "Em até 3x de R$ 39,80",
     },
     {
       title: "Assinatura Semestral",
       price: "R$179",
       paymentUrl: "https://pay.cakto.com.br/3cia8pm_513526",
-      savings: "Economia de R$60,40",
+      savings: "Em até 6x de R$ 35,2",
     },
   ];
 
