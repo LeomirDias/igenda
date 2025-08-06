@@ -31,8 +31,12 @@ export async function POST(req: NextRequest) {
     }
 
     if (event === "subscription_created") {
+        // Verifica se já existe um registro com o mesmo doc_number
+        const existingSubscription = await db.query.usersSubscriptionTable.findFirst({
+            where: eq(usersSubscriptionTable.docNumber, customer.docNumber),
+        });
 
-        await db.insert(usersSubscriptionTable).values({
+        const subscriptionData = {
             //Cliente
             docNumber: customer.docNumber,
             phone: customer.phone,
@@ -49,9 +53,21 @@ export async function POST(req: NextRequest) {
             //Cancelamento
             canceledAt: null,
             //Outros de Cliente
-            createdAt: new Date(),
             updatedAt: new Date(),
-        });
+        };
+
+        if (existingSubscription) {
+            // Atualiza o registro existente
+            await db.update(usersSubscriptionTable)
+                .set(subscriptionData)
+                .where(eq(usersSubscriptionTable.docNumber, customer.docNumber));
+        } else {
+            // Insere um novo registro
+            await db.insert(usersSubscriptionTable).values({
+                ...subscriptionData,
+                createdAt: new Date(),
+            });
+        }
 
         // Busca usuário existente pelo email
         const existingUserWithEmail = await db.query.usersTable.findFirst({
