@@ -1,13 +1,21 @@
-"use client";
-
+import { headers } from "next/headers";
 import Image from "next/image";
+import { redirect } from "next/navigation";
+
+import { auth } from "@/lib/auth";
 
 import LoginForm from "./_components/login-form ";
 import OpenPrivacyPoliciesButton from "./_components/open-privacy-policies-button";
 import OpenTermsButton from "./_components/open-terms-button";
 
 
-const AuthenticationPage = () => {
+const AuthenticationPage = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (!session?.user) {
+    redirect("/authentication");
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4">
