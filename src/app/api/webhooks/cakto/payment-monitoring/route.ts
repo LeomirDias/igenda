@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
                 refId: data.refId,
                 //Pagamento
                 paymentMethod: data.paymentMethod,
-                paidAt: new Date(data.paidAt),
+                paidAt: data.paidAt ? new Date(data.paidAt) : null,
                 //Cancelamento
                 canceledAt: null,
             })

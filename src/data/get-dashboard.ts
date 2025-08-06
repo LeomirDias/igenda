@@ -22,6 +22,10 @@ const getDashboard = async ({ session, from, to }: Params) => {
   const todayStart = dayjs().startOf("day").toDate();
   const todayEnd = dayjs().endOf("day").toDate();
 
+  // Converter as datas de string para objetos Date válidos
+  const fromDate = dayjs(from).startOf("day").toDate();
+  const toDate = dayjs(to).endOf("day").toDate();
+
   const [
     [totalRevenue],
     [totalAppointments],
@@ -41,8 +45,8 @@ const getDashboard = async ({ session, from, to }: Params) => {
       .where(
         and(
           eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-          gte(appointmentsTable.date, new Date(from)),
-          lte(appointmentsTable.date, new Date(to)),
+          gte(appointmentsTable.date, fromDate),
+          lte(appointmentsTable.date, toDate),
         ),
       ),
 
@@ -54,8 +58,8 @@ const getDashboard = async ({ session, from, to }: Params) => {
       .where(
         and(
           eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
-          gte(appointmentsTable.date, new Date(from)),
-          lte(appointmentsTable.date, new Date(to)),
+          gte(appointmentsTable.date, fromDate),
+          lte(appointmentsTable.date, toDate),
         ),
       ),
 
@@ -84,8 +88,8 @@ const getDashboard = async ({ session, from, to }: Params) => {
         and(
           eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
           eq(appointmentsTable.status, "canceled"),
-          gte(appointmentsTable.date, new Date(from)),
-          lte(appointmentsTable.date, new Date(to)),
+          gte(appointmentsTable.date, fromDate),
+          lte(appointmentsTable.date, toDate),
         ),
       ),
 
@@ -102,8 +106,8 @@ const getDashboard = async ({ session, from, to }: Params) => {
         appointmentsTable,
         and(
           eq(appointmentsTable.professionalId, professionalsTable.id),
-          gte(appointmentsTable.date, new Date(from)),
-          lte(appointmentsTable.date, new Date(to)),
+          gte(appointmentsTable.date, fromDate),
+          lte(appointmentsTable.date, toDate),
         ),
       )
       .where(eq(professionalsTable.enterpriseId, session.user.enterprise.id))
@@ -122,8 +126,8 @@ const getDashboard = async ({ session, from, to }: Params) => {
         appointmentsTable,
         and(
           eq(appointmentsTable.serviceId, servicesTable.id),
-          gte(appointmentsTable.date, new Date(from)),
-          lte(appointmentsTable.date, new Date(to)),
+          gte(appointmentsTable.date, fromDate),
+          lte(appointmentsTable.date, toDate),
         ),
       )
       .where(eq(servicesTable.enterpriseId, session.user.enterprise.id))
