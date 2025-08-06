@@ -54,7 +54,7 @@ const AuthenticationPage = async ({ searchParams }: SetPasswordPageProps) => {
             alt="iGenda Logo"
             width={400}
             height={80}
-            className="h-42 w-auto"
+            className="h-41 w-auto"
             priority
           />
         </div>
