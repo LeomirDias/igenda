@@ -194,7 +194,7 @@ const EnterpriseForm = () => {
         }
       }
 
-      router.push("/subscription");
+      router.push("/valid-subscription");
     } catch (error) {
       if (isRedirectError(error)) {
         return;

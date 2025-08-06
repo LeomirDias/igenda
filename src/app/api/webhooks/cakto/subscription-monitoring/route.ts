@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "@/db";
-import { usersTable } from "@/db/schema";
+import { usersSubscriptionTable, usersTable } from "@/db/schema";
 
 const CAKTO_WEBHOOK_SECRET = process.env.CAKTO_WEBHOOK_SECRET_SUBSCRIPTIONS!;
 
@@ -29,9 +29,9 @@ export async function POST(req: NextRequest) {
 
     if (event === "subscription_renewed") {
         await db
-            .update(usersTable)
+            .update(usersSubscriptionTable)
             .set({
-                //Produto
+                //Plano
                 planId: data.product.id,
                 plan: data.product.name,
                 //Assinatura
@@ -44,32 +44,55 @@ export async function POST(req: NextRequest) {
                 //Cancelamento
                 canceledAt: null,
             })
+            .where(eq(usersTable.docNumber, data.customer.docNumber));
+
+        await db
+            .update(usersTable)
+            .set({
+                //Assinatura
+                subscriptionStatus: "active",
+            })
+            .where(eq(usersTable.docNumber, data.customer.docNumber));
 
     }
 
     if (event === "subscription_renewal_refused") {
         await db
-            .update(usersTable)
+            .update(usersSubscriptionTable)
             .set({
+                //Plano
+                planId: data.product.id,
+                plan: data.product.name,
                 //Assinatura
                 subscriptionStatus: "subscription_renewal_refused",
                 subscriptionId: null,
                 refId: null,
+                //Pagamento
+                paymentMethod: null,
+                paidAt: null,
                 //Cancelamento
                 canceledAt: null,
+            })
+            .where(eq(usersTable.docNumber, data.customer.docNumber));
+
+        await db
+            .update(usersTable)
+            .set({
+                //Assinatura
+                subscriptionStatus: "subscription_renewal_refused",
             })
             .where(eq(usersTable.docNumber, data.customer.docNumber));
     }
     if (event === "subscription_canceled") {
         await db
+            .delete(usersSubscriptionTable)
+            .where(eq(usersTable.docNumber, data.customer.docNumber));
+
+        await db
             .update(usersTable)
             .set({
                 //Assinatura
                 subscriptionStatus: "subscription_canceled",
-                subscriptionId: null,
-                refId: null,
-                //Cancelamento
-                canceledAt: null,
             })
             .where(eq(usersTable.docNumber, data.customer.docNumber));
     }

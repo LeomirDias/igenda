@@ -23,6 +23,12 @@ export const auth = betterAuth({
       verifications: schema.verificationsTable,
     }
   }),
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
   plugins: [
     customSession(async ({ user, session }) => {
       const [userData, enterprises] = await Promise.all([
@@ -42,7 +48,8 @@ export const auth = betterAuth({
       return {
         user: {
           ...user,
-          plan: userData?.plan,
+          phone: userData?.phone,
+          docNumber: userData?.docNumber,
           subscriptionStatus: userData?.subscriptionStatus,
           enterprise: enterprise?.enterpriseId
             ? {
@@ -59,14 +66,19 @@ export const auth = betterAuth({
   user: {
     modelName: "users",
     additionalFields: {
-      subscriptionStatus: {
+      phone: {
         type: "string",
-        fieldName: "subscription_status",
+        fieldName: "phone",
         required: false,
       },
-      plan: {
+      docNumber: {
         type: "string",
-        fieldName: "plan",
+        fieldName: "docNumber",
+        required: false,
+      },
+      subscriptionStatus: {
+        type: "string",
+        fieldName: "subscriptionStatus",
         required: false,
       },
     },
@@ -82,11 +94,6 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, // Desabilitar verificação de email obrigatória
-    hash: {
-      algorithm: "bcrypt",
-      rounds: 10,
-    },
     sendResetPassword: async ({ user, url }) => {
       resend.emails.send({
         from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,

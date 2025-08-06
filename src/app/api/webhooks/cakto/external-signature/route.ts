@@ -1,11 +1,9 @@
-import crypto from "crypto";
-import dayjs from "dayjs";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 import { db } from "@/db";
-import { usersTable, verificationsTable } from "@/db/schema";
+import { usersSubscriptionTable, usersTable } from "@/db/schema";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 const CAKTO_WEBHOOK_SECRET = process.env.CAKTO_WEBHOOK_SECRET_EXTERNAL_SIGNATURES!;
@@ -34,102 +32,91 @@ export async function POST(req: NextRequest) {
 
     if (event === "subscription_created") {
 
-        // Verifica se o cliente já existe pelo docNumber
-        const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.docNumber, customer.docNumber)
+        await db.insert(usersSubscriptionTable).values({
+            //Cliente
+            docNumber: customer.docNumber,
+            phone: customer.phone,
+            //Plano
+            planId: product.id,
+            plan: product.name,
+            //Assinatura
+            subscriptionStatus: "active",
+            subscriptionId: data.id,
+            refId: data.refId,
+            //Pagamento
+            paymentMethod: data.paymentMethod,
+            paidAt: data.paidAt,
+            //Cancelamento
+            canceledAt: null,
+            //Outros de Cliente
+            createdAt: new Date(),
+            updatedAt: new Date(),
         });
 
-        if (existingUser) {
-            // Cliente já existe, atualiza os dados
-            await db.update(usersTable)
-                .set({
-                    name: customer.name,
-                    phone: customer.phone,
-                    // Plano
-                    planId: product.id,
-                    plan: product.name,
-                    // Assinatura
-                    subscriptionStatus: "waiting_payment",
-                    subscriptionId: data.id,
-                    refId: data.refId,
-                    // Pagamento
-                    paymentMethod: null,
-                    paidAt: null,
-                    // Cancelamento
-                    canceledAt: null,
-                    // Campos obrigatórios
-                    updatedAt: new Date(),
-                })
-                .where(eq(usersTable.docNumber, customer.docNumber));
+        // Busca usuário existente pelo email
+        const existingUserWithEmail = await db.query.usersTable.findFirst({
+            where: eq(usersTable.email, customer.email),
+        });
 
+        // Busca usuário existente pelo nome
+        const existingUserWithName = await db.query.usersTable.findFirst({
+            where: eq(usersTable.name, customer.name),
+        });
+
+        // Verifica se o usuário já existe
+        const isExistingUser = existingUserWithEmail || existingUserWithName;
+
+        if (isExistingUser) {
+            // Mensagem para usuários existentes
+            await resend.emails.send({
+                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
+                to: customer.email,
+                subject: "Bem-vindo de volta à iGenda!",
+                html: `<p>Olá, ${customer.name}!<br/> 
+                Que bom ter você de volta na iGenda! 💚 <br/>
+                Sua assinatura foi ativada com sucesso.<br/>
+                Acesse sua conta: <a href="https://igendaapp.com.br/authentication">Entrar na iGenda</a></p>`,
+            });
+
+            // Mensagem WhatsApp para usuários existentes
+            await sendWhatsappMessage(customer.phone,
+                `Olá, ${customer.name || ""}! 👋
+
+Que bom ter você de volta na iGenda! 💚
+
+Sua assinatura foi ativada com sucesso! 
+
+Acesse sua conta: https://igendaapp.com.br/authentication
+
+Obrigado por continuar conosco! 🎉`
+            );
         } else {
-            // Cliente não existe, cria um novo registro
-            // Gera um ID único se customer.id não estiver disponível
-            const userId = customer.id || crypto.randomUUID();
-
-            await db.insert(usersTable).values({
-                // Cliente
-                id: userId,
-                name: customer.name,
-                email: customer.email,
-                emailVerified: false,
-                phone: customer.phone,
-                phoneVerified: false,
-                docNumber: customer.docNumber,
-                // Plano
-                planId: product.id,
-                plan: product.name,
-                // Assinatura
-                subscriptionStatus: "waiting_payment",
-                subscriptionId: data.id,
-                refId: data.refId,
-                //Pagamento
-                paymentMethod: null,
-                paidAt: null,
-                //Cancelamento
-                canceledAt: null,
-                // Campos obrigatórios
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                role: "administrator",
-            });
-
-            // Gera token de verificação apenas para novos clientes
-            const token = crypto.randomUUID();
-            await db.insert(verificationsTable).values({
-                id: crypto.randomUUID(),
-                identifier: customer.email,
-                value: token,
-                expiresAt: dayjs().add(24, "hours").toDate(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            });
-
-            // Envia e-mail com o link apenas para novos clientes
+            // Mensagem para novos usuários
             await resend.emails.send({
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
                 to: customer.email,
                 subject: "Complete seu cadastro na iGenda",
-                html: `<p>Olá, ${customer.name}!<br/> Agradecemos por escolher a iGenda. 💚 <br/>
-      Clique no link abaixo para definir sua senha:<br/>
-      <a href="https://igendaapp.com.br/authentication/set-password?token=${token}">
-      Definir senha</a></p>`,
+                html: `<p>Olá, ${customer.name}!<br/> 
+                Agradecemos por escolher a iGenda. 💚 <br/>
+                Clique no link abaixo para cadastrar sua conta:<br/>
+                <a href="https://igendaapp.com.br/authentication/sign-up">Cadastrar conta</a></p>`,
             });
 
-            // Enviar mensagem personalizada apenas para novos clientes
+            // Mensagem WhatsApp para novos usuários
             await sendWhatsappMessage(customer.phone,
                 `Olá, ${customer.name || ""}!
 Agradecemos por escolher a iGenda. 💚 
 
-Clique neste link para definir sua senha e ter acesso a sua iGenda: *href="https://igendaapp.com.br/authentication/set-password?token=${token}*
+Clique neste link para cadastrar sua conta: https://igendaapp.com.br/authentication/sign-up
 
 ⚠️ Atenção: 
 
-O código é válido por 24 horas. ⏳ 
+O link é válido por 24 horas. ⏳ 
 
 Caso não tenha solicitado, desconsidere esta mensagem.`
             );
         }
     }
+
     return NextResponse.json({ received: true });
 }

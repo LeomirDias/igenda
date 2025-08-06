@@ -15,10 +15,20 @@ export const usersTable = pgTable("users", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  image: text("image"),
   emailVerified: boolean("email_verified").notNull(),
-  phone: text("phone_number").notNull().unique(),
-  phoneVerified: boolean("phone_verified").notNull(),
-  docNumber: text("doc_number").notNull().unique(),
+  phone: text("phone_number").unique(),
+  docNumber: text("doc_number").unique(),
+  subscriptionStatus: text("subscription_status"),
+  role: text("role").notNull().default("administrator"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+});
+
+//Table to store customer subscription data
+export const usersSubscriptionTable = pgTable("users_subscription", {
+  docNumber: text("doc_number").notNull().unique().primaryKey(),
+  phone: text("phone_number").unique(),
   //Plano
   planId: text("plan_id"),
   plan: text("plan"),
@@ -32,7 +42,6 @@ export const usersTable = pgTable("users", {
   //Cancelamento
   canceledAt: timestamp("canceled_at"),
   //Outros de Cliente
-  role: text("role").notNull().default("administrator"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });
@@ -54,7 +63,7 @@ export const sessionsTable = pgTable("sessions", {
 //table to store accounts
 export const accountsTable = pgTable("accounts", {
   id: text("id").primaryKey(),
-  providerAccountId: text("provider_account_id").notNull(),
+  accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
   userId: text("user_id")
     .notNull()

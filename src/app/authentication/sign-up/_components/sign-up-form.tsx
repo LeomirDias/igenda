@@ -58,13 +58,13 @@ const SignUpForm = () => {
         email: values.email,
         password: values.password,
         name: values.name,
-        callbackURL: "/authentication/verify-email",
+        callbackURL: "/dashboard",
       },
       {
         onSuccess: () => {
-          router.push("/authentication/verify-email");
+          router.push("/dashboard");
           toast.success(
-            "Conta criada com sucesso! Verifique seu e-mail para ativar sua conta.",
+            "Conta criada com sucesso!",
           );
         },
         onError: (ctx) => {
@@ -121,7 +121,9 @@ const SignUpForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-white">E-mail</FormLabel>
+                  <FormLabel className="text-white">E-mail<span className="text-red-300 text-bold">(Deve ser o mesmo e-mail utilizado na assinatura)</span>
+
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Digite seu e-mail..."
