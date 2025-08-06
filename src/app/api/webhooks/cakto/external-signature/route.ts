@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
+import NewSubscriptionEmail from "@/components/emails/new-subscriptions";
 import { db } from "@/db";
 import { usersSubscriptionTable } from "@/db/schema";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
@@ -98,10 +99,9 @@ Obrigado por continuar conosco! 🎉`
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
                 to: customer.email,
                 subject: "Complete seu cadastro na iGenda",
-                html: `<p>Olá, ${customer.name}!<br/> 
-                Agradecemos por escolher a iGenda. 💚 <br/>
-                Clique no link abaixo para cadastrar sua conta:<br/>
-                <a href="https://igendaapp.com.br/authentication/sign-up">Cadastrar conta</a></p>`,
+                react: NewSubscriptionEmail({
+                    customerName: customer.name || "",
+                }),
             });
 
             // Mensagem WhatsApp para novos usuários
