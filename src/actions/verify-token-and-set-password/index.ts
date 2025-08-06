@@ -72,11 +72,10 @@ export const verifyTokenAndSetPassword = actionClient
             const hashedPassword = await bcrypt.hash(password, saltRounds);
 
             // Criar conta na tabela do BetterAuth
-            const accountId = crypto.randomUUID();
             await db.insert(accountsTable).values({
-                id: accountId,
-                accountId: accountId,
+                id: crypto.randomUUID(),
                 providerId: "credentials",
+                accountId: userData.email,
                 userId: userData.id,
                 password: hashedPassword, // Senha hasheada
                 createdAt: new Date(),
