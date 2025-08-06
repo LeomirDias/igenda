@@ -82,6 +82,11 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: false, // Desabilitar verificação de email obrigatória
+    hash: {
+      algorithm: "bcrypt",
+      rounds: 10,
+    },
     sendResetPassword: async ({ user, url }) => {
       resend.emails.send({
         from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,

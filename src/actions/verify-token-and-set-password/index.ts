@@ -1,5 +1,6 @@
 "use server";
 
+import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { and, eq, gt } from "drizzle-orm";
 import { z } from "zod";
@@ -50,16 +51,47 @@ export const verifyTokenAndSetPassword = actionClient
 
             const userData = user[0];
 
+            // Verificar se já existe uma conta para este usuário
+            const existingAccount = await db
+                .select()
+                .from(accountsTable)
+                .where(
+                    and(
+                        eq(accountsTable.userId, userData.id),
+                        eq(accountsTable.providerId, "credentials")
+                    )
+                )
+                .limit(1);
+
+            if (existingAccount.length > 0) {
+                return { error: "Usuário já possui uma conta criada" };
+            }
+
+            // Fazer hash da senha
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
             // Criar conta na tabela do BetterAuth
+            const accountId = crypto.randomUUID();
             await db.insert(accountsTable).values({
-                id: crypto.randomUUID(),
-                accountId: crypto.randomUUID(),
+                id: accountId,
+                accountId: accountId,
                 providerId: "credentials",
                 userId: userData.id,
-                password: password, // BetterAuth fará o hash automaticamente
+                password: hashedPassword, // Senha hasheada
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
+
+            // Atualizar o usuário para marcar o email como verificado
+            await db
+                .update(usersTable)
+                .set({
+                    emailVerified: true,
+                    phoneVerified: true,
+                    updatedAt: new Date(),
+                })
+                .where(eq(usersTable.id, userData.id));
 
             // Deletar verificação usada
             await db
