@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
                 subject: "Complete seu cadastro na iGenda",
                 html: `<p>Olá, ${customer.name}!<br/> Agradecemos por escolher a iGenda. 💚 <br/>
       Clique no link abaixo para definir sua senha:<br/>
-      <a href="https://igendaapp.com.br/set-password?token=${token}">
+      <a href="https://igendaapp.com.br/authentication/set-password?token=${token}">
       Definir senha</a></p>`,
             });
 
@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
                 `Olá, ${customer.name || ""}!
 Agradecemos por escolher a iGenda. 💚 
 
-Clique neste link para definir sua senha e ter acesso a sua iGenda: *href="https://igendaapp.com.br/set-password?token=${token}*
+Clique neste link para definir sua senha e ter acesso a sua iGenda: *href="https://igendaapp.com.br/authentication/set-password?token=${token}*
 
 ⚠️ Atenção: 
 

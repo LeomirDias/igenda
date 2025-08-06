@@ -66,13 +66,6 @@ export const verifyTokenAndSetPassword = actionClient
                 .delete(verificationsTable)
                 .where(eq(verificationsTable.id, verificationData.id));
 
-            await db
-                .update(usersTable)
-                .set({
-                    phoneVerified: true,
-                    emailVerified: true,
-                })
-                .where(eq(usersTable.id, accountsTable.userId));
 
             return {
                 success: true,
