@@ -1,12 +1,10 @@
 "use client";
-import { SquareArrowOutUpRight, User } from "lucide-react";
-import Link from "next/link";
+import { User } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { deleteUser } from "@/actions/delete-user";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -27,7 +25,6 @@ interface UserCardProps {
     id: string;
     name: string;
     email: string;
-    plan?: string | null;
   };
 }
 
@@ -82,17 +79,10 @@ const UserCard = ({ user }: UserCardProps) => {
         </div>
       </CardContent>
 
-      <Link href="/subscription">
-        <Badge className="bg-card border-border text-primary hover:bg-primary absolute top-3 right-3 cursor-pointer p-2 hover:text-white">
-          {user.plan ? "Assinatura ativa" : "Sem assinatura"}{" "}
-          <SquareArrowOutUpRight />
-        </Badge>
-      </Link>
-
       <div className="flex flex-col gap-2 p-4 pt-0">
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button variant="destructive" className="mt-2 w-full">
+            <Button variant="destructive" className="w-full">
               Excluir conta
             </Button>
           </DialogTrigger>

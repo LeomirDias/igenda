@@ -11,10 +11,11 @@ import {
   PageTitle,
 } from "@/components/ui/page-container";
 import { db } from "@/db";
-import { enterprisesTable } from "@/db/schema";
+import { enterprisesTable, usersSubscriptionTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import EnterpriseCard from "./_components/enterprise-card";
+import SubscriptionCard from "./_components/subscription-card";
 import UserCard from "./_components/user-card";
 
 const SettingsPage = async () => {
@@ -28,9 +29,14 @@ const SettingsPage = async () => {
     redirect("/enterprise-form");
   }
 
-  const enterprise = await db.query.enterprisesTable.findFirst({
-    where: eq(enterprisesTable.id, session.user.enterprise.id),
-  });
+  const [enterprise, subscription] = await Promise.all([
+    db.query.enterprisesTable.findFirst({
+      where: eq(enterprisesTable.id, session.user.enterprise.id),
+    }),
+    db.query.usersSubscriptionTable.findFirst({
+      where: eq(usersSubscriptionTable.docNumber, session.user.docNumber || ""),
+    }),
+  ]);
 
   if (!enterprise) {
     throw new Error("Empresa não encontrada");
@@ -48,7 +54,10 @@ const SettingsPage = async () => {
       </PageHeader>
       <PageContent>
         <div className="flex flex-col gap-4">
-          <UserCard user={session.user} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <UserCard user={session.user} />
+            <SubscriptionCard subscription={subscription || null} />
+          </div>
           <EnterpriseCard enterprise={enterprise} />
         </div>
       </PageContent>

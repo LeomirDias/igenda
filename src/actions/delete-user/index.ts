@@ -25,7 +25,7 @@ export const deleteUser = actionClient.action(async () => {
   }
 
   // Verificar se há assinatura ativa
-  if (user.plan === "iGendaPro") {
+  if (user.subscriptionStatus === "active") {
     throw new Error(
       "Não é possível excluir a conta com uma assinatura ativa. Cancele a assinatura antes.",
     );
