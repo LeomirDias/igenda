@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 
-import ResetPasswordForm from "../_components/reset-password-form";
+import ResetPasswordForm from "./_components/reset-password-form";
 
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({

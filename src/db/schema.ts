@@ -11,14 +11,27 @@ import {
 
 //Users
 export const usersTable = pgTable("users", {
+  //Cliente
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").notNull(),
-  image: text("image"),
-  stripeCustomerId: text("stripe_customer_id"),
-  stripeSubscriptionId: text("stripe_subscription_id"),
+  phone: text("phone_number").notNull().unique(),
+  phoneVerified: boolean("phone_verified").notNull(),
+  docNumber: text("doc_number").notNull().unique(),
+  //Plano
+  planId: text("plan_id"),
   plan: text("plan"),
+  //Assinatura
+  subscriptionStatus: text("subscription_status"),
+  subscriptionId: text("subscription_id"),
+  refId: text("ref_id"),
+  //Pagamento
+  paymentMethod: text("payment_method"),
+  paidAt: timestamp("paid_at"),
+  //Cancelamento
+  canceledAt: timestamp("canceled_at"),
+  //Outros de Cliente
   role: text("role").notNull().default("administrator"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
@@ -163,7 +176,7 @@ export const professionalsTable = pgTable("professionals", {
   enterpriseId: uuid("enterprise_id")
     .notNull()
     .references(() => enterprisesTable.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
+  userId: uuid("user_id"),
 });
 
 //Professionals tables relationships whit relations whit enterprises and appointments
@@ -257,6 +270,7 @@ export const clientsTable = pgTable("clients", {
   enterpriseId: uuid("enterprise_id")
     .notNull()
     .references(() => enterprisesTable.id, { onDelete: "cascade" }),
+  userId: uuid("user_id"),
 });
 
 //Clients tables relationships whit relations whit enterprises

@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 import { Resend } from "resend";
 
 import ForgotPasswordEmail from "@/components/emails/reset-password";
-import VerifyEmail from "@/components/emails/verify-email";
 import { db } from "@/db";
 import * as schema from "@/db/schema";
 import { usersTable } from "@/db/schema";
@@ -24,25 +23,6 @@ export const auth = betterAuth({
       verifications: schema.verificationsTable,
     }
   }),
-  emailVerification: {
-    sendVerificationEmail: async ({ user, url }) => {
-      resend.emails.send({
-        from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
-        to: user.email,
-        subject: "Verifique seu e-mail - iGenda App",
-        react: VerifyEmail({ username: user.name, verifyUrl: url }),
-      });
-    },
-    sendOnSignUp: true,
-    autoSignInAfterVerification: true,
-    expiresIn: 86400, // 1 day
-  },
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    },
-  },
   plugins: [
     customSession(async ({ user, session }) => {
       const [userData, enterprises] = await Promise.all([
@@ -63,8 +43,7 @@ export const auth = betterAuth({
         user: {
           ...user,
           plan: userData?.plan,
-          stripeCustomerId: userData?.stripeCustomerId,
-          stripeSubscriptionId: userData?.stripeSubscriptionId,
+          subscriptionStatus: userData?.subscriptionStatus,
           enterprise: enterprise?.enterpriseId
             ? {
               id: enterprise?.enterpriseId,
@@ -80,14 +59,9 @@ export const auth = betterAuth({
   user: {
     modelName: "users",
     additionalFields: {
-      stripeCustomerId: {
+      subscriptionStatus: {
         type: "string",
-        fieldName: "stripeCustomerId",
-        required: false,
-      },
-      stripeSubscriptionId: {
-        type: "string",
-        fieldName: "stripeSubscriptionId",
+        fieldName: "subscription_status",
         required: false,
       },
       plan: {
@@ -120,6 +94,5 @@ export const auth = betterAuth({
         }),
       });
     },
-    requireEmailVerification: true,
   },
 });

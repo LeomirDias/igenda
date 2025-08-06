@@ -6,7 +6,6 @@ import {
   Box,
   Calendar,
   CircleHelp,
-  CreditCard,
   LayoutDashboard,
   LinkIcon,
   LogOutIcon,
@@ -90,11 +89,6 @@ const itemsClients = [
 ];
 
 const othersItems = [
-  {
-    title: "Assinatura",
-    url: "/subscription",
-    icon: CreditCard,
-  },
   {
     title: "Tutoriais",
     url: "/tutorials",

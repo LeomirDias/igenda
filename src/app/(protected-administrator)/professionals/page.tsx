@@ -29,7 +29,7 @@ const ProfessionalsPage = async () => {
   if (!session.user.enterprise) {
     redirect("/enterprise-form");
   }
-  if (session.user.plan !== "active") {
+  if (session.user.subscriptionStatus !== "active") {
     return <AccessWhitoutPlan />;
   }
 

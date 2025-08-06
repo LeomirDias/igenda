@@ -13,7 +13,7 @@ export const AccessWhitoutPlan = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.push("/subscription");
+      router.push("/subscription-plans");
     }, 8000);
 
     return () => clearTimeout(timeout);
@@ -34,7 +34,7 @@ export const AccessWhitoutPlan = () => {
         </div>
         <div className="flex flex-col space-y-1 text-center">
           <span className="text-muted-foreground text-xs">
-            Carregando oferta de assinatura...
+            Carregando ofertas de assinatura...
           </span>
           <div className="bg-muted relative flex h-2 items-center overflow-hidden rounded-full">
             <div

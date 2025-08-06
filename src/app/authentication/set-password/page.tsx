@@ -1,18 +1,46 @@
+import { and, eq, gt } from "drizzle-orm";
 import { headers } from "next/headers";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+import { db } from "@/db";
+import { verificationsTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
-import ForgotPasswordForm from "./_components/forgot-password-form";
+import SetPassworForm from "./_components/set-password-form";
 
-const AuthenticationPage = async () => {
+const AuthenticationPage = async ({
+  searchParams,
+}: {
+  searchParams: { token?: string };
+}) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (session?.user) {
     redirect("/dashboard");
+  }
+
+  // Verificar se o token existe na URL
+  if (!searchParams.token) {
+    redirect("/authentication?error=token-missing");
+  }
+
+  // Verificar se o token é válido
+  const verification = await db
+    .select()
+    .from(verificationsTable)
+    .where(
+      and(
+        eq(verificationsTable.value, searchParams.token),
+        gt(verificationsTable.expiresAt, new Date())
+      )
+    )
+    .limit(1);
+
+  if (!verification.length) {
+    redirect("/authentication?error=invalid-token");
   }
 
   return (
@@ -28,7 +56,7 @@ const AuthenticationPage = async () => {
             priority
           />
         </div>
-        <ForgotPasswordForm />
+        <SetPassworForm />
       </div>
     </div>
   );
