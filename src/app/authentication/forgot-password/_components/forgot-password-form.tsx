@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -34,7 +33,6 @@ const formSchema = z.object({
 
 export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,7 +42,6 @@ export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
 
     await authClient.forgetPassword({
       email: values.email,
@@ -54,7 +51,6 @@ export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
     toast.success("Enviamos um link de redefinição de senha para o seu e-mail.");
     router.push("/authentication");
 
-    setIsLoading(false);
   }
 
   return (
@@ -93,9 +89,9 @@ export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
               <Button
                 type="submit"
                 className="h-10 w-full text-sm sm:h-11 sm:text-base"
-                disabled={isLoading}
+                disabled={form.formState.isSubmitting}
               >
-                {isLoading ? (
+                {form.formState.isSubmitting ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   "Receber link"

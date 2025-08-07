@@ -51,7 +51,7 @@ export default function Home() {
             <div className="flex-1 h-px bg-slate-300" />
           </div>
 
-          <Link href="/subscription-plans" className="w-full">
+          <Link href="/authentication/subscription-plans" className="w-full">
             <Button
               className="w-full h-12 bg-primary hover:bg-emerald-600 text-white font-medium text-base shadow-md hover:shadow-2xl border-transparent"
               size="lg"

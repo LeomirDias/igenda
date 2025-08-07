@@ -1,19 +1,9 @@
-import { headers } from "next/headers";
 import Image from "next/image";
-import { redirect } from "next/navigation";
-
-import { auth } from "@/lib/auth";
 
 import ResetPasswordForm from "./_components/reset-password-form";
 
 const AuthenticationPage = async () => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
 
-  if (session?.user) {
-    redirect("/dashboard");
-  }
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center p-4 sm:p-6 lg:p-8">
