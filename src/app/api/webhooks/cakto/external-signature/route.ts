@@ -19,6 +19,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Segredo inválido" }, { status: 401 });
     }
 
+    const alertPhone = "64992214800"
+
     const event = body?.event;
     const data = body?.data;
     const customer = data?.customer;
@@ -82,9 +84,17 @@ Que bom ter você de volta na iGenda! 🎉
 
 Sua assinatura foi ativada com sucesso! 
 
-Acesse sua conta: https://igendaapp.com.br/authentication
-
 Obrigado por continuar conosco!💚 `
+            );
+
+            // Mensagem WhatsApp para usuários existentes
+            await sendWhatsappMessage(alertPhone,
+                `Olá, Leomir! 👋
+
+Mais uma venda realizada. 🤑
+
+Um novo cliente adquiriu a iGenda! 🎉
+ `
             );
 
         } else {
@@ -115,6 +125,16 @@ Sua assinatura foi ativada com sucesso!
 Clique neste link para cadastrar sua conta: https://igendaapp.com.br/authentication/sign-up
 
 Atenciosamente, equipe iGenda! 💚 `
+            );
+
+            // Mensagem WhatsApp para usuários existentes
+            await sendWhatsappMessage(alertPhone,
+                `Olá, Leomir! 👋
+
+Mais uma venda realizada. 🤑
+
+Um cliente reativou sua assinatura iGenda! 🎉
+ `
             );
         }
     }
