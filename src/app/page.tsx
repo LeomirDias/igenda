@@ -9,7 +9,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-[#347d61] to-[#88b94d] flex">
       {/* Left Side - Image */}
       <div
-        className="flex-1 flex items-center justify-center bg-no-repeat bg-center bg-contain min-h-screen"
+        className="flex-1 hidden xl:flex items-center justify-center bg-no-repeat bg-center bg-contain min-h-screen"
         style={{
           backgroundImage: "url('/CapaAuthentication.png')",
         }}
@@ -38,7 +38,7 @@ export default function Home() {
         <div className="w-full flex flex-col gap-8 items-center">
           <Link href="/authentication" className="w-full">
             <Button
-              className="w-full h-12 bg-primary hover:bg-emerald-600 text-white font-medium text-base rounded-md"
+              className="w-full h-12 bg-primary hover:bg-emerald-600 text-white font-medium text-base shadow-md hover:shadow-2xl border-transparent"
               size="lg"
             >
               Já sou cliente iGenda
@@ -53,7 +53,7 @@ export default function Home() {
 
           <Link href="/subscription-plans" className="w-full">
             <Button
-              className="w-full h-12 bg-primary hover:bg-emerald-600 text-white font-medium text-base rounded-md"
+              className="w-full h-12 bg-primary hover:bg-emerald-600 text-white font-medium text-base shadow-md hover:shadow-2xl border-transparent"
               size="lg"
             >
               Quero fazer parte!
