@@ -1,6 +1,8 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { useAppointmentStore } from "@/stores/appointment-store";
@@ -26,13 +28,11 @@ const StoreRedirectButton = ({
 }: StoreRedirectButtonProps) => {
     const router = useRouter();
     const appointmentStore = useAppointmentStore();
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    const handleClick = () => {
-        // Chama o setter apropriado baseado na storeKey
+    const handleClick = async () => {
+        setIsLoading(true);
         appointmentStore[storeKey](value);
-        console.log(useAppointmentStore.getState());
-
-        // Redireciona para a página especificada com o slug
         router.push(`/${slug}/${redirectTo}`);
     };
 
@@ -40,8 +40,13 @@ const StoreRedirectButton = ({
         <Button
             onClick={handleClick}
             className={className}
+            disabled={isLoading}
         >
-            {children}
+            {isLoading ? (
+                <Loader2 className="animate-spin w-4 h-4" />
+            ) : (
+                children
+            )}
         </Button>
     );
 };

@@ -82,7 +82,7 @@ const ProfessionalCard = () => {
                     </p>
                 )}
             </div>
-            <NotificationTag itemForSelection="profissional" itemForShow="data" />
+            <NotificationTag itemForSelection="profissional" itemForShow="datas" />
         </div>
     );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import dayjs from "dayjs";
+import { Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
@@ -57,7 +58,7 @@ const ConfirmAppointment = () => {
         }
     });
 
-    const { execute: executeAddAppointment } = useAction(createAppointment, {
+    const { execute: executeAddAppointment, isPending: isLoading } = useAction(createAppointment, {
         onSuccess: () => {
             router.push(`/${slug}/successful-scheduling`);
         },
@@ -120,7 +121,13 @@ const ConfirmAppointment = () => {
                 </div>
                 <Separator />
                 <SheetFooter>
-                    <Button type="submit" onClick={handleClickConfirm}>Confirmar agendamento</Button>
+                    <Button type="submit" onClick={handleClickConfirm} disabled={isLoading}>
+                        {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            "Confirmar agendamento"
+                        )}
+                    </Button>
                 </SheetFooter>
             </SheetContent>
         </Sheet>

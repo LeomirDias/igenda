@@ -13,7 +13,7 @@ export default function NotificationTag({ itemForSelection, itemForShow }: Notif
             <Alert className="bg-primary/10 border-primary/20 text-primary">
                 <AlertCircle className="h-4 w-4 text-primary" />
                 <AlertDescription className="text-xs text-primary">
-                    Escolha um {itemForSelection} para buscar os {itemForShow} disponíveis para agendamento
+                    Escolha um {itemForSelection} para buscar {itemForShow} disponíveis para agendamento
                 </AlertDescription>
             </Alert>
         </div>

@@ -14,8 +14,10 @@ import { clientsTable } from "@/db/schema";
 
 
 const formSchema = z.object({
-    name: z.string().trim().min(1, { message: "Nome do serviço é obrigatório." }),
-    phoneNumber: z.string().min(1, { message: "Número de telefone é obrigatório." }),
+    name: z.string().trim().min(1, { message: "Nome do cliente é obrigatório." }),
+    phoneNumber: z.string()
+        .min(1, { message: "Número de telefone é obrigatório." })
+        .regex(/^[0-9]{10,11}$/, { message: "Digite um número de telefone válido (DDD + número)" }),
 })
 
 interface upsertClientFormProps {
@@ -46,10 +48,16 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
     });
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
+        // Adiciona o código do país (55) se não estiver presente
+        let formattedPhoneNumber = values.phoneNumber;
+        if (!formattedPhoneNumber.startsWith('55')) {
+            formattedPhoneNumber = `55${formattedPhoneNumber}`;
+        }
+
         upsertClientAction.execute({
             ...values,
             id: client?.id,
-            phoneNumber: values.phoneNumber,
+            phoneNumber: formattedPhoneNumber,
         });
     };
 
@@ -82,7 +90,7 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
                             <FormItem>
                                 <FormLabel>Contato</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Digite a número de contato da sua empresa" {...field} />
+                                    <Input placeholder="Digite o número de telefone (ex: 11987654321)" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

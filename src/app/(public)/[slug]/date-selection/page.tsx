@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ptBR } from "date-fns/locale";
+import { Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
@@ -31,6 +32,7 @@ const DataPicker = () => {
   const timePickerRef = useRef<HTMLDivElement>(null);
 
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
 
   const setStoreDate = useAppointmentStore((state) => state.setDate);
   const selectedProfessionalId = useAppointmentStore(
@@ -60,6 +62,7 @@ const DataPicker = () => {
   };
 
   const handleSelectDate = (selectedDate: Date | undefined) => {
+
     setDate(selectedDate);
     if (selectedDate) {
       setStoreDate(selectedDate.toISOString());
@@ -78,6 +81,7 @@ const DataPicker = () => {
   };
 
   const handleClickConfirm = () => {
+    setIsLoading(true);
     router.push(`/${slug}/client-infos`);
   };
 
@@ -121,10 +125,14 @@ const DataPicker = () => {
         <SheetFooter>
           <Button
             type="submit"
-            disabled={date === undefined}
+            disabled={isLoading || date === undefined}
             onClick={handleClickConfirm}
           >
-            Confirmar
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Confirmar"
+            )}
           </Button>
           <SheetClose asChild>
             <Button variant="secondary" onClick={handleClose}>
