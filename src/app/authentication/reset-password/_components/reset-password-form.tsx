@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -34,10 +34,7 @@ const formSchema = z.object({
 });
 
 export function ResetPasswordForm({ }: React.ComponentProps<"div">) {
-  const searchParams = useSearchParams();
   const router = useRouter();
-
-  const token = searchParams.get("token") as string;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,7 +57,6 @@ export function ResetPasswordForm({ }: React.ComponentProps<"div">) {
 
     const { error } = await authClient.resetPassword({
       newPassword: values.password,
-      token,
     });
 
     if (error) {
