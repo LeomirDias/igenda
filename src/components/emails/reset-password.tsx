@@ -22,83 +22,189 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
   const { username, resetUrl, userEmail } = props;
 
   return (
-    <Html lang="pt-BR" dir="ltr">
+    <Html lang="pt-BR">
+      <Head>
+        <title>Redefina sua senha</title>
+      </Head>
+      <Preview>Olá, recebemos seu pedido de redefinição de senha!</Preview>
       <Tailwind>
-        <Head />
-        <Preview>Redefina sua senha - Ação necessária</Preview>
-        <Body className="bg-gray-100 py-[40px] font-sans">
-          <Container className="mx-auto max-w-[600px] rounded-[8px] bg-white p-[40px] shadow-sm">
+        <Body style={{ fontFamily: "Arial, sans-serif", backgroundColor: "#f4f4f4", margin: 0, padding: 0 }}>
+          <Container style={{ maxWidth: "600px", margin: "0 auto", backgroundColor: "#ffffff", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
+
             {/* Header */}
-            <Section className="mb-[32px] text-center">
-              <Heading className="m-0 mb-[8px] text-[28px] font-bold text-gray-900">
-                Redefina sua senha
+            <Section style={{
+              background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+              borderRadius: "8px 8px 0 0",
+              padding: "40px 0 20px 0",
+              textAlign: "center"
+            }}>
+              <Heading style={{
+                margin: 0,
+                color: "#ffffff",
+                fontSize: "32px",
+                fontWeight: "bold"
+              }}>
+                iGenda
               </Heading>
-              <Text className="m-0 text-[16px] text-gray-600">
-                Recebemos uma solicitação para redefinir sua senha
+              <Text style={{
+                margin: "10px 0 0 0",
+                color: "#ffffff",
+                fontSize: "16px",
+                opacity: 0.9
+              }}>
+                Sua agenda inteligente
               </Text>
             </Section>
 
-            {/* Main Content */}
-            <Section className="mb-[32px]">
-              <Text className="m-0 mb-[16px] text-[16px] leading-[24px] text-gray-700">
-                Olá, {username}!
-              </Text>
-              <Text className="m-0 mb-[16px] text-[16px] leading-[24px] text-gray-700">
-                Recebemos uma solicitação para redefinir a senha da sua conta
-                associada ao e-mail {userEmail}.
-              </Text>
-              <Text className="m-0 mb-[24px] text-[16px] leading-[24px] text-gray-700">
-                Clique no botão abaixo para criar uma nova senha. Este link irá
-                expirar em 24 horas por motivos de segurança.
-              </Text>
-            </Section>
+            {/* Content */}
+            <Section style={{ padding: "40px 60px" }}>
 
-            {/* Reset Button */}
-            <Section className="mb-[32px] text-center">
-              <Button
-                href={resetUrl}
-                className="box-border inline-block rounded-[8px] bg-green-600 px-[32px] py-[16px] text-[16px] font-semibold text-white no-underline"
-              >
-                Redefinir senha
-              </Button>
-            </Section>
+              {/* Welcome message */}
+              <div style={{ textAlign: "center", marginBottom: "30px" }}>
+                <div style={{ fontSize: "48px", marginBottom: "20px" }}>👋</div>
+                <Heading style={{
+                  margin: "0 0 10px 0",
+                  color: "#1f2937",
+                  fontSize: "24px",
+                  fontWeight: "bold"
+                }}>
+                  Olá, {username}!
+                </Heading>
+              </div>
 
-            {/* Alternative Link */}
-            <Section className="mb-[32px]">
-              <Text className="m-0 mb-[16px] text-[14px] leading-[20px] text-gray-600">
-                Se o botão acima não funcionar, copie e cole este link no seu
-                navegador:
-              </Text>
-              <Text className="m-0 text-[14px] leading-[20px] break-all text-green-600">
-                {resetUrl}
-              </Text>
-            </Section>
+              {/* Main message */}
+              <div style={{
+                backgroundColor: "#f9fafb",
+                padding: "30px",
+                borderRadius: "8px",
+                borderLeft: "4px solid #22c55e",
+                marginBottom: "30px"
+              }}>
+                <Text style={{
+                  margin: "0 0 20px 0",
+                  color: "#374151",
+                  fontSize: "16px",
+                  lineHeight: 1.6
+                }}>
+                  Agradecemos por escolher a iGenda para organizar seu dia a dia! 💚
+                </Text>
+                <Text style={{
+                  margin: 0,
+                  color: "#374151",
+                  fontSize: "16px",
+                  lineHeight: 1.6
+                }}>
+                  Recebemos seu pedido para redefinir a senha da sua conta iGenda referente ao email {userEmail}, clique no botão abaixo e você será direcionado para a redefinição:
+                </Text>
+              </div>
 
-            {/* Security Notice */}
-            <Section className="mb-[32px] border-t border-gray-200 pt-[24px]">
-              <Text className="m-0 mb-[12px] text-[14px] leading-[20px] text-gray-600">
-                <strong>Aviso de segurança:</strong>
-              </Text>
-              <Text className="m-0 mb-[8px] text-[14px] leading-[20px] text-gray-600">
-                • Se você não solicitou a redefinição de senha, ignore este
-                e-mail
-              </Text>
-              <Text className="m-0 mb-[8px] text-[14px] leading-[20px] text-gray-600">
-                • Este link irá expirar em 24 horas
-              </Text>
-              <Text className="m-0 text-[14px] leading-[20px] text-gray-600">
-                • Por segurança, nunca compartilhe este link com ninguém
-              </Text>
+              {/* Call to action button */}
+              <div style={{ textAlign: "center", margin: "40px 0" }}>
+                <Button
+                  href={resetUrl}
+                  style={{
+                    backgroundColor: "#22c55e",
+                    color: "#ffffff",
+                    padding: "16px 32px",
+                    borderRadius: "6px",
+                    textDecoration: "none",
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    display: "inline-block"
+                  }}
+                >
+                  ✨ Redefinir Senha
+                </Button>
+              </div>
+
+              {/* Additional info */}
+              <div style={{
+                backgroundColor: "#eff6ff",
+                padding: "20px",
+                borderRadius: "8px",
+                border: "1px solid #dbeafe"
+              }}>
+                <Text style={{
+                  margin: "0 0 10px 0",
+                  color: "#1e40af",
+                  fontSize: "14px",
+                  fontWeight: "bold"
+                }}>
+                  💡 Dica:
+                </Text>
+                <Text style={{
+                  margin: 0,
+                  color: "#1e3a8a",
+                  fontSize: "14px",
+                  lineHeight: 1.5
+                }}>
+                  Caso você não tenha solicitado esta redefinição ignore está mensagem.
+                </Text>
+              </div>
+
             </Section>
 
             {/* Footer */}
-            <Section className="border-t border-gray-200 pt-[24px] text-center">
-              <Text className="m-0 mb-[8px] text-[12px] leading-[16px] text-gray-500">
-                Este e-mail foi enviado para{" "}
-                <strong className="text-green-600">{userEmail}</strong>
+            <Section style={{
+              padding: "30px 60px",
+              backgroundColor: "#f9fafb",
+              borderRadius: "0 0 8px 8px",
+              borderTop: "1px solid #e5e7eb",
+              textAlign: "center"
+            }}>
+              <Text style={{
+                margin: "0 0 15px 0",
+                color: "#6b7280",
+                fontSize: "14px"
+              }}>
+                Precisa de ajuda? Entre em contato conosco:
               </Text>
-              <Text className="m-0 mb-[8px] text-[12px] leading-[16px] text-gray-500">
-                © 2025 iGenda. Todos os direitos reservados.
+              <Text style={{ margin: "0 0 20px 0" }}>
+                <a href="https://wa.me/64992834346" style={{
+                  color: "#22c55e",
+                  textDecoration: "none",
+                  fontWeight: "bold"
+                }}>
+                  Suporte iGenda
+                </a>
+              </Text>
+              {/* 
+                            {/* Social links 
+                            <div style={{ marginBottom: "20px" }}>
+                                <a href="https://wa.me/64992834346?text=Olá! Preciso de ajuda com a minha assinatura iGenda." style={{
+                                    display: "inline-block",
+                                    margin: "0 10px",
+                                    color: "#6b7280",
+                                    textDecoration: "none"
+                                }}>
+                                    📱 WhatsApp
+                                </a>
+                                <a href="suporteigenda@gmail.com" style={{
+                                    display: "inline-block",
+                                    margin: "0 10px",
+                                    color: "#6b7280",
+                                    textDecoration: "none"
+                                }}>
+                                    📧 Email
+                                </a>
+                                <a href="https://igendaapp.com.br/authentication" style={{
+                                    display: "inline-block",
+                                    margin: "0 10px",
+                                    color: "#6b7280",
+                                    textDecoration: "none"
+                                }}>
+                                    🌐 Website
+                                </a>
+                            </div> */}
+
+              <Text style={{
+                margin: 0,
+                color: "#9ca3af",
+                fontSize: "12px",
+                lineHeight: 1.4
+              }}>
+                © 2025 iGenda. Todos os direitos reservados.<br />
+                Este email foi enviado para você porque você possui uma assinatura na nossa plataforma.
               </Text>
             </Section>
           </Container>

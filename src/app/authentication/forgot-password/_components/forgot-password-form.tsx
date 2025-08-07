@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -28,10 +29,11 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 
 const formSchema = z.object({
-  email: z.string().email(),
+  email: z.string().email({ message: "Email inválido" })
 });
 
 export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,16 +46,13 @@ export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    const { error } = await authClient.forgetPassword({
+    await authClient.forgetPassword({
       email: values.email,
       redirectTo: "/authentication/reset-password",
     });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("E-mail de redefinição de senha enviado");
-    }
+    toast.success("Enviamos um link de redefinição de senha para o seu e-mail.");
+    router.push("/authentication");
 
     setIsLoading(false);
   }
