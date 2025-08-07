@@ -1,6 +1,6 @@
 "use client";
 
-import { Hand, MonitorCheck } from "lucide-react";
+import { Hand, Loader2, MonitorCheck } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -57,28 +57,7 @@ export function ConfirmationToggleButton({
       className="text-primary hover:bg-primary hover:border-primary flex cursor-pointer items-center border-white bg-white text-xs hover:text-white sm:text-sm"
     >
       {isLoading ? (
-        <span className="mr-2 flex h-4 w-4 items-center justify-center">
-          <svg
-            className="text-primary animate-spin"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 16 16"
-          >
-            <circle
-              className="opacity-25"
-              cx="8"
-              cy="8"
-              r="7"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M15 8a7 7 0 11-7-7v2a5 5 0 100 10V8a7 7 0 017-7z"
-            />
-          </svg>
-        </span>
+        <Loader2 className="h-4 w-4 animate-spin" />
       ) : isAutomatic ? (
         <MonitorCheck />
       ) : (

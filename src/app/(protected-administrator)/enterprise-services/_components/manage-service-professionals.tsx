@@ -1,6 +1,6 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -46,7 +46,7 @@ export default function ManageServiceProfessionals({
         }
     });
 
-    const { execute: associateProfessionals } = useAction(associateProfessionalsToService, {
+    const associateProfessionalsAction = useAction(associateProfessionalsToService, {
         onSuccess: () => {
             toast.success("Profissionais associados com sucesso!");
             onSuccess?.();
@@ -82,7 +82,7 @@ export default function ManageServiceProfessionals({
     };
 
     const handleSave = () => {
-        associateProfessionals({
+        associateProfessionalsAction.execute({
             serviceId: service.id,
             professionalIds: selectedProfessionals
         });
@@ -124,8 +124,12 @@ export default function ManageServiceProfessionals({
             </Command>
 
             <DialogFooter>
-                <Button onClick={handleSave}>
-                    Salvar
+                <Button onClick={handleSave} disabled={associateProfessionalsAction?.isPending}>
+                    {associateProfessionalsAction?.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                        "Salvar"
+                    )}
                 </Button>
             </DialogFooter>
         </DialogContent>

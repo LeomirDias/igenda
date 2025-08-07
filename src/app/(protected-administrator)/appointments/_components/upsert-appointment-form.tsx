@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import dayjs from "dayjs";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -98,21 +98,21 @@ const UpsertAppointmentForm = ({
     defaultValues:
       isEdit && appointment
         ? {
-            clientId: appointment.clientId,
-            professionalId: appointment.professionalId,
-            serviceId: appointment.serviceId,
-            date: appointment.date
-              ? dayjs(appointment.date).toDate()
-              : undefined,
-            time: appointment.time || "",
-          }
+          clientId: appointment.clientId,
+          professionalId: appointment.professionalId,
+          serviceId: appointment.serviceId,
+          date: appointment.date
+            ? dayjs(appointment.date).toDate()
+            : undefined,
+          time: appointment.time || "",
+        }
         : {
-            clientId: "",
-            professionalId: "",
-            serviceId: "",
-            date: undefined,
-            time: "",
-          },
+          clientId: "",
+          professionalId: "",
+          serviceId: "",
+          date: undefined,
+          time: "",
+        },
   });
 
   const selectedProfessionalId = form.watch("professionalId");
@@ -392,13 +392,11 @@ const UpsertAppointmentForm = ({
               }
             >
               {createAppointmentAction.isPending ||
-              updateAppointmentAction.isPending
-                ? isEdit
-                  ? "Salvando..."
-                  : "Criando..."
-                : isEdit
-                  ? "Salvar alterações"
-                  : "Criar agendamento"}
+                updateAppointmentAction.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                appointment ? "Editar" : "Agendar"
+              )}
             </Button>
           </DialogFooter>
         </form>

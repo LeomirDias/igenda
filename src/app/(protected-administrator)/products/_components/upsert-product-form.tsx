@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks"
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -298,10 +298,11 @@ const UpsertProductForm = ({ product, onSuccess }: upsertProductoForm) => {
 
                     <DialogFooter>
                         <Button type="submit" disabled={upsertProductoAction.isPending}>
-                            {upsertProductoAction.isPending
-                                ? "Salvando..."
-                                : product ? "Editar produto"
-                                    : "Cadastrar produto"}
+                            {upsertProductoAction.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                "Cadastrar produto"
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>

@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form";
 import { NumericFormat } from 'react-number-format';
@@ -37,7 +38,7 @@ const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
 
     const upsertServiceAction = useAction(upsertService, {
         onSuccess: () => {
-            toast.success("Serviço adicionado com sucesso!");
+            toast.success(service ? "Serviço atualizado com sucesso!" : "Serviço adicionado com sucesso!");
             onSuccess?.();
             form.reset();
         },
@@ -125,11 +126,14 @@ const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
                     />
 
                     <DialogFooter>
-                        <Button type="submit" disabled={upsertServiceAction.isPending}>
-                            {upsertServiceAction.isPending
-                                ? "Salvando..."
-                                : service ? "Editar serviço"
-                                    : "Cadastrar serviço"}
+                        <Button type="submit" disabled={form.formState.isSubmitting || upsertServiceAction.isPending}>
+                            {form.formState.isSubmitting || upsertServiceAction.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : service ? (
+                                "Editar serviço"
+                            ) : (
+                                "Cadastrar serviço"
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>

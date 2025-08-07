@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks"
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -198,9 +198,11 @@ const UpsertMovementStockForm = ({ products, onSuccess }: UpsertMovementStockFor
 
                     <DialogFooter>
                         <Button type="submit" disabled={upsertStockMovementAction.isPending}>
-                            {upsertStockMovementAction.isPending
-                                ? "Registrando..."
-                                : "Registrar movimento"}
+                            {upsertStockMovementAction.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                "Registrar movimento"
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>

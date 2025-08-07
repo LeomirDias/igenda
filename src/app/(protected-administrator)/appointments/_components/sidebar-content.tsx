@@ -1,3 +1,4 @@
+import { ptBR } from "date-fns/locale";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
 interface SidebarContentProps {
   date: Date | undefined;
   setDate: (date: Date | undefined) => void;
+  setIsSidebarOpen?: (open: boolean) => void; // nova prop opcional
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   selectedProfessional: string;
@@ -29,6 +31,7 @@ interface SidebarContentProps {
 export const SidebarContent: React.FC<SidebarContentProps> = ({
   date,
   setDate,
+  setIsSidebarOpen, // nova prop
   searchTerm,
   setSearchTerm,
   selectedProfessional,
@@ -46,7 +49,11 @@ export const SidebarContent: React.FC<SidebarContentProps> = ({
       <Calendar
         mode="single"
         selected={date}
-        onSelect={setDate}
+        locale={ptBR}
+        onSelect={(selectedDate) => {
+          setDate(selectedDate);
+          if (setIsSidebarOpen) setIsSidebarOpen(false);
+        }}
         className="border-border rounded-md border"
       />
     </div>

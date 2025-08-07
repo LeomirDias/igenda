@@ -129,6 +129,7 @@ export function SchedulingDashboard({
                 <SidebarContent
                   date={date}
                   setDate={setDate}
+                  setIsSidebarOpen={setIsSidebarOpen}
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
                   selectedProfessional={selectedProfessional}

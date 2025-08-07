@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks"
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -40,7 +41,7 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
             form.reset();
         },
         onError: () => {
-            toast.error(`Erro ao adicionar cliente.`);
+            toast.error(`Já existe um cliente com estes dados.`);
         },
     });
 
@@ -89,10 +90,11 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
                     />
                     <DialogFooter>
                         <Button type="submit" disabled={upsertClientAction.isPending}>
-                            {upsertClientAction.isPending
-                                ? "Salvando..."
-                                : client ? "Editar cliente"
-                                    : "Cadastrar cliente"}
+                            {upsertClientAction.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                "Cadastrar cliente"
+                            )}
                         </Button>
                     </DialogFooter>
                 </form>
