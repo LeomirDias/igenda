@@ -15,9 +15,9 @@ import ScheduleFormWrapper from "./_components/schedule-form-wrapper";
 import WhatsAppContact from "./_components/whatsapp-contact";
 
 interface SchedulePageProps {
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 }
 
 const SchedulePage = async ({ params }: SchedulePageProps) => {
