@@ -42,8 +42,7 @@ const AuthenticationPage = () => {
 
             <footer className="text-muted-foreground absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-xs w-full max-w-[400px] md:max-w-full">
                 <span className="inline">
-                    © {year} Grupo Synqia. Todos os direitos reservados. iGenda é uma marca
-                    registrada do Grupo Synqia.
+                    © {year} iGenda. Todos os direitos reservados.
                 </span>
             </footer>
         </div>

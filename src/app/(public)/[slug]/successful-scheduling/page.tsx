@@ -1,53 +1,59 @@
 import { eq } from "drizzle-orm";
-import { Check } from "lucide-react";
+import { CheckCircle } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { SlugPageContainer, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
+import { Button } from "@/components/ui/button";
+import { SlugPageContainer, SlugPageContent, SlugPageHeader, SlugPageHeaderContent, SlugPageTitle } from "@/components/ui/slug-page-container";
 import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
 
-interface PageProps {
-    params: Promise<{
+interface SuccessfulSchedulingPageProps {
+    params: {
         slug: string;
-    }>;
+    };
 }
 
-const SuccessfulScheduling = async ({ params }: PageProps) => {
+const SuccessfulSchedulingPage = async ({ params }: SuccessfulSchedulingPageProps) => {
     const { slug } = await params;
 
+    // Buscar empresa pelo slug
     const enterprise = await db.query.enterprisesTable.findFirst({
         where: eq(enterprisesTable.slug, slug),
     });
 
-    return (
-        <>
-            <meta httpEquiv="refresh" content={`5;url=/${slug}/enterprise-infos`} />
-            <SlugPageContainer>
-                <div className="flex items-center justify-center min-h-[80vh]">
-                    <SlugPageHeader>
-                        <SlugPageHeaderContent>
-                            <div className="flex flex-col items-center justify-center gap-4">
-                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <Check className="h-6 w-6 text-primary" />
-                                </div>
-                                <div className="text-center">
-                                    <SlugPageTitle>Agendamento realizado com sucesso!</SlugPageTitle>
-                                    <p className="text-muted-foreground mt-2">
-                                        Seu agendamento foi confirmado em {enterprise?.name}.
-                                    </p>
-                                    <p className="text-muted-foreground mt-2">
-                                        Os detalhes do seu agendamento serão enviados para o WhatsApp cadastrado.
-                                    </p>
-                                    <p className="text-muted-foreground mt-4 text-sm">
-                                        Você será redirecionado em 5 segundos...
-                                    </p>
-                                </div>
-                            </div>
-                        </SlugPageHeaderContent>
-                    </SlugPageHeader>
-                </div>
-            </SlugPageContainer>
-        </>
-    );
-}
+    if (!enterprise) {
+        redirect("/enterprise-not-found");
+    }
 
-export default SuccessfulScheduling;
+    return (
+        <SlugPageContainer>
+            <SlugPageHeader>
+                <SlugPageHeaderContent>
+                    <div className="flex items-center gap-3">
+                        <div>
+                            <SlugPageTitle>{enterprise.name}</SlugPageTitle>
+                        </div>
+                    </div>
+                </SlugPageHeaderContent>
+            </SlugPageHeader>
+
+            <SlugPageContent>
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+                    <h1 className="text-2xl font-bold mb-2">Agendamento Realizado!</h1>
+                    <p className="text-muted-foreground mb-6">
+                        Seu agendamento foi realizado com sucesso. Você receberá uma confirmação em breve.
+                    </p>
+                    <Button asChild>
+                        <Link href={`/${slug}`}>
+                            Voltar ao Início
+                        </Link>
+                    </Button>
+                </div>
+            </SlugPageContent>
+        </SlugPageContainer>
+    );
+};
+
+export default SuccessfulSchedulingPage;

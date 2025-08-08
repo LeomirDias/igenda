@@ -104,7 +104,7 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
                 toast.success("Código verificado com sucesso!");
                 setClientId(data.client.id);
                 console.log(useAppointmentStore.getState());
-                router.push(`/${enterpriseSlug}/confirm-appoitment`);
+                router.push(`/${enterpriseSlug}/schedule`);
             } else {
                 toast.error(data?.message || "Código inválido. Por favor, tente novamente.");
             }
