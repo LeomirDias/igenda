@@ -9,9 +9,9 @@ import { db } from "@/db";
 import { enterprisesTable } from "@/db/schema";
 
 interface SuccessfulSchedulingPageProps {
-    params: {
+    params: Promise<{
         slug: string;
-    };
+    }>;
 }
 
 const SuccessfulSchedulingPage = async ({ params }: SuccessfulSchedulingPageProps) => {
