@@ -4,8 +4,16 @@ import dayjs from "dayjs";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { appointmentsTable, servicesTable } from "@/db/schema";
+import {
+  appointmentsTable,
+  clientsTable,
+  enterprisesTable,
+  professionalsTable,
+  servicesTable,
+} from "@/db/schema";
+import { formatCurrencyInCents } from "@/helpers/currency";
 import { actionClient } from "@/lib/next-safe-action";
+import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 import { getAvailableTimes } from "../get-available-times";
 import { createAppointmentSchema } from "./schema";
@@ -53,4 +61,31 @@ export const createAppointment = actionClient
       appointmentPriceInCents: service.servicePriceInCents,
       status: "not-confirmed",
     });
+
+    // Enviar mensagem para a empresa quando a confirmação for manual
+    const [enterprise] = await db
+      .select()
+      .from(enterprisesTable)
+      .where(eq(enterprisesTable.id, parsedInput.enterpriseId));
+
+    if (!enterprise) return;
+
+    if (enterprise.confirmation === "manual") {
+      const [[client], [professional]] = await Promise.all([
+        db.select().from(clientsTable).where(eq(clientsTable.id, parsedInput.clientId)),
+        db
+          .select()
+          .from(professionalsTable)
+          .where(eq(professionalsTable.id, parsedInput.professionalId)),
+      ]);
+
+      if (!client || !professional) return;
+
+      const formattedDate = dayjs(appointmentDateTime).format("DD/MM/YYYY");
+      const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
+
+      const message = `Olá, ${enterprise.name}!👋\n\nHá um novo agendamento pendente de confirmação.📅\n\nDados do agendamento:\n• Cliente: ${client.name}\n• Telefone do cliente: ${client.phoneNumber}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n\nAcesse o painel da iGenda para confirmar ou recusar este agendamento.\n\nAtenciosamente, equipe iGenda💚`;
+
+      await sendWhatsappMessage(enterprise.phoneNumber, message);
+    }
   });

@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAppointmentStore } from "@/stores/appointment-store";
 
 const verificationSchema = z.object({
     code: z.string().length(6, { message: "O código deve ter 6 dígitos" }),
@@ -38,7 +37,6 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
     const [timeLeft, setTimeLeft] = useState(EXPIRATION_TIME);
     const [canResend, setCanResend] = useState(false);
     const [isResending, setIsResending] = useState(false);
-    const setClientId = useAppointmentStore((state) => state.setClientId);
 
     const form = useForm<z.infer<typeof verificationSchema>>({
         resolver: zodResolver(verificationSchema),
@@ -102,8 +100,6 @@ const VerificationForm = ({ clientData }: VerificationFormProps) => {
         onSuccess: async ({ data }) => {
             if (data?.success && data.client) {
                 toast.success("Código verificado com sucesso!");
-                setClientId(data.client.id);
-                console.log(useAppointmentStore.getState());
                 router.push(`/${enterpriseSlug}/schedule`);
             } else {
                 toast.error(data?.message || "Código inválido. Por favor, tente novamente.");
