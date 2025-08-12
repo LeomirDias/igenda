@@ -1,29 +1,11 @@
 
 import Image from "next/image";
 
-import SubscriptionPlanCard from "./_components/subscription-plan-card";
+import MonthlyPlanCard from "./_components/monthly-plan-card";
+import QuarterlyPlanCard from "./_components/quarterly-plan-card";
+import SemiannualPlanCard from "./_components/semiannual-plan-card";
 
 const SubscriptionPage = async () => {
-  const plans = [
-    {
-      title: "Assinatura Mensal",
-      price: "R$39,90",
-      paymentUrl: "https://pay.cakto.com.br/ht897wv_511991",
-      savings: null,
-    },
-    {
-      title: "Assinatura Trimestral",
-      price: "R$104,90",
-      paymentUrl: "https://pay.cakto.com.br/5aqjg9q_513522",
-      savings: "Em até 3x de R$ 34,96",
-    },
-    {
-      title: "Assinatura Semestral",
-      price: "R$179",
-      paymentUrl: "https://pay.cakto.com.br/3cia8pm_513526",
-      savings: "Em até 6x de R$ 29,83",
-    },
-  ];
 
   const features = [
     "Cadastro de profissionais ilimitados",
@@ -39,6 +21,7 @@ const SubscriptionPage = async () => {
     "Suporte via 24/7 via WhatsApp",
     "Acesso integral a todas as novidades e atualizações",
   ];
+
 
   return (
     <div className="min-h-screen p-4 bg-background">
@@ -86,16 +69,9 @@ const SubscriptionPage = async () => {
         </div>
 
         <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {plans.map((plan, index) => (
-            <div key={index} className="flex h-full">
-              <SubscriptionPlanCard
-                title={plan.title}
-                price={plan.price}
-                paymentUrl={plan.paymentUrl}
-                savings={plan.savings}
-              />
-            </div>
-          ))}
+          <MonthlyPlanCard active={false} />
+          <QuarterlyPlanCard active={false} />
+          <SemiannualPlanCard active={false} />
         </div>
       </div>
     </div>
