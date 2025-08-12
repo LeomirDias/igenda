@@ -7,8 +7,7 @@ import WhatsappCard from "@/app/(protected-administrator)/support/_components/wh
 import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Suporte - Nossa Aplicação",
-  description: "Entre em contato com nossa equipe de suporte",
+  title: "iGenda - Suporte"
 };
 
 const SupportPage = async () => {

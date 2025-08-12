@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -18,6 +19,10 @@ import { auth } from "@/lib/auth";
 
 import AddClientButton from "./_components/add-client-button";
 import { ClientsTable } from "./_components/clients-table";
+
+export const metadata: Metadata = {
+  title: "iGenda - Clientes",
+};
 
 const ClientsPage = async () => {
   const session = await auth.api.getSession({

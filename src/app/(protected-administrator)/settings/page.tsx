@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -17,6 +18,10 @@ import { auth } from "@/lib/auth";
 import EnterpriseCard from "./_components/enterprise-card";
 import SubscriptionCard from "./_components/subscription-card";
 import UserCard from "./_components/user-card";
+
+export const metadata: Metadata = {
+  title: "iGenda - Configurações",
+};
 
 const SettingsPage = async () => {
   const session = await auth.api.getSession({

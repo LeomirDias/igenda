@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -11,6 +12,11 @@ import {
 import { auth } from "@/lib/auth";
 
 import EnterpriseForm from "./_components/enterprise-form";
+
+export const metadata: Metadata = {
+  title: "iGenda - Cadastrar empresa",
+};
+
 
 const EnterpriseFormPage = async () => {
   const session = await auth.api.getSession({

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -21,6 +22,11 @@ import { DatePicker } from "./_components/date-picker";
 import StatsCards from "./_components/stats-cards";
 import TopProfessionals from "./_components/top-professionals";
 import TopServices from "./_components/top-services";
+
+export const metadata: Metadata = {
+  title: "iGenda - Relatórios",
+};
+
 
 interface DashboardPageProps {
   searchParams: Promise<{

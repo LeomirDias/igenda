@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -18,6 +19,10 @@ import { auth } from "@/lib/auth";
 
 import AddProfessionalButton from "./_components/add-professional-button";
 import ProfessionalCard from "./_components/profesisonal-card";
+
+export const metadata: Metadata = {
+  title: "iGenda - Profissionais",
+};
 
 const ProfessionalsPage = async () => {
   const session = await auth.api.getSession({

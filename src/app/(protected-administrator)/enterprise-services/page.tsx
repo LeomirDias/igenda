@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -18,6 +19,11 @@ import { auth } from "@/lib/auth";
 
 import AddServiceButton from "./_components/add-service-button";
 import ServiceCard from "./_components/service-card";
+
+export const metadata: Metadata = {
+  title: "iGenda - Serviços",
+};
+
 
 const EnterpriseServicesPage = async () => {
   const session = await auth.api.getSession({

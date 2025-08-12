@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -11,6 +12,10 @@ import {
 import { auth } from "@/lib/auth";
 
 import ValidSubscriptionForm from "./_components/valid-subscription-form";
+
+export const metadata: Metadata = {
+    title: "iGenda - Validação de assinatura",
+};
 
 const EnterpriseFormPage = async () => {
     const session = await auth.api.getSession({

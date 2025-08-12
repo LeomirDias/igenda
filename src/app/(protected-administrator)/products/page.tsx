@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -20,6 +21,11 @@ import { auth } from "@/lib/auth";
 import AddMovementStockButton from "./_components/add-movement-button";
 import AddProductButton from "./_components/add-product-button";
 import { productsTableColumns } from "./_components/table-columns";
+
+export const metadata: Metadata = {
+  title: "iGenda - Estoque",
+};
+
 
 const ProductsPage = async () => {
   const session = await auth.api.getSession({

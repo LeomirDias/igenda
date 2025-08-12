@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { Link } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -25,6 +26,10 @@ import { usersToEnterprisesTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import { CopyLinkButton } from "./_components/copy-link-button";
+
+export const metadata: Metadata = {
+  title: "iGenda - Link de Agendamento",
+};
 
 const BookingLinkPage = async () => {
   const session = await auth.api.getSession({
