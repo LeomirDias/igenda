@@ -141,6 +141,7 @@ export const enterprisesTable = pgTable("enterprises", {
   slug: text("slug").notNull().unique(),
   avatarImageURL: text("avatar_image_url"),
   confirmation: text("confirmation").notNull().default("manual"),
+  interval: text("interval").default("30"),
   ownerId: text("owner_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
@@ -177,6 +178,7 @@ export const professionalsTable = pgTable("professionals", {
   availableToWeekDay: integer("available_to_week_day").notNull(),
   availableFromTime: time("available_from_time").notNull(),
   availableToTime: time("available_to_time").notNull(),
+  status: text("status").notNull().default("active"),
   createdAT: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
@@ -239,6 +241,7 @@ export const servicesTable = pgTable("services", {
   name: text("name").notNull(),
   durationInMinutes: integer("duration_in_minutes").notNull(),
   servicePriceInCents: integer("service_price_in_cents").notNull(),
+  status: text("status").notNull().default("active"),
   createdAT: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

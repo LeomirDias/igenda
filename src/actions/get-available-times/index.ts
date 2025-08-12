@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { professionalsTable } from "@/db/schema";
+import { enterprisesTable, professionalsTable } from "@/db/schema";
 import { generateTimeSlots } from "@/helpers/time";
 import { actionClient } from "@/lib/next-safe-action";
 
@@ -28,6 +28,13 @@ export const getAvailableTimes = actionClient
     if (!professional) {
       throw new Error("Profissional não encontrado");
     }
+    // Buscar o intervalo configurado na empresa do profissional
+    const enterprise = await db.query.enterprisesTable.findFirst({
+      where: eq(enterprisesTable.id, professional.enterpriseId),
+    });
+    const intervalInMinutes = enterprise?.interval
+      ? parseInt(enterprise.interval, 10)
+      : 30;
     const selectedDayOfWeek = dayjs(parsedInput.date).day();
     const professionalIsAvailable =
       selectedDayOfWeek >= professional.availableFromWeekDay &&
@@ -47,7 +54,7 @@ export const getAvailableTimes = actionClient
         return dayjs(appointment.date).isSame(parsedInput.date, "day");
       })
       .map((appointment) => dayjs(appointment.date).format("HH:mm:ss"));
-    const timeSlots = generateTimeSlots();
+    const timeSlots = generateTimeSlots(Number.isFinite(intervalInMinutes) ? intervalInMinutes : 30);
 
     // Lê os horários diretamente do banco (sem conversão UTC)
     const professionalAvailableFrom = professional.availableFromTime;

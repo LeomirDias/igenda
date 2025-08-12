@@ -68,6 +68,7 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
       city: enterprise?.city || "",
       state: enterprise?.state || "",
       confirmation: enterprise?.confirmation || "manual",
+      interval: enterprise?.interval || "30"
     },
   });
 
@@ -162,6 +163,7 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
         city: data.city,
         state: data.state,
         confirmation: data.confirmation,
+        interval: data.interval,
       });
 
       if (avatarFile) {
@@ -405,7 +407,7 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
                 )}
               />
             </div>
-            <div className="w-full">
+            <div className="w-full flex flex-col gap-2">
               <FormField
                 control={form.control}
                 name="confirmation"
@@ -414,7 +416,7 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
                     <FormLabel>
                       Tipo de Confirmação{" "}
                       <span className="text-muted-foreground text-xs">
-                        (Pode ser alterado depois)
+                        (Pode ser alterado na tela de agendamentos)
                       </span>
                     </FormLabel>
                     <Select
@@ -429,6 +431,36 @@ const EnterpriseCard = ({ enterprise }: EnterpriseCardProps) => {
                       <SelectContent>
                         <SelectItem value="manual">Manual</SelectItem>
                         <SelectItem value="automatic">Automático</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="interval"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Intervalo de horário de atendimento
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione o tipo de confirmação..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="15">15 minutos</SelectItem>
+                        <SelectItem value="30">30 minutos</SelectItem>
+                        <SelectItem value="45">45 minutos</SelectItem>
+                        <SelectItem value="60">1 hora</SelectItem>
+                        <SelectItem value="90">1 hora e 30 minutos</SelectItem>
+                        <SelectItem value="120">2 horas</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

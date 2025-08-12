@@ -44,6 +44,7 @@ export const updateEnterprise = actionClient
       city,
       state,
       confirmation,
+      interval
     } = parsedInput;
 
     const enterpriseId = id;
@@ -64,6 +65,7 @@ export const updateEnterprise = actionClient
           city,
           state,
           confirmation,
+          interval,
           updatedAt: new Date(),
         })
         .where(eq(enterprisesTable.id, enterpriseId));
