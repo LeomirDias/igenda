@@ -168,7 +168,7 @@ const LoginForm = () => {
                     fill="#EA4335"
                   />
                 </svg>
-                Cadastrar com Google
+                Entrar com Google
               </Button>
             </div>
           </CardFooter>

@@ -6,11 +6,8 @@ import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 import { LauchingSoon } from "@/components/ui/launching-soon";
 import { auth } from "@/lib/auth";
 
-
-
 export const metadata: Metadata = {
-  title: "Suporte - Nossa Aplicação",
-  description: "Entre em contato com nossa equipe de suporte",
+  title: "iGenda - Mensagens",
 };
 
 const SupportPage = async () => {

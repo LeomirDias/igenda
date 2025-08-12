@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -14,6 +15,11 @@ import {
 import { auth } from "@/lib/auth";
 
 import { SchedulingDashboard } from "./_components/scheduling-dashboard";
+
+export const metadata: Metadata = {
+  title: "iGenda - Agendamentos",
+};
+
 
 const AppointmentsPage = async () => {
   const session = await auth.api.getSession({

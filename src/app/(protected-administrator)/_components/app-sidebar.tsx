@@ -44,12 +44,12 @@ import { authClient } from "@/lib/auth-client";
 // Menu items.
 const itemsEnterprise = [
   {
-    title: "Dashboard",
+    title: "Relatórios",
     url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    title: "Agendamentos",
+    title: "Agenda",
     url: "/appointments",
     icon: Calendar,
   },
