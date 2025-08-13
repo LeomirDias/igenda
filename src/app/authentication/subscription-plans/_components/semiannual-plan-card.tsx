@@ -42,7 +42,7 @@ export default function SemiannualPlanCard({
                 </CardDescription>
                 <div className="flex items-baseline">
                     <span className="text-white text-2xl font-bold sm:text-3xl">
-                        R$ 179,90
+                        R$ 99,90
                     </span>
                     <span className="text-white ml-1">/ semestre</span>
                 </div>
@@ -50,7 +50,7 @@ export default function SemiannualPlanCard({
                     <span
                         className="bg-emerald-900 text-emerald-300 px-2 py-1 rounded text-xs"
                     >
-                        Em até 6x de R$ 29,83
+                        Em até 6x de R$ 19,69 <br />
                     </span>
                 </div>
 
