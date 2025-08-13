@@ -161,10 +161,13 @@ const EnterpriseForm = () => {
 
   const onSubmit = async (data: z.infer<typeof enterpriseFormSchema>) => {
     try {
+      // Limpar o telefone removendo caracteres especiais e adicionar código do país
+      const cleanPhoneNumber = `55${data.phoneNumber.replace(/\D/g, "")}`;
+
       const result = await createEnterprise(
         data.name,
         data.specialty,
-        data.phoneNumber,
+        cleanPhoneNumber,
         data.register,
         data.instagramURL || "",
         data.cep,

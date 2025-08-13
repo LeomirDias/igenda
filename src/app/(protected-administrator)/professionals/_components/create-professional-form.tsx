@@ -120,10 +120,13 @@ const CreateProfessionalForm = ({
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
+      // Limpar o telefone removendo caracteres especiais e adicionar código do país
+      const cleanPhoneNumber = `55${data.phoneNumber.replace(/\D/g, "")}`;
+
       const result = await createProfessional(
         data.name,
         data.specialty,
-        data.phoneNumber,
+        cleanPhoneNumber,
         data.instagramURL || "",
         parseInt(data.availableFromWeekDay),
         parseInt(data.availableToWeekDay),

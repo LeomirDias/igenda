@@ -88,11 +88,14 @@ const UpdateProfessionalForm = ({
 
   const onSubmit = async (data: UpdateProfessionalSchema) => {
     try {
+      // Limpar o telefone removendo caracteres especiais e adicionar código do país
+      const cleanPhoneNumber = `55${data.phoneNumber.replace(/\D/g, "")}`;
+
       await executeUpdateProfessional({
         id: professional?.id,
         name: data.name,
         specialty: data.specialty,
-        phoneNumber: data.phoneNumber,
+        phoneNumber: cleanPhoneNumber,
         instagramURL: data.instagramURL,
         availableFromWeekDay: data.availableFromWeekDay,
         availableToWeekDay: data.availableToWeekDay,

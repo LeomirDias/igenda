@@ -93,7 +93,7 @@ Obrigado por continuar conosco!💚 `
 
 Mais uma venda realizada. 🤑
 
-Um novo cliente adquiriu a iGenda! 🎉
+Um cliente reativou sua assinatura iGenda! 🎉
  `
             );
 
@@ -124,6 +124,12 @@ Sua assinatura foi ativada com sucesso!
 
 Clique neste link para cadastrar sua conta: https://igendaapp.com.br/authentication/sign-up
 
+Seja bem vinda a iGenda. 💚
+
+Clique neste link para entrar no grupo exclusivo de assinantes: https://chat.whatsapp.com/Ilg5BA5SR7wBlwd9t8KA1a?mode=ems_copy_c
+
+Neste grupo você tem suporte total da nossa equipe além do chat privado e a oportunidade de criar uma rede de network com outros assinantes iGenda.
+
 Atenciosamente, equipe iGenda! 💚 `
             );
 
@@ -133,7 +139,7 @@ Atenciosamente, equipe iGenda! 💚 `
 
 Mais uma venda realizada. 🤑
 
-Um cliente reativou sua assinatura iGenda! 🎉
+Um novo cliente adquiriu a iGenda! 🎉
  `
             );
         }

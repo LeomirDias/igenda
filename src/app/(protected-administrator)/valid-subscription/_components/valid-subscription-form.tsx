@@ -59,7 +59,13 @@ const ValidSubscriptionForm = () => {
 
     const onSubmit = async (data: z.infer<typeof validSubscriptionFormSchema>) => {
         try {
-            await execute(data);
+            // Limpar o telefone removendo caracteres especiais e adicionar código do país
+            const cleanPhone = `55${data.phone.replace(/\D/g, "")}`;
+
+            await execute({
+                docNumber: data.docNumber,
+                phone: cleanPhone,
+            });
         } catch (error) {
             if (isRedirectError(error)) {
                 return;
