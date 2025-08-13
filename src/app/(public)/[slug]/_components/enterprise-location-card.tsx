@@ -121,7 +121,10 @@ const EnterpriseLocationCard = ({ enterprise }: EnterpriseLocationCardProps) => 
                                     rel="noopener noreferrer"
                                     className="text-sm hover:underline"
                                 >
-                                    {enterprise.instagramURL}
+                                    {enterprise.instagramURL
+                                        ? `@${enterprise.instagramURL.replace(/^@/, "")}`
+                                        : <span className="text-muted-foreground">Não informado</span>
+                                    }
                                 </a>
                             </div>
                         </div>
