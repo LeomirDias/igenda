@@ -20,13 +20,13 @@ export default function MonthlyPlanCard({
 
 
     return (
-        <Card className="flex h-full w-full flex-col border-2 border-rose-500 bg-background shadow-lg hover:shadow-xl transition-all duration-300 relative">
+        <Card className="flex h-full w-full flex-col border-2 border-emerald-500 bg-background shadow-lg hover:shadow-xl transition-all duration-300 relative">
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span
+                {/* <span
                     className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg animate-pulse"
                 >
                     🔥 Promoção 50% OFF
-                </span>
+                </span>  */}
             </div>
             <CardHeader className="pb-4  text-white rounded-t-lg">
                 <div className="mb-2 flex items-center justify-between">
@@ -38,28 +38,34 @@ export default function MonthlyPlanCard({
                     )}
                 </div>
                 <CardDescription className="text-white mb-4 text-sm">
-                    Mensal com 50% de desconto! <br />
-                    <span className="text-rose-500 text-sm font-semibold">
+                    Ideal para profissionais que trabalham sozinhos! <br />
+                    {/* <span className="text-rose-500 text-sm font-semibold">
                         Promoção válida apenas para o primeiro mês de assinatura.
-                    </span>
+                    </span> */}
                 </CardDescription>
                 <div className="flex items-baseline">
                     <span className="text-white text-2xl font-bold sm:text-3xl">
-                        R$ 19,90
+                        R$ 27,99
                     </span>
                     <span className="text-white ml-1">/ mês</span>
                 </div>
-
+                <div className="mt-2">
+                    <span
+                        className="bg-emerald-900 text-emerald-300 px-2 py-1 rounded text-xs"
+                    >
+                        Menos de R$ 1,00 por dia!!
+                    </span>
+                </div>
             </CardHeader>
 
             <CardFooter className="mt-auto">
                 <Button
                     onClick={() => { window.open("https://pay.cakto.com.br/ht897wv_511991", "_blank") }}
                     variant="default"
-                    className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600"
+                    className="w-full bg-gradient-to-r from-emerald-500 to-emerald-500 hover:from-emerald-600 hover:to-emerald-600"
                     size="lg"
                 >
-                    Assinar agora com 50% de desconto!
+                    Assinar agora!
                 </Button>
             </CardFooter>
         </Card>

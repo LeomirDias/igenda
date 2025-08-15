@@ -42,7 +42,7 @@ export default function QuarterlyPlanCard({
                 </CardDescription>
                 <div className="flex items-baseline">
                     <span className="text-white text-2xl font-bold sm:text-3xl">
-                        R$ 49,90
+                        R$ 74,97
                     </span>
                     <span className="text-white ml-1">/ trimestre</span>
                 </div>
@@ -50,7 +50,7 @@ export default function QuarterlyPlanCard({
                     <span
                         className="bg-emerald-900 text-emerald-300 px-2 py-1 rounded text-xs"
                     >
-                        Apenas R$ 16,63 por mês
+                        Apenas R$ 24,99 por mês
                     </span>
                 </div>
 
