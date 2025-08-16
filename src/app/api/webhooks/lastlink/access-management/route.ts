@@ -26,6 +26,12 @@ export async function POST(req: NextRequest) {
 
     const alertPhone = "64992214800";
 
+    // Função para formatar o telefone removendo o "+" e mantendo o formato internacional
+    const formatPhoneNumber = (phone: string | undefined) => {
+        if (!phone) return '';
+        return phone.replace(/^\+/, '');
+    };
+
     const event = body?.Event;
     const data = body?.Data;
     const buyer = data?.Buyer;
@@ -53,6 +59,12 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Telefone do cliente ausente" }, { status: 400 });
     }
 
+    // Valida se o telefone tem pelo menos 10 dígitos (formato internacional)
+    const phoneDigits = buyer.PhoneNumber.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+        return NextResponse.json({ error: "Telefone do cliente inválido" }, { status: 400 });
+    }
+
     if (event === "Purchase_Order_Confirmed") {
         // Verifica se já existe um registro com o mesmo doc_number
         const existingSubscription = await db.query.usersSubscriptionTable.findFirst({
@@ -62,7 +74,7 @@ export async function POST(req: NextRequest) {
         const subscriptionData = {
             //Cliente
             docNumber: buyer.Document,
-            phone: buyer.PhoneNumber,
+            phone: formatPhoneNumber(buyer.PhoneNumber),
             //Plano
             planId: product?.Id,
             plan: product?.Name,
