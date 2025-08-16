@@ -44,7 +44,7 @@ export async function GET() {
             ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
             : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
 
-        const message = `📅 *Lembrete de Agendamento - ${enterprise.name}*\n\nOlá, ${client.name}!😁\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\nVocê tem um agendamento para *${service.name}* hoje, ${formattedDate} às *${time}*.\n\n• Endereço: ${fullAddress}\n\n⚠️ Se precisar reagendar ou cancelar, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} .\n\nAgradecemos pela preferência!\n\nAtenciosamente, equipe iGenda!💚`;
+        const message = `📅 *Lembrete de Agendamento*\n\nOlá, ${client.name}!😁\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\nVocê tem um agendamento para *${service.name}* hoje, ${formattedDate} às *${time}*.\n\n• Endereço: ${fullAddress}\n\n⚠️ Se precisar reagendar ou cancelar, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} .\n\nAgradecemos pela preferência!\n\nAtenciosamente, equipe iGenda!💚`;
 
         await sendWhatsappMessage(client.phoneNumber, message);
     }

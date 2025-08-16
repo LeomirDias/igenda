@@ -140,11 +140,11 @@ Telefone: ${buyer.PhoneNumber}`
         await sendWhatsappMessage(buyer.PhoneNumber,
             `Olá, ${buyer.Name || ""}! 👋
 
-Agradecemos por fazer parte da iGenda e lamentamos sua saída.! 😕
+Agradecemos por fazer parte da iGenda e lamentamos sua saída. 😕
 
 Seu feedback é de extrema importância para a evolução dos serviços da iGenda. Se possível entre em contato e nos explique o que levou ao cancelamento da sua assinatura..
 
-Caso precise de ajuda ou queira dar seu feedback, entre em contato com o nosso suporte em 64 9283-4346!📱
+Entre em contato conosco pelo contato: 64 9283-4346!📱
 
 Atenciosamente, equipe iGenda!💚 `
         );
