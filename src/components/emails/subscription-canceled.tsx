@@ -92,7 +92,7 @@ const subscriptionCanceled = (props: SubscriptionCanceledProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.6
                                 }}>
-                                    Agradecemos por fazer parte da iGenda e lamentamos sua saída.! 💚
+                                    Agradecemos por fazer parte da iGenda e lamentamos sua saída. 😕💚
                                 </Text>
                             </div>
 
@@ -111,7 +111,7 @@ const subscriptionCanceled = (props: SubscriptionCanceledProps) => {
                                         display: "inline-block"
                                     }}
                                 >
-                                    ❌ Nos dê seu feedback.
+                                    ❌ Conte-nos o que aconteceu...
                                 </Button>
                             </div>
 
@@ -128,7 +128,7 @@ const subscriptionCanceled = (props: SubscriptionCanceledProps) => {
                                     fontSize: "14px",
                                     fontWeight: "bold"
                                 }}>
-                                    💡 Dica:
+                                    ℹ️ Feedback:
                                 </Text>
                                 <Text style={{
                                     margin: 0,

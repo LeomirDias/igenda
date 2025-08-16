@@ -107,7 +107,7 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                             {/* Call to action button */}
                             <div style={{ textAlign: "center", margin: "40px 0" }}>
                                 <Button
-                                    href="https://igendaapp.com.br/authentication/sign-up"
+                                    href="https://igendaapp.com.br/authentication"
                                     style={{
                                         backgroundColor: "#22c55e",
                                         color: "#ffffff",
