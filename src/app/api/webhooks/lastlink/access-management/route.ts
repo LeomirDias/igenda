@@ -41,6 +41,18 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Produto ausente" }, { status: 400 });
     }
 
+    if (!buyer?.Email) {
+        return NextResponse.json({ error: "Email do cliente ausente" }, { status: 400 });
+    }
+
+    if (!buyer?.Name) {
+        return NextResponse.json({ error: "Nome do cliente ausente" }, { status: 400 });
+    }
+
+    if (!buyer?.PhoneNumber) {
+        return NextResponse.json({ error: "Telefone do cliente ausente" }, { status: 400 });
+    }
+
     if (event === "Purchase_Order_Confirmed") {
         // Verifica se já existe um registro com o mesmo doc_number
         const existingSubscription = await db.query.usersSubscriptionTable.findFirst({
@@ -52,14 +64,14 @@ export async function POST(req: NextRequest) {
             docNumber: buyer.Document,
             phone: buyer.PhoneNumber,
             //Plano
-            planId: product.Id,
-            plan: product.Name,
+            planId: product?.Id,
+            plan: product?.Name,
             //Assinatura
             subscriptionStatus: "active",
-            subscriptionId: subscription.Id,
+            subscriptionId: subscription?.Id,
             //Pagamento
-            paymentMethod: purchase.Payment?.PaymentMethod,
-            paidAt: purchase.PaymentDate,
+            paymentMethod: purchase?.Payment?.PaymentMethod,
+            paidAt: purchase?.PaymentDate ? new Date(purchase.PaymentDate) : new Date(),
             //Cancelamento
             canceledAt: null,
             //Outros de Cliente
@@ -70,21 +82,21 @@ export async function POST(req: NextRequest) {
             // Atualiza o registro existente
             await db.update(usersSubscriptionTable)
                 .set(subscriptionData)
-                .where(eq(usersSubscriptionTable.docNumber, buyer.docNumber));
+                .where(eq(usersSubscriptionTable.docNumber, buyer.Document));
 
             // Email
             await resend.emails.send({
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSION} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
-                to: buyer.email,
+                to: buyer.Email,
                 subject: "Acesse novamente sua iGenda!",
                 react: RenewSubscriptionEmail({
-                    customerName: buyer.name || "",
+                    customerName: buyer.Name || "",
                 }),
             });
 
             // WhatsApp
-            await sendWhatsappMessage(buyer.phone,
-                `Olá, ${buyer.name || ""}! 👋
+            await sendWhatsappMessage(buyer.PhoneNumber,
+                `Olá, ${buyer.Name || ""}! 👋
 
 Que bom ter você de volta na iGenda! 🎉
 
@@ -98,7 +110,11 @@ Obrigado por continuar conosco!💚 `
 
 Mais uma venda realizada. 🤑
 
-Um cliente reativou sua assinatura iGenda! 🎉`
+Um cliente reativou sua assinatura iGenda! 🎉
+
+Cliente: ${buyer.Name || ""}
+CPF: ${buyer.Document}
+Telefone: ${buyer.PhoneNumber}`
             );
 
         } else {
@@ -111,16 +127,16 @@ Um cliente reativou sua assinatura iGenda! 🎉`
             // Email
             await resend.emails.send({
                 from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSION} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
-                to: buyer.email,
+                to: buyer.Email,
                 subject: "Complete seu cadastro na iGenda!",
                 react: NewSubscriptionEmail({
-                    customerName: buyer.name || "",
+                    customerName: buyer.Name || "",
                 }),
             });
 
             // WhatsApp
-            await sendWhatsappMessage(buyer.phone,
-                `Olá, ${buyer.name || ""}! 👋
+            await sendWhatsappMessage(buyer.PhoneNumber,
+                `Olá, ${buyer.Name || ""}! 👋
 
 Agradecemos por escolher a iGenda. 🎉
 
@@ -142,7 +158,11 @@ Atenciosamente, equipe iGenda! 💚 `
 
 Mais uma venda realizada. 🤑
 
-Um novo cliente adquiriu a iGenda! 🎉`
+Um novo cliente adquiriu a iGenda! 🎉
+
+Cliente: ${buyer.Name || ""}
+CPF: ${buyer.Document}
+Telefone: ${buyer.PhoneNumber}`
             );
         }
     }
