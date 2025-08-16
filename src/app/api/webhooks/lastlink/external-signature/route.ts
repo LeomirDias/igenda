@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
             });
 
             // WhatsApp
-            await sendWhatsappMessage(buyer.PhoneNumber,
+            await sendWhatsappMessage(formatPhoneNumber(buyer.PhoneNumber),
                 `Olá, ${buyer.Name || ""}! 👋
 
 Que bom ter você de volta na iGenda! 🎉
@@ -126,7 +126,7 @@ Um cliente reativou sua assinatura iGenda! 🎉
 
 Cliente: ${buyer.Name || ""}
 CPF: ${buyer.Document}
-Telefone: ${buyer.PhoneNumber}`
+Telefone: ${formatPhoneNumber(buyer.PhoneNumber)}`
             );
 
         } else {
@@ -147,7 +147,7 @@ Telefone: ${buyer.PhoneNumber}`
             });
 
             // WhatsApp
-            await sendWhatsappMessage(buyer.PhoneNumber,
+            await sendWhatsappMessage(formatPhoneNumber(buyer.PhoneNumber),
                 `Olá, ${buyer.Name || ""}! 👋
 
 Agradecemos por escolher a iGenda. 🎉
@@ -174,7 +174,7 @@ Um novo cliente adquiriu a iGenda! 🎉
 
 Cliente: ${buyer.Name || ""}
 CPF: ${buyer.Document}
-Telefone: ${buyer.PhoneNumber}`
+Telefone: ${formatPhoneNumber(buyer.PhoneNumber)}`
             );
         }
     }
