@@ -26,40 +26,40 @@ export async function POST(req: NextRequest) {
 
     const alertPhone = "64992214800";
 
-    const event = body?.event;
-    const data = body?.data;
-    const buyer = data?.buyer;
-    const product = data?.product;
-    const subscription = data?.subscription;
-    const purchase = data?.purchase;
+    const event = body?.Event;
+    const data = body?.Data;
+    const buyer = data?.Buyer;
+    const product = data?.Products?.[0];
+    const subscription = data?.Subscriptions?.[0];
+    const purchase = data?.Purchase;
 
-    if (!buyer?.docNumber) {
+    if (!buyer?.Document) {
         return NextResponse.json({ error: "CPF do cliente ausente" }, { status: 400 });
     }
 
-    if (!product?.id) {
+    if (!product?.Id) {
         return NextResponse.json({ error: "Produto ausente" }, { status: 400 });
     }
 
     if (event === "Purchase_Order_Confirmed") {
         // Verifica se já existe um registro com o mesmo doc_number
         const existingSubscription = await db.query.usersSubscriptionTable.findFirst({
-            where: eq(usersSubscriptionTable.docNumber, buyer.docNumber),
+            where: eq(usersSubscriptionTable.docNumber, buyer.Document),
         });
 
         const subscriptionData = {
             //Cliente
-            docNumber: buyer.docNumber,
-            phone: buyer.phoneNumber,
+            docNumber: buyer.Document,
+            phone: buyer.PhoneNumber,
             //Plano
-            planId: product.id,
-            plan: product.name,
+            planId: product.Id,
+            plan: product.Name,
             //Assinatura
             subscriptionStatus: "active",
-            subscriptionId: subscription.id,
+            subscriptionId: subscription.Id,
             //Pagamento
-            paymentMethod: purchase.paymentMethod,
-            paidAt: purchase.paymentDate,
+            paymentMethod: purchase.Payment?.PaymentMethod,
+            paidAt: purchase.PaymentDate,
             //Cancelamento
             canceledAt: null,
             //Outros de Cliente
