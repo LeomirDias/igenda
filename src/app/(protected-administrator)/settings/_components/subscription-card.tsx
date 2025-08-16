@@ -24,7 +24,6 @@ interface SubscriptionCardProps {
         plan: string | null;
         subscriptionStatus: string | null;
         subscriptionId: string | null;
-        refId: string | null;
         paymentMethod: string | null;
         paidAt: Date | null;
         canceledAt: Date | null;
