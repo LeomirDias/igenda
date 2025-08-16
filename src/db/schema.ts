@@ -35,7 +35,6 @@ export const usersSubscriptionTable = pgTable("users_subscription", {
   //Assinatura
   subscriptionStatus: text("subscription_status"),
   subscriptionId: text("subscription_id"),
-  refId: text("ref_id"),
   //Pagamento
   paymentMethod: text("payment_method"),
   paidAt: timestamp("paid_at"),

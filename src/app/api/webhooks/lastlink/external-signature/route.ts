@@ -3,26 +3,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 import NewSubscriptionEmail from "@/components/emails/new-subscriptions";
-import RenewSubscriptionEmail from "@/components/emails/renewed subscriptions";
+import RenewSubscriptionEmail from "@/components/emails/renewed-subscriptions";
 import { db } from "@/db";
 import { usersSubscriptionTable } from "@/db/schema";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
-const LASTLINK_WEBHOOK_SECRET = process.env.LASTLINK_WEBHOOK_SECRET!;
+const LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES = process.env.LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES!;
 
 export async function POST(req: NextRequest) {
     // pegar token do header
     const headerSecret = req.headers.get("x-lastlink-token");
 
-    if (!headerSecret || headerSecret !== LASTLINK_WEBHOOK_SECRET) {
+    if (!headerSecret || headerSecret !== LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES) {
         return NextResponse.json({ error: "Segredo inválido" }, { status: 401 });
     }
 
     // só processa o body depois que validar o secret
     const body = await req.json();
-
-    console.log("Webhook recebido da Lastlink:", body);
 
     const alertPhone = "64992214800";
 
@@ -38,6 +36,8 @@ export async function POST(req: NextRequest) {
     const product = data?.Products?.[0];
     const subscription = data?.Subscriptions?.[0];
     const purchase = data?.Purchase;
+    const offer = data?.Offer;
+
 
     if (!buyer?.Document) {
         return NextResponse.json({ error: "CPF do cliente ausente" }, { status: 400 });
@@ -76,8 +76,8 @@ export async function POST(req: NextRequest) {
             docNumber: buyer.Document,
             phone: formatPhoneNumber(buyer.PhoneNumber),
             //Plano
-            planId: product?.Id,
-            plan: product?.Name,
+            planId: offer?.Id,
+            plan: offer?.Name,
             //Assinatura
             subscriptionStatus: "active",
             subscriptionId: subscription?.Id,
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
 
             // Email
             await resend.emails.send({
-                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE}>`,
+                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
                 to: buyer.Email,
                 subject: "Acesse novamente sua iGenda!",
                 react: RenewSubscriptionEmail({
@@ -138,7 +138,7 @@ Telefone: ${buyer.PhoneNumber}`
 
             // Email
             await resend.emails.send({
-                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE}>`,
+                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
                 to: buyer.Email,
                 subject: "Complete seu cadastro na iGenda!",
                 react: NewSubscriptionEmail({

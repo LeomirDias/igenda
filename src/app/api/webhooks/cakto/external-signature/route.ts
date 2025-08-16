@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 import NewSubscriptionEmail from "@/components/emails/new-subscriptions";
-import RenewSubscriptionEmail from "@/components/emails/renewed subscriptions";
+import RenewSubscriptionEmail from "@/components/emails/renewed-subscriptions";
 import { db } from "@/db";
 import { usersSubscriptionTable } from "@/db/schema";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
@@ -50,7 +50,6 @@ export async function POST(req: NextRequest) {
             //Assinatura
             subscriptionStatus: "active",
             subscriptionId: data.id,
-            refId: data.refId,
             //Pagamento
             paymentMethod: data.paymentMethod,
             paidAt: data.paidAt ? new Date(data.paidAt) : null,

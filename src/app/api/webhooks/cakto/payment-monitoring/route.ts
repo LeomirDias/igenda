@@ -36,8 +36,6 @@ export async function POST(req: NextRequest) {
                 plan: data.product.name,
                 //Assinatura
                 subscriptionStatus: "active",
-                subscriptionId: data.id,
-                refId: data.refId,
                 //Pagamento
                 paymentMethod: data.paymentMethod,
                 paidAt: data.paidAt ? new Date(data.paidAt) : null,
@@ -63,8 +61,6 @@ export async function POST(req: NextRequest) {
                 plan: data.product.name,
                 //Assinatura
                 subscriptionStatus: "purchase_refused",
-                subscriptionId: data.id,
-                refId: data.refId,
                 //Pagamento
                 paymentMethod: null,
                 paidAt: null,

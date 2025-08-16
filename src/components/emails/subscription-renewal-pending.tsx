@@ -12,19 +12,19 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface RenewedSubscriptionEmailProps {
+interface SubscriptionRenewalPendingProps {
     customerName: string;
 }
 
-const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
+const subscriptionRenewalPending = (props: SubscriptionRenewalPendingProps) => {
     const { customerName } = props;
 
     return (
         <Html lang="pt-BR">
             <Head>
-                <title>Acesse sua iGenda</title>
+                <title>Assinatura iGenda</title>
             </Head>
-            <Preview>Bem-vindo (a) de volta à iGenda! Seu pagamento foi efetivado.</Preview>
+            <Preview>Sua assinatura está pendente.</Preview>
             <Tailwind>
                 <Body style={{ fontFamily: "Arial, sans-serif", backgroundColor: "#f4f4f4", margin: 0, padding: 0 }}>
                     <Container style={{ maxWidth: "600px", margin: "0 auto", backgroundColor: "#ffffff", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
@@ -74,7 +74,7 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.5
                                 }}>
-                                    Bem-vindo (a) de volta à iGenda! Estamos muito felizes em tê-lo conosco.
+                                    A sua assinatura está pendente.
                                 </Text>
                             </div>
 
@@ -100,14 +100,14 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                                     fontSize: "16px",
                                     lineHeight: 1.6
                                 }}>
-                                    Para continuar a usar todos os recursos da nossa plataforma, você precisa acessar sua conta clicando no botão abaixo:
+                                    Para continuar a usar todos os recursos da nossa plataforma, você precisa realizar o pagamento da sua assinatura.
                                 </Text>
                             </div>
 
                             {/* Call to action button */}
                             <div style={{ textAlign: "center", margin: "40px 0" }}>
                                 <Button
-                                    href="https://igendaapp.com.br/authentication/sign-up"
+                                    href="https://api.whatsapp.com/send/?phone=64992834346&text=Ol%C3%A1%21+Preciso+de+ajuda+com+a+iGenda.&type=phone_number&app_absent=0"
                                     style={{
                                         backgroundColor: "#22c55e",
                                         color: "#ffffff",
@@ -119,7 +119,7 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                                         display: "inline-block"
                                     }}
                                 >
-                                    ✨ Acessar Minha Conta
+                                    📱 Preciso de ajuda com a minha assinatura.
                                 </Button>
                             </div>
 
@@ -144,7 +144,7 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                                     fontSize: "14px",
                                     lineHeight: 1.5
                                 }}>
-                                    Após acessar sua conta, você terá acesso a todas as funcionalidades da iGenda, incluindo agendamento inteligente, lembretes automáticos e muito mais!
+                                    Caso precise de ajuda com a sua assinatura ou tenha perdido seu acesso mesmo efetuando o pagamento. Entre em contato com nosso suporte.
                                 </Text>
                             </div>
 
@@ -158,7 +158,7 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                             borderTop: "1px solid #e5e7eb",
                             textAlign: "center"
                         }}>
-                            <Text style={{
+                            {/* <Text style={{
                                 margin: "0 0 15px 0",
                                 color: "#6b7280",
                                 fontSize: "14px"
@@ -173,7 +173,7 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                                 }}>
                                     Suporte iGenda
                                 </a>
-                            </Text>
+                            </Text> */}
                             {/* 
                             {/* Social links 
                             <div style={{ marginBottom: "20px" }}>
@@ -210,7 +210,7 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
                                 lineHeight: 1.4
                             }}>
                                 © 2025 iGenda. Todos os direitos reservados.<br />
-                                Este email foi enviado para você porque você renovou sua assinatura em nossos serviços.
+                                Este email foi enviado para você porque possui um assinatura em nossos serviços.
                             </Text>
                         </Section>
 
@@ -221,4 +221,4 @@ const RenewSubscriptionEmail = (props: RenewedSubscriptionEmailProps) => {
     );
 };
 
-export default RenewSubscriptionEmail;
+export default subscriptionRenewalPending;
