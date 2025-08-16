@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
 
             // Email
             await resend.emails.send({
-                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSION} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
+                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE}>`,
                 to: buyer.Email,
                 subject: "Acesse novamente sua iGenda!",
                 react: RenewSubscriptionEmail({
@@ -138,7 +138,7 @@ Telefone: ${buyer.PhoneNumber}`
 
             // Email
             await resend.emails.send({
-                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSION} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSION}>`,
+                from: `${process.env.NAME_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE} <${process.env.EMAIL_FOR_ACCOUNT_MANAGEMENT_SUBMISSIONE}>`,
                 to: buyer.Email,
                 subject: "Complete seu cadastro na iGenda!",
                 react: NewSubscriptionEmail({
