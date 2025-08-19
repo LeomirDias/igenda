@@ -35,7 +35,8 @@ const getDashboard = async ({ session, from, to }: Params) => {
     topProfessionals,
     topServices,
     todayAppointments,
-    dailyAppointmentsData,
+    dailyAppointmentsCountData,
+    dailyRevenueData,
   ] = await Promise.all([
     db
       .select({
@@ -45,6 +46,7 @@ const getDashboard = async ({ session, from, to }: Params) => {
       .where(
         and(
           eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
+          eq(appointmentsTable.status, "scheduled"),
           gte(appointmentsTable.date, fromDate),
           lte(appointmentsTable.date, toDate),
         ),
@@ -58,6 +60,7 @@ const getDashboard = async ({ session, from, to }: Params) => {
       .where(
         and(
           eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
+          eq(appointmentsTable.status, "scheduled"),
           gte(appointmentsTable.date, fromDate),
           lte(appointmentsTable.date, toDate),
         ),
@@ -106,6 +109,7 @@ const getDashboard = async ({ session, from, to }: Params) => {
         appointmentsTable,
         and(
           eq(appointmentsTable.professionalId, professionalsTable.id),
+          eq(appointmentsTable.status, "scheduled"),
           gte(appointmentsTable.date, fromDate),
           lte(appointmentsTable.date, toDate),
         ),
@@ -126,6 +130,7 @@ const getDashboard = async ({ session, from, to }: Params) => {
         appointmentsTable,
         and(
           eq(appointmentsTable.serviceId, servicesTable.id),
+          eq(appointmentsTable.status, "scheduled"),
           gte(appointmentsTable.date, fromDate),
           lte(appointmentsTable.date, toDate),
         ),
@@ -149,19 +154,37 @@ const getDashboard = async ({ session, from, to }: Params) => {
       orderBy: appointmentsTable.date,
     }),
 
+    // Contagem diária de agendamentos (todas as situações)
     db
       .select({
         date: sql<string>`DATE(${appointmentsTable.date})`.as("date"),
         appointments: count(appointmentsTable.id),
-        revenue:
-          sql<number>`COALESCE(SUM(${appointmentsTable.appointmentPriceInCents}), 0)`.as(
-            "revenue",
-          ),
       })
       .from(appointmentsTable)
       .where(
         and(
           eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
+          eq(appointmentsTable.status, "scheduled"),
+          gte(appointmentsTable.date, chartStartDate),
+          lte(appointmentsTable.date, chartEndDate),
+        ),
+      )
+      .groupBy(sql`DATE(${appointmentsTable.date})`)
+      .orderBy(sql`DATE(${appointmentsTable.date})`),
+
+    // Faturamento diário apenas de agendamentos com status 'scheduled'
+    db
+      .select({
+        date: sql<string>`DATE(${appointmentsTable.date})`.as("date"),
+        revenue: sql<number>`COALESCE(SUM(${appointmentsTable.appointmentPriceInCents}), 0)`.as(
+          "revenue",
+        ),
+      })
+      .from(appointmentsTable)
+      .where(
+        and(
+          eq(appointmentsTable.enterpriseId, session.user.enterprise.id),
+          eq(appointmentsTable.status, "scheduled"),
           gte(appointmentsTable.date, chartStartDate),
           lte(appointmentsTable.date, chartEndDate),
         ),
@@ -169,6 +192,12 @@ const getDashboard = async ({ session, from, to }: Params) => {
       .groupBy(sql`DATE(${appointmentsTable.date})`)
       .orderBy(sql`DATE(${appointmentsTable.date})`),
   ]);
+
+  const dailyAppointmentsData = dailyAppointmentsCountData.map((item) => ({
+    date: item.date,
+    appointments: item.appointments,
+    revenue: dailyRevenueData.find((r) => r.date === item.date)?.revenue ?? 0,
+  }));
 
   return {
     totalRevenue,
@@ -201,6 +230,7 @@ export async function getDailyBillingData(enterpriseId: string) {
     .where(
       and(
         eq(appointmentsTable.enterpriseId, enterpriseId),
+        eq(appointmentsTable.status, "scheduled"),
         gte(appointmentsTable.date, chartStartDate),
         lte(appointmentsTable.date, chartEndDate),
       ),
