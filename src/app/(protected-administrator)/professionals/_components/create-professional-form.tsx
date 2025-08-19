@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { professionalsTable } from "@/db/schema";
+import { formatName } from "@/helpers/format-name";
 
 const formSchema = z
   .object({
@@ -224,6 +225,13 @@ const CreateProfessionalForm = ({
                   <Input
                     placeholder="Digite o nome do profissonal"
                     {...field}
+                    onBlur={(e) => {
+                      const formatted = formatName(e.target.value);
+                      if (formatted !== field.value) {
+                        field.onChange(formatted);
+                      }
+                      field.onBlur();
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -240,6 +248,13 @@ const CreateProfessionalForm = ({
                   <Input
                     placeholder="Digite a função ou especialidade do profissional"
                     {...field}
+                    onBlur={(e) => {
+                      const formatted = formatName(e.target.value);
+                      if (formatted !== field.value) {
+                        field.onChange(formatted);
+                      }
+                      field.onBlur();
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

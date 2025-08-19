@@ -12,6 +12,7 @@ import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/c
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { servicesTable } from "@/db/schema";
+import { formatName } from "@/helpers/format-name";
 
 const formSchema = z.object({
     name: z.string().trim().min(1, { message: "Nome do serviço é obrigatório." }),
@@ -71,7 +72,16 @@ const UpsertServiceForm = ({ service, onSuccess }: upsertServiceFormProps) => {
                                     Nome do serviço
                                 </FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Digite o nome do serviço" {...field} />
+                                    <Input placeholder="Digite o nome do serviço"
+                                        {...field}
+                                        onBlur={(e) => {
+                                            const formatted = formatName(e.target.value);
+                                            if (formatted !== field.value) {
+                                                field.onChange(formatted);
+                                            }
+                                            field.onBlur();
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

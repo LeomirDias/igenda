@@ -11,6 +11,7 @@ import { DialogContent, DialogDescription, DialogFooter, DialogTitle } from "@/c
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { clientsTable } from "@/db/schema";
+import { formatName } from "@/helpers/format-name";
 
 
 const formSchema = z.object({
@@ -76,7 +77,16 @@ const UpsertClientForm = ({ client, onSuccess }: upsertClientFormProps) => {
                                     Nome do cliente
                                 </FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Digite o nome do cliente" {...field} />
+                                    <Input placeholder="Digite o nome do cliente"
+                                        {...field}
+                                        onBlur={(e) => {
+                                            const formatted = formatName(e.target.value);
+                                            if (formatted !== field.value) {
+                                                field.onChange(formatted);
+                                            }
+                                            field.onBlur();
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

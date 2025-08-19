@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { formatName } from "@/helpers/format-name";
 import { authClient } from "@/lib/auth-client";
 
 const registerSchema = z.object({
@@ -57,7 +58,7 @@ const SignUpForm = () => {
       {
         email: values.email,
         password: values.password,
-        name: values.name,
+        name: formatName(values.name),
         callbackURL: "/dashboard",
       },
       {
@@ -109,6 +110,13 @@ const SignUpForm = () => {
                       placeholder="Digite seu nome..."
                       className="border-none bg-[#191919] text-white placeholder:text-white/70 focus:border-[#424242] focus:ring-[#424242]"
                       {...field}
+                      onBlur={(e) => {
+                        const formatted = formatName(e.target.value);
+                        if (formatted !== field.value) {
+                          field.onChange(formatted);
+                        }
+                        field.onBlur();
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

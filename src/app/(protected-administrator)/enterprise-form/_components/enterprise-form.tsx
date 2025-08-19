@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatName } from "@/helpers/format-name";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import { enterpriseSpecialty } from "../_constants";
@@ -260,6 +261,13 @@ const EnterpriseForm = () => {
                     placeholder="Digite o nome da sua empresa"
                     className="text-sm"
                     {...field}
+                    onBlur={(e) => {
+                      const formatted = formatName(e.target.value);
+                      if (formatted !== field.value) {
+                        field.onChange(formatted);
+                      }
+                      field.onBlur();
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
