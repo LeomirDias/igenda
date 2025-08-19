@@ -27,6 +27,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 
 import { AppointmentWithRelations } from "./scheduling-dashboard";
 
@@ -92,6 +93,8 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
       toast.error("Erro ao cancelar agendamento.");
     },
   });
+
+  const [cancellationReason, setCancellationReason] = React.useState("");
 
   if (isMobile) {
     return (
@@ -168,12 +171,19 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                   reverter, o agendamento deverá ser recriado.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              <div className="mt-2">
+                <Textarea
+                  placeholder="Justificativa do cancelamento (opcional)"
+                  value={cancellationReason}
+                  onChange={(e) => setCancellationReason(e.target.value)}
+                />
+              </div>
               <AlertDialogFooter>
                 <AlertDialogCancel className="text-sm md:text-base">
                   Cancelar
                 </AlertDialogCancel>
                 <AlertDialogAction
-                  onClick={() => execute({ id: appointment.id })}
+                  onClick={() => execute({ id: appointment.id, justification: cancellationReason || undefined })}
                   className="text-foreground text-sm"
                   disabled={status === "executing"}
                 >
@@ -275,12 +285,19 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                 o agendamento deverá ser recriado.
               </AlertDialogDescription>
             </AlertDialogHeader>
+            <div className="mt-2">
+              <Textarea
+                placeholder="Justificativa do cancelamento (opcional)"
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+              />
+            </div>
             <AlertDialogFooter>
               <AlertDialogCancel className="cursor-pointer text-sm md:text-base">
                 Cancelar
               </AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => execute({ id: appointment.id })}
+                onClick={() => execute({ id: appointment.id, justification: cancellationReason || undefined })}
                 className="cursor-pointer text-sm"
                 disabled={status === "executing"}
               >

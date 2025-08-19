@@ -20,6 +20,7 @@ import { cancelAppointment } from "@/actions/cancel-appointment";
 import { confirmAppointment } from "@/actions/confirm-appointment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -64,6 +65,7 @@ export function NewAppointmentAlert() {
   const [isOpen, setIsOpen] = useState(false);
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [cancelJustification, setCancelJustification] = useState("");
 
   const { execute: executeConfirm, isExecuting: isConfirming } = useAction(
     confirmAppointment,
@@ -143,7 +145,7 @@ export function NewAppointmentAlert() {
     if (!appointment) return;
 
     setIsLoading(true);
-    await executeCancel({ id: appointment.id });
+    await executeCancel({ id: appointment.id, justification: cancelJustification || undefined });
     setIsLoading(false);
   };
 
@@ -241,6 +243,13 @@ export function NewAppointmentAlert() {
         </div>
 
         <DialogFooter className="gap-2">
+          <div className="w-full">
+            <Textarea
+              placeholder="Justificativa do cancelamento (opcional)"
+              value={cancelJustification}
+              onChange={(e) => setCancelJustification(e.target.value)}
+            />
+          </div>
           <Button
             variant="outline"
             onClick={handleCancel}

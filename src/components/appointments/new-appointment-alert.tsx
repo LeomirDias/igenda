@@ -28,6 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { formatCurrencyInCents } from "@/helpers/currency";
 
 dayjs.locale("pt-br");
@@ -64,6 +65,7 @@ export function NewAppointmentAlert() {
   const [isOpen, setIsOpen] = useState(false);
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [cancelJustification, setCancelJustification] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -154,7 +156,7 @@ export function NewAppointmentAlert() {
     if (!appointment) return;
 
     setIsLoading(true);
-    await executeCancel({ id: appointment.id });
+    await executeCancel({ id: appointment.id, justification: cancelJustification || undefined });
     setIsLoading(false);
   };
 
@@ -252,6 +254,13 @@ export function NewAppointmentAlert() {
         </div>
 
         <DialogFooter className="gap-2">
+          <div className="w-full">
+            <Textarea
+              placeholder="Justificativa do cancelamento (opcional)"
+              value={cancelJustification}
+              onChange={(e) => setCancelJustification(e.target.value)}
+            />
+          </div>
           <Button
             variant="outline"
             onClick={handleCancel}
