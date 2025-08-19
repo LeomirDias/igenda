@@ -27,6 +27,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { formatName } from "@/helpers/format-name";
 
 import VerificationForm from "./verification-form";
 
@@ -167,7 +168,15 @@ const ClientSignUpForm = () => {
                 <FormItem>
                   <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite seu nome..." {...field} />
+                    <Input placeholder="Digite seu nome..." {...field}
+                      onBlur={(e) => {
+                        const formatted = formatName(e.target.value);
+                        if (formatted !== field.value) {
+                          field.onChange(formatted);
+                        }
+                        field.onBlur();
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
