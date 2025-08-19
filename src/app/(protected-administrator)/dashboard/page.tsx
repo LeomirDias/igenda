@@ -99,13 +99,22 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
         totalClients={totalClients.total}
         totalProfessionals={totalProfessionals.total}
       />
-      <div className="hidden gap-4 lg:grid lg:grid-cols-2">
-        <AppointmentsChart dailyAppointmentsData={dailyAppointmentsData} />
-        <BillingChart dailyBillingData={dailyBillingData} />
-      </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2.25fr_1fr]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <TopProfessionals professionals={topProfessionals} />
         <TopServices topServices={topServices} />
+      </div>
+
+      <div className="space-y-4">
+        <div className="rounded-lg border bg-card p-4 text-center">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Atenção: os gráficos não seguem as datas selecionadas, os dados mostrados neles são referentes ao período de 7 dias anteriores e 7 dias seguintes a data atual.
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <AppointmentsChart dailyAppointmentsData={dailyAppointmentsData} />
+          <BillingChart dailyBillingData={dailyBillingData} />
+        </div>
       </div>
     </PageContainer>
   );

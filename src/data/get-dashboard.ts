@@ -16,8 +16,8 @@ interface Params {
 }
 
 const getDashboard = async ({ session, from, to }: Params) => {
-  const chartStartDate = dayjs().subtract(10, "days").startOf("day").toDate();
-  const chartEndDate = dayjs().add(10, "days").endOf("day").toDate();
+  const chartStartDate = dayjs().subtract(7, "days").startOf("day").toDate();
+  const chartEndDate = dayjs().add(7, "days").endOf("day").toDate();
 
   const todayStart = dayjs().startOf("day").toDate();
   const todayEnd = dayjs().endOf("day").toDate();
@@ -213,8 +213,8 @@ const getDashboard = async ({ session, from, to }: Params) => {
 };
 
 export async function getDailyBillingData(enterpriseId: string) {
-  const chartStartDate = dayjs().subtract(10, "days").startOf("day").toDate();
-  const chartEndDate = dayjs().add(10, "days").endOf("day").toDate();
+  const chartStartDate = dayjs().subtract(7, "days").startOf("day").toDate();
+  const chartEndDate = dayjs().add(7, "days").endOf("day").toDate();
 
   // Busca o faturamento diário baseado nos agendamentos e valores dos serviços
   const dailyBillingData = await db

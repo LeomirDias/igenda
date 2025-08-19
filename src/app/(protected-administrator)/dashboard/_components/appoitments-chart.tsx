@@ -34,9 +34,10 @@ export function AppointmentsChart({
   dailyAppointmentsData,
 }: AppointmentsChartProps) {
   dayjs.locale("pt-br");
-  const chartDays = Array.from({ length: 21 }).map((_, i) =>
+  const chartDays = Array.from({ length: 15 }).map((_, i) =>
     dayjs()
-      .subtract(10 - i, "days")
+      .startOf("day")
+      .subtract(7 - i, "days")
       .format("YYYY-MM-DD"),
   );
 
@@ -63,7 +64,7 @@ export function AppointmentsChart({
         <div className="flex w-full flex-row items-center justify-between">
           <CardTitle className="text-lg">Agendamentos</CardTitle>
           <CardDescription className="text-xs">
-            Total de agendamentos para os últimos 21 dias
+            Total de agendamentos dos últimos 7 dias e próximos 7 dias
           </CardDescription>
         </div>
       </CardHeader>

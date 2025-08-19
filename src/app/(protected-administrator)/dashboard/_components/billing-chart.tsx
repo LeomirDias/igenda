@@ -32,9 +32,10 @@ interface BillingChartProps {
 
 export function BillingChart({ dailyBillingData }: BillingChartProps) {
   dayjs.locale("pt-br");
-  const chartDays = Array.from({ length: 21 }).map((_, i) =>
+  const chartDays = Array.from({ length: 15 }).map((_, i) =>
     dayjs()
-      .subtract(10 - i, "days")
+      .startOf("day")
+      .subtract(7 - i, "days")
       .format("YYYY-MM-DD"),
   );
 
@@ -61,7 +62,7 @@ export function BillingChart({ dailyBillingData }: BillingChartProps) {
         <div className="flex w-full flex-row items-center justify-between">
           <CardTitle className="text-lg">Faturamento</CardTitle>
           <CardDescription className="text-xs">
-            Faturamento total nos últimos 21 dias
+            Faturamento total dos últimos 7 dias e próximos 7 dias
           </CardDescription>
         </div>
       </CardHeader>
