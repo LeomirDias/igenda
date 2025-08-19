@@ -7,11 +7,12 @@ import { ptBR } from "date-fns/locale";
 import dayjs from "dayjs";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { getProfessionalsByService } from "@/actions/associate-professionals-to-service";
 import { getAvailableTimes } from "@/actions/get-available-times";
 import {
   addAppointment,
@@ -118,6 +119,7 @@ const UpsertAppointmentForm = ({
   const selectedProfessionalId = form.watch("professionalId");
   const selectedClientId = form.watch("clientId");
   const selectedDate = form.watch("date");
+  const selectedServiceId = form.watch("serviceId");
 
   const { data: availableTimes } = useQuery({
     queryKey: ["available-times", selectedDate, selectedProfessionalId],
@@ -128,6 +130,34 @@ const UpsertAppointmentForm = ({
       }),
     enabled: !!selectedDate && !!selectedProfessionalId,
   });
+
+  const { data: serviceProfessionals } = useQuery({
+    queryKey: ["service-professionals", selectedServiceId],
+    queryFn: () =>
+      getProfessionalsByService({
+        serviceId: selectedServiceId,
+      }),
+    enabled: !!selectedServiceId,
+  });
+
+  // Filtra profissionais baseado no serviço selecionado
+  const availableProfessionals = useMemo(() => {
+    return selectedServiceId && serviceProfessionals?.data
+      ? serviceProfessionals.data
+      : [];
+  }, [selectedServiceId, serviceProfessionals?.data]);
+
+  // Reset profissional quando serviço mudar
+  useEffect(() => {
+    if (selectedServiceId && selectedProfessionalId) {
+      const isProfessionalAvailable = availableProfessionals.some(
+        p => p.id === selectedProfessionalId
+      );
+      if (!isProfessionalAvailable) {
+        form.setValue("professionalId", "");
+      }
+    }
+  }, [selectedServiceId, selectedProfessionalId, availableProfessionals, form]);
 
   useEffect(() => {
     if (isOpen) {
@@ -243,33 +273,6 @@ const UpsertAppointmentForm = ({
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="professionalId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Profissional</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full whitespace-normal break-words min-h-[48px]">
-                      <SelectValue placeholder="Selecione um profissional" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {professionals.map((professional) => (
-                      <SelectItem key={professional.id} value={professional.id} className="whitespace-normal break-words">
-                        {professional.name} - {professional.specialty}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <FormField
             control={form.control}
@@ -290,6 +293,34 @@ const UpsertAppointmentForm = ({
                     {services.map((service) => (
                       <SelectItem key={service.id} value={service.id} className="whitespace-normal break-words">
                         {service.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="professionalId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Profissional</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full whitespace-normal break-words min-h-[48px]">
+                      <SelectValue placeholder="Selecione um profissional" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {availableProfessionals.map((professional) => (
+                      <SelectItem key={professional.id} value={professional.id} className="whitespace-normal break-words">
+                        {professional.name} - {professional.specialty}
                       </SelectItem>
                     ))}
                   </SelectContent>

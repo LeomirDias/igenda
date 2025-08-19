@@ -48,7 +48,7 @@ export default function ManageServiceProfessionals({
 
     const associateProfessionalsAction = useAction(associateProfessionalsToService, {
         onSuccess: () => {
-            toast.success("Profissionais associados com sucesso!");
+            toast.success("Profissionais associados atualizados com sucesso!");
             onSuccess?.();
         },
         onError: (error) => {

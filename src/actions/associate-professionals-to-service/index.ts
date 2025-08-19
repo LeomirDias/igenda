@@ -52,6 +52,12 @@ export const associateProfessionalsToService = actionClient
                 .delete(professionalsToServicesTable)
                 .where(eq(professionalsToServicesTable.serviceId, parsedInput.serviceId));
 
+            // Se não há profissionais para associar, apenas retorna sucesso
+            if (parsedInput.professionalIds.length === 0) {
+                revalidatePath("/enterprise-services");
+                return { success: true };
+            }
+
             // Cria as novas associações
             const values = parsedInput.professionalIds.map(professionalId => ({
                 professionalId,
@@ -91,6 +97,25 @@ export const getProfessionalsByService = actionClient
             return professionals.map(p => p.professional);
         } catch (error) {
             console.error("[GET_PROFESSIONALS_BY_SERVICE]", error);
+            throw new Error("Erro ao buscar profissionais do serviço");
+        }
+    });
+
+// Action para buscar profissionais associados a um serviço (para uso público)
+export const getProfessionalsByServicePublic = actionClient
+    .schema(associateProfessionalsSchema.pick({ serviceId: true }))
+    .action(async ({ parsedInput }) => {
+        try {
+            const professionals = await db.query.professionalsToServicesTable.findMany({
+                where: eq(professionalsToServicesTable.serviceId, parsedInput.serviceId),
+                with: {
+                    professional: true
+                }
+            });
+
+            return professionals.map(p => p.professional);
+        } catch (error) {
+            console.error("[GET_PROFESSIONALS_BY_SERVICE_PUBLIC]", error);
             throw new Error("Erro ao buscar profissionais do serviço");
         }
     });

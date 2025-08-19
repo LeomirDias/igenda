@@ -7,10 +7,12 @@ import dayjs from "dayjs";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { getProfessionalsByServicePublic } from "@/actions/associate-professionals-to-service";
 import { createAppointment } from "@/actions/create-appointments";
 import { getAvailableTimes } from "@/actions/get-available-times";
 import { Button } from "@/components/ui/button";
@@ -69,6 +71,7 @@ const ScheduleForm = ({ services, professionals, enterpriseId, clientId, enterpr
 
     const selectedProfessionalId = form.watch("professionalId");
     const selectedDate = form.watch("date");
+    const selectedServiceId = form.watch("serviceId");
 
     const { data: availableTimes } = useQuery({
         queryKey: ["available-times", selectedDate, selectedProfessionalId],
@@ -79,6 +82,34 @@ const ScheduleForm = ({ services, professionals, enterpriseId, clientId, enterpr
             }),
         enabled: !!selectedDate && !!selectedProfessionalId,
     });
+
+    const { data: serviceProfessionals } = useQuery({
+        queryKey: ["service-professionals", selectedServiceId],
+        queryFn: () =>
+            getProfessionalsByServicePublic({
+                serviceId: selectedServiceId,
+            }),
+        enabled: !!selectedServiceId,
+    });
+
+    // Filtra profissionais baseado no serviço selecionado
+    const availableProfessionals = useMemo(() => {
+        return selectedServiceId && serviceProfessionals?.data
+            ? serviceProfessionals.data
+            : [];
+    }, [selectedServiceId, serviceProfessionals?.data]);
+
+    // Reset profissional quando serviço mudar
+    useEffect(() => {
+        if (selectedServiceId && selectedProfessionalId) {
+            const isProfessionalAvailable = availableProfessionals.some(
+                p => p.id === selectedProfessionalId
+            );
+            if (!isProfessionalAvailable) {
+                form.setValue("professionalId", "");
+            }
+        }
+    }, [selectedServiceId, selectedProfessionalId, availableProfessionals, form]);
 
     const createAppointmentAction = useAction(createAppointment, {
         onSuccess: () => {
@@ -173,7 +204,7 @@ const ScheduleForm = ({ services, professionals, enterpriseId, clientId, enterpr
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {professionals.map((professional) => (
+                                            {availableProfessionals.map((professional) => (
                                                 <SelectItem key={professional.id} value={professional.id}>
                                                     {professional.name} - {professional.specialty}
                                                 </SelectItem>

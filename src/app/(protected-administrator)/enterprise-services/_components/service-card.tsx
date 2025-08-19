@@ -113,8 +113,8 @@ const ServiceCard = ({ service, professionals }: ServiceCardProps) => {
               variant="outline"
               className="hover:bg-primary/5 w-full text-xs sm:text-sm md:text-base"
             >
-              <p className="hidden lg:inline">Gerenciar Profissionais</p>
-              <p className="lg:hidden">Profissionais</p>
+              <p className="hidden lg:inline">Profissionais associados</p>
+              <p className="lg:hidden">Prof. Associados</p>
             </Button>
           </DialogTrigger>
           <ManageServiceProfessionals
