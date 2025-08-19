@@ -50,6 +50,13 @@ export function AppointmentsChart({
     };
   });
 
+  // Calcular o valor máximo para definir os ticks do eixo Y
+  const maxAppointments = Math.max(...chartData.map(item => item.appointments));
+  const yAxisTicks = Array.from(
+    { length: Math.max(2, Math.min(6, Math.ceil(maxAppointments) + 1)) },
+    (_, i) => i
+  );
+
   const chartConfig = {
     appointments: {
       label: "Agendamentos",
@@ -99,6 +106,8 @@ export function AppointmentsChart({
               tickMargin={8}
               fontSize={11}
               width={30}
+              ticks={yAxisTicks}
+              domain={[0, Math.max(1, maxAppointments)]}
             />
             <ChartTooltip
               content={

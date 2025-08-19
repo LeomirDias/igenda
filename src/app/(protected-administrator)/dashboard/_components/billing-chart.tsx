@@ -92,12 +92,12 @@ export function BillingChart({ dailyBillingData }: BillingChartProps) {
               minTickGap={5}
             />
             <YAxis
+              hide={true}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               fontSize={11}
               width={30}
-              tickFormatter={(value) => formatCurrencyInCents(value)}
             />
             <ChartTooltip
               content={
