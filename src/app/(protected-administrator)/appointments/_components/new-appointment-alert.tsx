@@ -20,7 +20,6 @@ import { cancelAppointment } from "@/actions/cancel-appointment";
 import { confirmAppointment } from "@/actions/confirm-appointment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { formatCurrencyInCents } from "@/helpers/currency";
 
 dayjs.locale("pt-br");
