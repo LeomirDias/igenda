@@ -9,13 +9,13 @@ import { usersSubscriptionTable } from "@/db/schema";
 import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 const resend = new Resend(process.env.RESEND_API_KEY as string);
-const LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES = process.env.LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES!;
+const LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES_UPSELL = process.env.LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES_UPSELL!;
 
 export async function POST(req: NextRequest) {
     // pegar token do header
     const headerSecret = req.headers.get("x-lastlink-token");
 
-    if (!headerSecret || headerSecret !== LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES) {
+    if (!headerSecret || headerSecret !== LASTLINK_WEBHOOK_SECRET_EXTERNAL_SIGNATURES_UPSELL) {
         return NextResponse.json({ error: "Segredo inválido" }, { status: 401 });
     }
 
