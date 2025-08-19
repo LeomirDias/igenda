@@ -19,7 +19,7 @@ Tecnologias e ferramentas utilizadas:
 - Drizzle como ORM
 - Neon DB como host do banco de dados
 - Resend para envio de emails
-- Stripe como Gateway
+- Lastlink como Gateway
 - Z-API como api de Whatsapp
 
 Princípios Principais:

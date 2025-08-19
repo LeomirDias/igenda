@@ -202,7 +202,7 @@ const UpsertAppointmentForm = ({
   const isDateTimeEnabled = selectedClientId && selectedProfessionalId;
 
   return (
-    <DialogContent className="sm:max-w-[500px]">
+    <DialogContent className="w-[95vw] max-w-lg sm:max-w-[500px]">
       <DialogHeader>
         <DialogTitle>
           {isEdit ? "Editar agendamento" : "Novo agendamento"}
@@ -226,13 +226,13 @@ const UpsertAppointmentForm = ({
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full whitespace-normal break-words min-h-[48px]">
                       <SelectValue placeholder="Selecione um cliente" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
+                      <SelectItem key={client.id} value={client.id} className="whitespace-normal break-words">
                         {client.name}
                       </SelectItem>
                     ))}
@@ -254,13 +254,13 @@ const UpsertAppointmentForm = ({
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full whitespace-normal break-words min-h-[48px]">
                       <SelectValue placeholder="Selecione um profissional" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {professionals.map((professional) => (
-                      <SelectItem key={professional.id} value={professional.id}>
+                      <SelectItem key={professional.id} value={professional.id} className="whitespace-normal break-words">
                         {professional.name} - {professional.specialty}
                       </SelectItem>
                     ))}
@@ -282,13 +282,13 @@ const UpsertAppointmentForm = ({
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full whitespace-normal break-words min-h-[48px]">
                       <SelectValue placeholder="Selecione um serviço" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {services.map((service) => (
-                      <SelectItem key={service.id} value={service.id}>
+                      <SelectItem key={service.id} value={service.id} className="whitespace-normal break-words">
                         {service.name}
                       </SelectItem>
                     ))}
@@ -356,7 +356,7 @@ const UpsertAppointmentForm = ({
                   disabled={!isDateTimeEnabled || !selectedDate}
                 >
                   <FormControl>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full whitespace-normal break-words min-h-[48px]">
                       <SelectValue placeholder="Selecione um horário" />
                     </SelectTrigger>
                   </FormControl>
@@ -371,6 +371,7 @@ const UpsertAppointmentForm = ({
                           key={time.value}
                           value={time.value}
                           disabled={!time.available}
+                          className="whitespace-normal break-words"
                         >
                           {time.label} {!time.available && "(Indisponível)"}
                         </SelectItem>
