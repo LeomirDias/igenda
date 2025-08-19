@@ -6,9 +6,17 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 import { db } from "@/db";
-import { appointmentsTable, servicesTable } from "@/db/schema";
+import {
+    appointmentsTable,
+    clientsTable,
+    enterprisesTable,
+    professionalsTable,
+    servicesTable,
+} from "@/db/schema";
+import { formatCurrencyInCents } from "@/helpers/currency";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/next-safe-action";
+import { sendWhatsappMessage } from "@/lib/zapi-service";
 
 import { getAvailableTimes } from "../get-available-times";
 import { upsertAppointmentSchema } from "./schema";
@@ -65,6 +73,49 @@ export const addAppointment = actionClient
             appointmentPriceInCents: service.servicePriceInCents, // Define o preço do agendamento igual ao preço do serviço
         });
 
+        // Buscar dados relacionados para enviar mensagem ao cliente
+        const [client] = await db
+            .select()
+            .from(clientsTable)
+            .where(eq(clientsTable.id, parsedInput.clientId));
+        if (!client) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        const [professional] = await db
+            .select()
+            .from(professionalsTable)
+            .where(eq(professionalsTable.id, parsedInput.professionalId));
+        if (!professional) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        const [enterprise] = await db
+            .select()
+            .from(enterprisesTable)
+            .where(eq(enterprisesTable.id, session.user.enterprise.id));
+        if (!enterprise) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        const formattedDate = dayjs(appointmentDateTime).format("DD/MM/YYYY");
+        const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
+
+        const address = `${enterprise.address}, ${enterprise.number}`;
+        const fullAddress = enterprise.complement
+            ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
+            : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
+
+        const creationMessage = `Olá, ${client.name}!👋\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\n✅ Seu agendamento foi criado na ${enterprise.name}.\n\nDados do agendamento:\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\nSe precisar reagendar ou tirar dúvidas, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber}.`;
+
+        await sendWhatsappMessage(client.phoneNumber, creationMessage);
+
         revalidatePath("/appointments");
         revalidatePath("/dashboard");
     });
@@ -119,6 +170,49 @@ export const updateAppointment = actionClient
                 appointmentPriceInCents: service.servicePriceInCents,
             })
             .where(eq(appointmentsTable.id, parsedInput.id));
+
+        // Buscar dados relacionados para enviar mensagem ao cliente
+        const [client] = await db
+            .select()
+            .from(clientsTable)
+            .where(eq(clientsTable.id, parsedInput.clientId));
+        if (!client) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        const [professional] = await db
+            .select()
+            .from(professionalsTable)
+            .where(eq(professionalsTable.id, parsedInput.professionalId));
+        if (!professional) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        const [enterprise] = await db
+            .select()
+            .from(enterprisesTable)
+            .where(eq(enterprisesTable.id, session.user.enterprise.id));
+        if (!enterprise) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        const formattedDate = dayjs(appointmentDateTime).format("DD/MM/YYYY");
+        const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
+
+        const address = `${enterprise.address}, ${enterprise.number}`;
+        const fullAddress = enterprise.complement
+            ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
+            : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
+
+        const updateMessage = `Olá, ${client.name}!👋\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\n✏️ Seu agendamento foi atualizado na ${enterprise.name}.\n\nNovos dados do agendamento:\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\n📞 Caso precise ajustar novamente ou tirar dúvidas, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber}.\n\nAgradecemos pela compreensão!`;
+
+        await sendWhatsappMessage(client.phoneNumber, updateMessage);
         revalidatePath("/appointments");
         revalidatePath("/dashboard");
     });
