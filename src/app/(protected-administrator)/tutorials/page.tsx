@@ -3,14 +3,24 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
-import { LauchingSoon } from "@/components/ui/launching-soon";
+import {
+  PageActions,
+  PageContainer,
+  PageContent,
+  PageDescription,
+  PageHeader,
+  PageHeaderContent,
+  PageTitle,
+} from "@/components/ui/page-container";
 import { auth } from "@/lib/auth";
+
+import { mockTutorialVideos, TutorialVideoGallery } from "./_components";
 
 export const metadata: Metadata = {
   title: "iGenda - Tutoriais",
 };
 
-const SupportPage = async () => {
+const TutorialsPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -28,10 +38,23 @@ const SupportPage = async () => {
   }
 
   return (
-    <div className="h-full w-full">
-      <LauchingSoon />
-    </div>
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle>Tutoriais</PageTitle>
+          <PageDescription>
+            Tire suas dúvidas e aprenda mais sobre sua iGenda! Assista aos vídeos tutoriais para dominar todas as funcionalidades da plataforma.
+          </PageDescription>
+        </PageHeaderContent>
+        <PageActions>
+          <></>
+        </PageActions>
+      </PageHeader>
+      <PageContent>
+        <TutorialVideoGallery videos={mockTutorialVideos} />
+      </PageContent>
+    </PageContainer>
   );
 };
 
-export default SupportPage;
+export default TutorialsPage;

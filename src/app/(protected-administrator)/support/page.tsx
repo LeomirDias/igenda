@@ -2,9 +2,20 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import SupportHeader from "@/app/(protected-administrator)/support/_components/support-header";
 import WhatsappCard from "@/app/(protected-administrator)/support/_components/whatsapp-card";
+import {
+  PageActions,
+  PageContainer,
+  PageContent,
+  PageDescription,
+  PageHeader,
+  PageHeaderContent,
+  PageTitle,
+} from "@/components/ui/page-container";
 import { auth } from "@/lib/auth";
+
+import { TutorialQuestions } from "./_components/tutorial-questions";
+
 
 export const metadata: Metadata = {
   title: "iGenda - Suporte"
@@ -22,12 +33,26 @@ const SupportPage = async () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <SupportHeader />
-      <div className="flex w-full items-center justify-center">
-        <WhatsappCard />
-      </div>
-    </div>
+
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle>Suporte</PageTitle>
+          <PageDescription>
+            Tire suas dúvidas ou entre em contato com o suporte!
+          </PageDescription>
+        </PageHeaderContent>
+        <PageActions>
+          <></>
+        </PageActions>
+      </PageHeader>
+      <PageContent>
+        <div className="max-w-4xl mx-auto space-y-8">
+          <TutorialQuestions />
+          <WhatsappCard />
+        </div>
+      </PageContent>
+    </PageContainer>
   );
 };
 
