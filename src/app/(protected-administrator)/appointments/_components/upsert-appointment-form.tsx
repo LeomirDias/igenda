@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import dayjs from "dayjs";
 import { CalendarIcon, Loader2 } from "lucide-react";
@@ -341,7 +340,6 @@ const UpsertAppointmentForm = ({
                     <FormControl>
                       <Button
                         variant={"outline"}
-                        disabled={!isDateTimeEnabled}
                         className={cn(
                           "w-full justify-start text-left font-normal",
                           !field.value && "text-muted-foreground",
@@ -349,7 +347,11 @@ const UpsertAppointmentForm = ({
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {field.value ? (
-                          format(field.value, "PPP", { locale: ptBR })
+                          field.value.toLocaleDateString("pt-BR", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric"
+                          })
                         ) : (
                           <span>Selecione uma data</span>
                         )}
@@ -359,6 +361,7 @@ const UpsertAppointmentForm = ({
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
+                      locale={ptBR}
                       selected={field.value}
                       onSelect={field.onChange}
                       disabled={(date) => {
