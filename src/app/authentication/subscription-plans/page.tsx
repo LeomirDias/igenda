@@ -1,8 +1,8 @@
 
 import Image from "next/image";
 
+import AnualPlanCard from "./_components/anual-plan-card";
 import MonthlyPlanCard from "./_components/monthly-plan-card";
-import QuarterlyPlanCard from "./_components/quarterly-plan-card";
 import SemiannualPlanCard from "./_components/semiannual-plan-card";
 
 const SubscriptionPage = async () => {
@@ -70,8 +70,8 @@ const SubscriptionPage = async () => {
 
         <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           <MonthlyPlanCard active={false} />
-          <QuarterlyPlanCard active={false} />
           <SemiannualPlanCard active={false} />
+          <AnualPlanCard active={false} />
         </div>
       </div>
     </div>

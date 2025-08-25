@@ -10,13 +10,13 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-interface QuarterlyPlanCardProps {
+interface AnualPlanCardProps {
     active?: boolean;
 }
 
-export default function QuarterlyPlanCard({
+export default function AnualPlanCard({
     active = false,
-}: QuarterlyPlanCardProps) {
+}: AnualPlanCardProps) {
 
 
     return (
@@ -25,32 +25,32 @@ export default function QuarterlyPlanCard({
                 <span
                     className="bg-gradient-to-r from-emerald-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg animate-pulse"
                 >
-                    ⭐ MAIS POPULAR
+                    🤑 MELHOR PREÇO
                 </span>
             </div>
             <CardHeader className="pb-4  text-white rounded-t-lg">
                 <div className="mb-2 flex items-center justify-between">
                     <CardTitle className="text-white text-lg font-bold sm:text-xl">
-                        Assinatura Trimestral
+                        Assinatura Anual
                     </CardTitle>
                     {active && (
                         <Badge className="text-emerald-500 text-xs bg-white">Assinatura atual</Badge>
                     )}
                 </div>
                 <CardDescription className="text-white mb-4 text-sm">
-                    O favorito de quem já usa a iGenda!
+                    Perfeito para quem quer organizar tudo e gastar pouco
                 </CardDescription>
                 <div className="flex items-baseline">
                     <span className="text-white text-2xl font-bold sm:text-3xl">
-                        R$ 74,97
+                        R$ 199,90
                     </span>
-                    <span className="text-white ml-1">/ trimestre</span>
+                    <span className="text-white ml-1">/ ano</span>
                 </div>
                 <div className="mt-2">
                     <span
                         className="bg-emerald-900 text-emerald-300 px-2 py-1 rounded text-xs"
                     >
-                        Apenas R$ 24,99 por mês
+                        Em até 12x R$ 20,28
                     </span>
                 </div>
 

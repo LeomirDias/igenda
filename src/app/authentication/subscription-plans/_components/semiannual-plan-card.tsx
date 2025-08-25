@@ -25,7 +25,7 @@ export default function SemiannualPlanCard({
                 <span
                     className="bg-gradient-to-r from-emerald-500 to-emerald-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg animate-pulse"
                 >
-                    🤑 MELHOR PREÇO
+                    ⭐ MAIS POPULAR
                 </span>
             </div>
             <CardHeader className="pb-4  text-white rounded-t-lg">
@@ -38,7 +38,7 @@ export default function SemiannualPlanCard({
                     )}
                 </div>
                 <CardDescription className="text-white mb-4 text-sm">
-                    Perfeito para quem quer organizar tudo e gastar pouco
+                    O preferido de quem já usa a iGenda!
                 </CardDescription>
                 <div className="flex items-baseline">
                     <span className="text-white text-2xl font-bold sm:text-3xl">
@@ -50,7 +50,7 @@ export default function SemiannualPlanCard({
                     <span
                         className="bg-emerald-900 text-emerald-300 px-2 py-1 rounded text-xs"
                     >
-                        Em até 6x de R$ 19,69 <br />
+                        Somente R$ 16,65 por mês <br />
                     </span>
                 </div>
 

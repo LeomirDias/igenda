@@ -45,7 +45,7 @@ export default function MonthlyPlanCard({
                 </CardDescription>
                 <div className="flex items-baseline">
                     <span className="text-white text-2xl font-bold sm:text-3xl">
-                        R$ 27,99
+                        R$ 19,90
                     </span>
                     <span className="text-white ml-1">/ mês</span>
                 </div>
