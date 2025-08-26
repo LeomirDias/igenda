@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
             //Cancelamento
             canceledAt: null,
             //Outros de Cliente
+            createdAt: new Date(),
             updatedAt: new Date(),
         };
 
@@ -125,10 +126,7 @@ Plano: ${offer?.Name}`
 
         } else {
             // Insere um novo registro
-            await db.insert(usersSubscriptionTable).values({
-                ...subscriptionData,
-                createdAt: new Date(),
-            });
+            await db.insert(usersSubscriptionTable).values(subscriptionData);
 
             // Email
             await resend.emails.send({

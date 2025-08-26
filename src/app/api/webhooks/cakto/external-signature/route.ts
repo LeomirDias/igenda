@@ -42,8 +42,10 @@ export async function POST(req: NextRequest) {
 
         const subscriptionData = {
             //Cliente
+            id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             docNumber: customer.docNumber,
             phone: customer.phone,
+            email: customer.email,
             //Plano
             planId: product.id,
             plan: product.name,
@@ -56,6 +58,7 @@ export async function POST(req: NextRequest) {
             //Cancelamento
             canceledAt: null,
             //Outros de Cliente
+            createdAt: new Date(),
             updatedAt: new Date(),
         };
 
@@ -98,10 +101,7 @@ Um cliente reativou sua assinatura iGenda! 🎉
 
         } else {
             // Insere um novo registro
-            await db.insert(usersSubscriptionTable).values({
-                ...subscriptionData,
-                createdAt: new Date(),
-            });
+            await db.insert(usersSubscriptionTable).values(subscriptionData);
 
             // Mensagem para novos usuários
             await resend.emails.send({
