@@ -3,10 +3,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
+import { checkSubscriptionByEmail } from "@/actions/check-subscription-by-email";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -53,30 +56,53 @@ const SignUpForm = () => {
     },
   });
 
+  const pendingValuesRef = useRef<z.infer<typeof registerSchema> | null>(null);
+
+  const { execute: executeCheckSubscription } = useAction(
+    checkSubscriptionByEmail,
+    {
+      onSuccess: async ({ data }) => {
+        if (!data?.exists) {
+          toast.error("E-mail não encontrado em nossa base de assinantes.");
+          return;
+        }
+
+        const values = pendingValuesRef.current;
+        if (!values) return;
+
+        await authClient.signUp.email(
+          {
+            email: values.email,
+            password: values.password,
+            name: formatName(values.name),
+            callbackURL: "/dashboard",
+          },
+          {
+            onSuccess: () => {
+              router.push("/dashboard");
+              toast.success(
+                "Conta criada com sucesso!",
+              );
+            },
+            onError: (ctx) => {
+              if (ctx.error.code === "USER_ALREADY_EXISTS") {
+                toast.error("Já existe uma conta com este e-mail.");
+                return;
+              }
+              toast.error("Erro ao criar conta. Tente outro e-mail.");
+            },
+          },
+        );
+      },
+      onError: () => {
+        toast.error("Não foi possível validar a assinatura. Tente novamente.");
+      },
+    },
+  );
+
   async function onSubmit(values: z.infer<typeof registerSchema>) {
-    await authClient.signUp.email(
-      {
-        email: values.email,
-        password: values.password,
-        name: formatName(values.name),
-        callbackURL: "/dashboard",
-      },
-      {
-        onSuccess: () => {
-          router.push("/dashboard");
-          toast.success(
-            "Conta criada com sucesso!",
-          );
-        },
-        onError: (ctx) => {
-          if (ctx.error.code === "USER_ALREADY_EXISTS") {
-            toast.error("Já existe uma conta com este e-mail.");
-            return;
-          }
-          toast.error("Erro ao criar conta. Tente outro e-mail.");
-        },
-      },
-    );
+    pendingValuesRef.current = values;
+    executeCheckSubscription({ email: values.email });
   }
 
   const handleGoogleSignUp = async () => {

@@ -28,23 +28,16 @@ export async function POST(req: NextRequest) {
     const event = body?.Event;
     const data = body?.Data;
     const buyer = data?.Buyer;
-    const product = data?.Products?.[0];
+    const purchase = data?.Purchase;
+    const subscription = data?.Subscriptions?.[0];
 
 
-    if (!buyer?.Document) {
-        return NextResponse.json({ error: "CPF do cliente ausente" }, { status: 400 });
-    }
-
-    if (!product?.Id) {
-        return NextResponse.json({ error: "Produto ausente" }, { status: 400 });
+    if (!buyer?.Id) {
+        return NextResponse.json({ error: "Email do cliente ausente" }, { status: 400 });
     }
 
     if (!buyer?.Email) {
         return NextResponse.json({ error: "Email do cliente ausente" }, { status: 400 });
-    }
-
-    if (!buyer?.Name) {
-        return NextResponse.json({ error: "Nome do cliente ausente" }, { status: 400 });
     }
 
     if (!buyer?.PhoneNumber) {
@@ -60,7 +53,7 @@ export async function POST(req: NextRequest) {
                 //Assinatura
                 subscriptionStatus: "Subscription_Renewal_Pending",
             })
-            .where(eq(usersSubscriptionTable.docNumber, buyer.Document));
+            .where(eq(usersSubscriptionTable.id, buyer.Id));
 
         await db
             .update(usersTable)
@@ -68,7 +61,7 @@ export async function POST(req: NextRequest) {
                 //Assinatura
                 subscriptionStatus: "Subscription_Renewal_Pending",
             })
-            .where(eq(usersTable.docNumber, buyer.Document));
+            .where(eq(usersTable.id, buyer.Id));
 
 
         // Email
@@ -100,7 +93,7 @@ Atenciosamente, equipe iGenda!💚 `
 Existe uma assinatura pendente. 😰
 
 Cliente: ${buyer.Name || ""}
-CPF: ${buyer.Document}
+CPF: ${buyer.Id}
 Telefone: ${buyer.PhoneNumber}`
         );
 
@@ -114,8 +107,10 @@ Telefone: ${buyer.PhoneNumber}`
             .set({
                 //Assinatura
                 subscriptionStatus: "Subscription_Canceled",
+                //Cancelamento
+                paidAt: subscription?.CanceledDate ? new Date(subscription.CanceledDate) : new Date(),
             })
-            .where(eq(usersSubscriptionTable.docNumber, buyer.Document));
+            .where(eq(usersSubscriptionTable.id, buyer.Id));
 
         await db
             .update(usersTable)
@@ -123,7 +118,7 @@ Telefone: ${buyer.PhoneNumber}`
                 //Assinatura
                 subscriptionStatus: "Subscription_Canceled",
             })
-            .where(eq(usersTable.docNumber, buyer.Document));
+            .where(eq(usersTable.id, buyer.Id));
 
 
         // Email
@@ -155,7 +150,7 @@ Atenciosamente, equipe iGenda!💚 `
 Uma assinatura foi cancelada. ❌
 
 Cliente: ${buyer.Name || ""}
-CPF: ${buyer.Document}
+CPF: ${buyer.Id}
 Telefone: ${buyer.PhoneNumber}`
         );
 
@@ -169,8 +164,10 @@ Telefone: ${buyer.PhoneNumber}`
             .set({
                 //Assinatura
                 subscriptionStatus: "active",
+                paymentMethod: purchase?.Payment?.PaymentMethod,
+                paidAt: purchase?.PaymentDate ? new Date(purchase.PaymentDate) : new Date(),
             })
-            .where(eq(usersSubscriptionTable.docNumber, buyer.Document));
+            .where(eq(usersSubscriptionTable.id, buyer.Id));
 
         await db
             .update(usersTable)
@@ -178,7 +175,7 @@ Telefone: ${buyer.PhoneNumber}`
                 //Assinatura
                 subscriptionStatus: "active",
             })
-            .where(eq(usersTable.docNumber, buyer.Document));
+            .where(eq(usersTable.id, buyer.Id));
 
 
         // Email
@@ -210,7 +207,7 @@ Atenciosamente, equipe iGenda!💚 `
 Uma assinatura foi renovada. 🥳
 
 Cliente: ${buyer.Name || ""}
-CPF: ${buyer.Document}
+CPF: ${buyer.Id}
 Telefone: ${buyer.PhoneNumber}`
         );
 

@@ -1,8 +1,9 @@
 import z from "zod";
 
 export const updateUserDataSchema = z.object({
-    docNumber: z.string(),
-    phone: z.string(),
+    docNumber: z.string().optional(),
+    phoneNumber: z.string(),
+    subscription_status: z.string(),
 });
 
-export type UpdateProfessionalSchema = z.infer<typeof updateUserDataSchema>;
+export type UpdateUserDataSchema = z.infer<typeof updateUserDataSchema>;

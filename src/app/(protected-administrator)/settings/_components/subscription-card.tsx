@@ -18,6 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface SubscriptionCardProps {
     subscription: {
+        id: string;
+        email: string;
         docNumber: string;
         phone: string | null;
         planId: string | null;

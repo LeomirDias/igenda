@@ -47,6 +47,10 @@ const SettingsPage = async () => {
     throw new Error("Empresa não encontrada");
   }
 
+  const normalizedSubscription = subscription
+    ? { ...subscription, docNumber: subscription.docNumber ?? "" }
+    : null;
+
   return (
     <PageContainer>
       <PageHeader>
@@ -61,7 +65,7 @@ const SettingsPage = async () => {
         <div className="flex flex-col gap-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UserCard user={session.user} />
-            <SubscriptionCard subscription={subscription || null} />
+            <SubscriptionCard subscription={normalizedSubscription} />
           </div>
           <EnterpriseCard enterprise={enterprise} />
         </div>

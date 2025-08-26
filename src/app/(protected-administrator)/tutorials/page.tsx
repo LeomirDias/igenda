@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { AccessWhitoutPlan } from "@/components/ui/acess-without-plan";
 import {
   PageActions,
   PageContainer,
@@ -26,15 +25,6 @@ const TutorialsPage = async () => {
   });
   if (!session?.user) {
     redirect("/authentication");
-  }
-  if (!session.user.enterprise) {
-    redirect("/enterprise-form");
-  }
-  if (!session.user.docNumber) {
-    redirect("/valid-subscription");
-  }
-  if (session.user.subscriptionStatus !== "active") {
-    return <AccessWhitoutPlan />;
   }
 
   return (

@@ -34,9 +34,6 @@ const ProfessionalsPage = async () => {
   if (!session.user.enterprise) {
     redirect("/enterprise-form");
   }
-  if (!session.user.docNumber) {
-    redirect("/valid-subscription");
-  }
   if (session.user.subscriptionStatus !== "active") {
     return <AccessWhitoutPlan />;
   }

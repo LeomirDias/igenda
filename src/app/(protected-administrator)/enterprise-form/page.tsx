@@ -31,7 +31,7 @@ const EnterpriseFormPage = async () => {
 
   return (
     <Dialog open>
-      <DialogContent className="max-h-[95vh] w-[95vw] max-w-[500px] overflow-y-auto p-4 sm:p-6">
+      <DialogContent overlayClassName="bg-black" className="max-h-[95vh] w-[95vw] max-w-[500px] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Quase lá!</DialogTitle>
           <DialogDescription>

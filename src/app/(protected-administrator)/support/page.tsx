@@ -28,9 +28,6 @@ const SupportPage = async () => {
   if (!session?.user) {
     redirect("/authentication");
   }
-  if (!session.user.enterprise) {
-    redirect("/enterprise-form");
-  }
 
   return (
 

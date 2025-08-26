@@ -4,10 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAction } from "next-safe-action/hooks";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
+import { checkSubscriptionByEmail } from "@/actions/check-subscription-by-email";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -51,21 +54,44 @@ const LoginForm = () => {
     },
   });
 
+  const pendingValuesRef = useRef<z.infer<typeof loginSchema> | null>(null);
+
+  const { execute: executeCheckSubscription } = useAction(
+    checkSubscriptionByEmail,
+    {
+      onSuccess: async ({ data }) => {
+        if (!data?.exists) {
+          toast.error("E-mail não encontrado em nossa base de assinantes.");
+          return;
+        }
+
+        const values = pendingValuesRef.current;
+        if (!values) return;
+
+        await authClient.signIn.email(
+          {
+            email: values.email,
+            password: values.password,
+          },
+          {
+            onSuccess: () => {
+              router.push("/dashboard");
+            },
+            onError: () => {
+              toast.error("E-mail ou senha inválidos.");
+            },
+          },
+        );
+      },
+      onError: () => {
+        toast.error("Não foi possível validar a assinatura. Tente novamente.");
+      },
+    },
+  );
+
   const handleSubmit = async (values: z.infer<typeof loginSchema>) => {
-    await authClient.signIn.email(
-      {
-        email: values.email,
-        password: values.password,
-      },
-      {
-        onSuccess: () => {
-          router.push("/dashboard");
-        },
-        onError: () => {
-          toast.error("E-mail ou senha inválidos.");
-        },
-      },
-    );
+    pendingValuesRef.current = values;
+    executeCheckSubscription({ email: values.email });
   };
 
   const handleGoogleSignUp = async () => {

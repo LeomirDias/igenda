@@ -17,7 +17,7 @@ export const usersTable = pgTable("users", {
   email: text("email").notNull().unique(),
   image: text("image"),
   emailVerified: boolean("email_verified").notNull(),
-  phone: text("phone_number").unique(),
+  phone: text("phone_number").notNull().unique(),
   docNumber: text("doc_number").unique(),
   subscriptionStatus: text("subscription_status"),
   role: text("role").notNull().default("administrator"),
@@ -27,8 +27,10 @@ export const usersTable = pgTable("users", {
 
 //Table to store customer subscription data
 export const usersSubscriptionTable = pgTable("users_subscription", {
-  docNumber: text("doc_number").notNull().unique().primaryKey(),
-  phone: text("phone_number").unique(),
+  id: text("id").primaryKey(),
+  docNumber: text("doc_number").unique(),
+  phone: text("phone_number").notNull().unique(),
+  email: text("email").notNull().unique(),
   //Plano
   planId: text("plan_id"),
   plan: text("plan"),
