@@ -78,7 +78,7 @@ export const confirmAppointment = actionClient
       ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
       : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
 
-    const message = `Olá, ${client.name}!😁\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\nSeu agendamento foi confirmado com sucesso na ${enterprise.name}. 👏\n\nDados do agendamento:\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${appointment.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\n⚠️ Se precisar reagendar ou cancelar, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} .\n\nAgradecemos pela preferência!`;
+    const message = `✅ Olá, ${client.name}! 👋\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\n Seu agendamento foi confirmado com sucesso!\n\nDados do agendamento:\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${appointment.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\n⚠️ Se precisar reagendar ou cancelar, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} .\n\nAgradecemos pela preferência!`;
 
     await sendWhatsappMessage(client.phoneNumber, message);
     revalidatePath("/appointments");

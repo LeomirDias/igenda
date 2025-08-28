@@ -2,9 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
-import { ptBR } from "date-fns/locale";
 import dayjs from "dayjs";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -18,8 +17,8 @@ import {
   updateAppointment,
 } from "@/actions/upsert-appointments";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   DialogContent,
   DialogDescription,
@@ -36,11 +35,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -48,7 +42,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { clientsTable, professionalsTable, servicesTable } from "@/db/schema";
-import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   clientId: z.string().min(1, {
@@ -122,13 +115,14 @@ const UpsertAppointmentForm = ({
   const selectedServiceId = form.watch("serviceId");
 
   const { data: availableTimes } = useQuery({
-    queryKey: ["available-times", selectedDate, selectedProfessionalId],
+    queryKey: ["available-times", selectedDate, selectedProfessionalId, selectedServiceId],
     queryFn: () =>
       getAvailableTimes({
         date: dayjs(selectedDate).format("YYYY-MM-DD"),
         professionalId: selectedProfessionalId,
+        serviceId: selectedServiceId,
       }),
-    enabled: !!selectedDate && !!selectedProfessionalId,
+    enabled: !!selectedDate && !!selectedProfessionalId && !!selectedServiceId,
   });
 
   const { data: serviceProfessionals } = useQuery({
@@ -186,7 +180,18 @@ const UpsertAppointmentForm = ({
       toast.success("Agendamento criado com sucesso.");
       onSuccess?.();
     },
-    onError: () => {
+    onError: (err) => {
+      const message = (err?.error && typeof err.error === "object" && "serverError" in err.error
+        ? (err.error as { serverError?: string }).serverError
+        : undefined) ?? "";
+      if (message?.includes("Time not available")) {
+        toast.error("Não foi possível agendar: a duração do serviço excede o tempo disponível para o horário escolhido.");
+        return;
+      }
+      if (message?.includes("Time conflicts")) {
+        toast.error("Horário indisponível: existe um agendamento conflitante neste período.");
+        return;
+      }
       toast.error("Erro ao criar agendamento.");
     },
   });
@@ -196,7 +201,18 @@ const UpsertAppointmentForm = ({
       toast.success("Agendamento atualizado com sucesso.");
       onSuccess?.();
     },
-    onError: () => {
+    onError: (err) => {
+      const message = (err?.error && typeof err.error === "object" && "serverError" in err.error
+        ? (err.error as { serverError?: string }).serverError
+        : undefined) ?? "";
+      if (message?.includes("Time not available")) {
+        toast.error("Não foi possível atualizar: a duração do serviço excede o tempo disponível para o horário escolhido.");
+        return;
+      }
+      if (message?.includes("Time conflicts")) {
+        toast.error("Horário indisponível: existe um agendamento conflitante neste período.");
+        return;
+      }
       toast.error("Erro ao atualizar agendamento.");
     },
   });
@@ -234,7 +250,7 @@ const UpsertAppointmentForm = ({
     return `R$ ${value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
   };
 
-  const isDateTimeEnabled = selectedClientId && selectedProfessionalId;
+  const isDateTimeEnabled = selectedClientId && selectedProfessionalId && selectedServiceId;
 
   return (
     <DialogContent className="w-[95vw] max-w-lg sm:max-w-[500px]">
@@ -343,44 +359,19 @@ const UpsertAppointmentForm = ({
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Data</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? (
-                              field.value.toLocaleDateString("pt-BR", {
-                                day: "2-digit",
-                                month: "long",
-                                year: "numeric"
-                              })
-                            ) : (
-                              <span>Selecione uma data</span>
-                            )}
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          locale={ptBR}
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => {
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            return date < today || !isDateAvailable(date);
-                          }}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <DatePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          return date < today || !isDateAvailable(date);
+                        }}
+                        placeholder="Selecione uma data"
+                        minDate={new Date()}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
