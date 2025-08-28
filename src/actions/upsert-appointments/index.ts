@@ -79,9 +79,8 @@ export const addAppointment = actionClient
         // Gerar identificador de 4 dígitos
         const identifier = Math.floor(1000 + Math.random() * 9000).toString();
 
-        // Definir status inicial conforme configuração da empresa
-        const initialStatus: "scheduled" | "not-confirmed" =
-            enterprise.confirmation === "automatic" ? "scheduled" : "not-confirmed";
+        // Definir status sempre como confirmado, pois é criado pela empresa
+        const initialStatus = "scheduled" as const;
 
         await db.insert(appointmentsTable).values({
             clientId: parsedInput.clientId,
@@ -122,24 +121,18 @@ export const addAppointment = actionClient
         const formattedDate = appointmentStart.format("DD/MM/YYYY");
         const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
 
-        if (enterprise.confirmation === "automatic") {
-            const address = `${enterprise.address}, ${enterprise.number}`;
-            const fullAddress = enterprise.complement
-                ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
-                : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
+        const address = `${enterprise.address}, ${enterprise.number}`;
+        const fullAddress = enterprise.complement
+            ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
+            : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
 
-            // Mensagem para o cliente
-            const clientMsg = `Olá, ${client.name}! 👋\n\nSeu agendamento em ${enterprise.name} foi confirmado!. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Empresa: ${enterprise.name}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\nCaso precise remarcar ou cancelar entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} \n\nAgradecemos a preferência! 💚`;
-            await sendWhatsappMessage(client.phoneNumber, clientMsg);
+        // Mensagem para o cliente
+        const clientMsg = `Olá, ${client.name}! 👋\n\nSeu agendamento em ${enterprise.name} foi confirmado!. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Empresa: ${enterprise.name}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\nCaso precise remarcar ou cancelar entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} \n\nAgradecemos a preferência! 💚`;
+        await sendWhatsappMessage(client.phoneNumber, clientMsg);
 
-            // Mensagem para a empresa
-            const enterpriseMsg = `Olá, ${enterprise.name}! 👋\n\nUm novo agendamento foi confirmado automaticamente. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Cliente: ${client.name}\n• Telefone do cliente: ${client.phoneNumber}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}`;
-            await sendWhatsappMessage(enterprise.phoneNumber, enterpriseMsg);
-        } else {
-            // Confirmação manual: envia mensagem para a empresa com instruções
-            const manualMsg = `Olá, ${enterprise.name}!\nCódigo do agendamento: #${identifier} 👋\n\nHá um novo agendamento aguardando confirmação. 📅\n\nDados do agendamento:\n• Cliente: ${client.name}\n• Telefone do cliente: ${client.phoneNumber}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n\nPara confirmar, responda com: CONFIRMAR ${identifier}.\nPara cancelar, responda com: CANCELAR ${identifier}.`;
-            await sendWhatsappMessage(enterprise.phoneNumber, manualMsg);
-        }
+        // Mensagem para a empresa
+        const enterpriseMsg = `Olá, ${enterprise.name}! 👋\n\nUm novo agendamento foi confirmado. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Cliente: ${client.name}\n• Telefone do cliente: ${client.phoneNumber}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}`;
+        await sendWhatsappMessage(enterprise.phoneNumber, enterpriseMsg);
 
         revalidatePath("/appointments");
         revalidatePath("/dashboard");
