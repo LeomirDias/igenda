@@ -57,23 +57,48 @@ export const addAppointment = actionClient
             throw new Error("Service not found");
         }
 
-        const appointmentDateTime = dayjs(parsedInput.date)
+        // Calcular início e fim do agendamento
+        const appointmentStart = dayjs(parsedInput.date)
             .set("hour", parseInt(parsedInput.time.split(":")[0]))
             .set("minute", parseInt(parsedInput.time.split(":")[1]))
-            .toDate();
+            .set("second", 0)
+            .millisecond(0);
+        const appointmentEnd = appointmentStart.add(service.durationInMinutes, "minute");
+
+        // Buscar empresa ANTES de salvar para definir status e mensagens
+        const [enterprise] = await db
+            .select()
+            .from(enterprisesTable)
+            .where(eq(enterprisesTable.id, session.user.enterprise.id));
+        if (!enterprise) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        // Gerar identificador de 4 dígitos
+        const identifier = Math.floor(1000 + Math.random() * 9000).toString();
+
+        // Definir status inicial conforme configuração da empresa
+        const initialStatus: "scheduled" | "not-confirmed" =
+            enterprise.confirmation === "automatic" ? "scheduled" : "not-confirmed";
 
         await db.insert(appointmentsTable).values({
             clientId: parsedInput.clientId,
             serviceId: parsedInput.serviceId,
             professionalId: parsedInput.professionalId,
             time: parsedInput.time,
-            date: appointmentDateTime,
+            date: appointmentStart.toDate(),
+            startTime: appointmentStart.format("HH:mm:ss"),
+            endTime: appointmentEnd.format("HH:mm:ss"),
             enterpriseId: session.user.enterprise.id,
             id: parsedInput.id,
-            appointmentPriceInCents: service.servicePriceInCents, // Define o preço do agendamento igual ao preço do serviço
+            appointmentPriceInCents: service.servicePriceInCents,
+            status: initialStatus,
+            identifier,
         });
 
-        // Buscar dados relacionados para enviar mensagem ao cliente
+        // Buscar dados relacionados para envio de mensagens
         const [client] = await db
             .select()
             .from(clientsTable)
@@ -94,27 +119,27 @@ export const addAppointment = actionClient
             return;
         }
 
-        const [enterprise] = await db
-            .select()
-            .from(enterprisesTable)
-            .where(eq(enterprisesTable.id, session.user.enterprise.id));
-        if (!enterprise) {
-            revalidatePath("/appointments");
-            revalidatePath("/dashboard");
-            return;
-        }
-
-        const formattedDate = dayjs(appointmentDateTime).format("DD/MM/YYYY");
+        const formattedDate = appointmentStart.format("DD/MM/YYYY");
         const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
 
-        const address = `${enterprise.address}, ${enterprise.number}`;
-        const fullAddress = enterprise.complement
-            ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
-            : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
+        if (enterprise.confirmation === "automatic") {
+            const address = `${enterprise.address}, ${enterprise.number}`;
+            const fullAddress = enterprise.complement
+                ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
+                : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
 
-        const creationMessage = `Olá, ${client.name}!👋\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\n✅ Seu agendamento foi criado em ${enterprise.name}.\n\nDados do agendamento:\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\nSe precisar reagendar ou tirar dúvidas, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber}.`;
+            // Mensagem para o cliente
+            const clientMsg = `Olá, ${client.name}! 👋\n\nSeu agendamento em ${enterprise.name} foi confirmado!. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Empresa: ${enterprise.name}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\nCaso precise remarcar ou cancelar entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} \n\nAgradecemos a preferência! 💚`;
+            await sendWhatsappMessage(client.phoneNumber, clientMsg);
 
-        await sendWhatsappMessage(client.phoneNumber, creationMessage);
+            // Mensagem para a empresa
+            const enterpriseMsg = `Olá, ${enterprise.name}! 👋\n\nUm novo agendamento foi confirmado automaticamente. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Cliente: ${client.name}\n• Telefone do cliente: ${client.phoneNumber}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}`;
+            await sendWhatsappMessage(enterprise.phoneNumber, enterpriseMsg);
+        } else {
+            // Confirmação manual: envia mensagem para a empresa com instruções
+            const manualMsg = `Olá, ${enterprise.name}!\nCódigo do agendamento: #${identifier} 👋\n\nHá um novo agendamento aguardando confirmação. 📅\n\nDados do agendamento:\n• Cliente: ${client.name}\n• Telefone do cliente: ${client.phoneNumber}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n\nPara confirmar, responda com: CONFIRMAR ${identifier}.\nPara cancelar, responda com: CANCELAR ${identifier}.`;
+            await sendWhatsappMessage(enterprise.phoneNumber, manualMsg);
+        }
 
         revalidatePath("/appointments");
         revalidatePath("/dashboard");
@@ -155,10 +180,12 @@ export const updateAppointment = actionClient
         if (!service) {
             throw new Error("Service not found");
         }
-        const appointmentDateTime = dayjs(parsedInput.date)
+        const appointmentStart = dayjs(parsedInput.date)
             .set("hour", parseInt(parsedInput.time.split(":")[0]))
             .set("minute", parseInt(parsedInput.time.split(":")[1]))
-            .toDate();
+            .set("second", 0)
+            .millisecond(0);
+        const appointmentEnd = appointmentStart.add(service.durationInMinutes, "minute");
         await db
             .update(appointmentsTable)
             .set({
@@ -166,7 +193,9 @@ export const updateAppointment = actionClient
                 serviceId: parsedInput.serviceId,
                 professionalId: parsedInput.professionalId,
                 time: parsedInput.time,
-                date: appointmentDateTime,
+                date: appointmentStart.toDate(),
+                startTime: appointmentStart.format("HH:mm:ss"),
+                endTime: appointmentEnd.format("HH:mm:ss"),
                 appointmentPriceInCents: service.servicePriceInCents,
             })
             .where(eq(appointmentsTable.id, parsedInput.id));
@@ -202,7 +231,7 @@ export const updateAppointment = actionClient
             return;
         }
 
-        const formattedDate = dayjs(appointmentDateTime).format("DD/MM/YYYY");
+        const formattedDate = appointmentStart.format("DD/MM/YYYY");
         const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
 
         const address = `${enterprise.address}, ${enterprise.number}`;
