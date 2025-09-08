@@ -57,47 +57,23 @@ export const addAppointment = actionClient
             throw new Error("Service not found");
         }
 
-        // Calcular início e fim do agendamento
-        const appointmentStart = dayjs(parsedInput.date)
+        const appointmentDateTime = dayjs(parsedInput.date)
             .set("hour", parseInt(parsedInput.time.split(":")[0]))
             .set("minute", parseInt(parsedInput.time.split(":")[1]))
-            .set("second", 0)
-            .millisecond(0);
-        const appointmentEnd = appointmentStart.add(service.durationInMinutes, "minute");
-
-        // Buscar empresa ANTES de salvar para definir status e mensagens
-        const [enterprise] = await db
-            .select()
-            .from(enterprisesTable)
-            .where(eq(enterprisesTable.id, session.user.enterprise.id));
-        if (!enterprise) {
-            revalidatePath("/appointments");
-            revalidatePath("/dashboard");
-            return;
-        }
-
-        // Gerar identificador de 4 dígitos
-        const identifier = Math.floor(1000 + Math.random() * 9000).toString();
-
-        // Definir status sempre como confirmado, pois é criado pela empresa
-        const initialStatus = "scheduled" as const;
+            .toDate();
 
         await db.insert(appointmentsTable).values({
             clientId: parsedInput.clientId,
             serviceId: parsedInput.serviceId,
             professionalId: parsedInput.professionalId,
             time: parsedInput.time,
-            date: appointmentStart.toDate(),
-            startTime: appointmentStart.format("HH:mm:ss"),
-            endTime: appointmentEnd.format("HH:mm:ss"),
+            date: appointmentDateTime,
             enterpriseId: session.user.enterprise.id,
             id: parsedInput.id,
-            appointmentPriceInCents: service.servicePriceInCents,
-            status: initialStatus,
-            identifier,
+            appointmentPriceInCents: service.servicePriceInCents, // Define o preço do agendamento igual ao preço do serviço
         });
 
-        // Buscar dados relacionados para envio de mensagens
+        // Buscar dados relacionados para enviar mensagem ao cliente
         const [client] = await db
             .select()
             .from(clientsTable)
@@ -118,7 +94,17 @@ export const addAppointment = actionClient
             return;
         }
 
-        const formattedDate = appointmentStart.format("DD/MM/YYYY");
+        const [enterprise] = await db
+            .select()
+            .from(enterprisesTable)
+            .where(eq(enterprisesTable.id, session.user.enterprise.id));
+        if (!enterprise) {
+            revalidatePath("/appointments");
+            revalidatePath("/dashboard");
+            return;
+        }
+
+        const formattedDate = dayjs(appointmentDateTime).format("DD/MM/YYYY");
         const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
 
         const address = `${enterprise.address}, ${enterprise.number}`;
@@ -126,13 +112,9 @@ export const addAppointment = actionClient
             ? `${address} - ${enterprise.complement}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`
             : `${address}, ${enterprise.city}/${enterprise.state} - CEP: ${enterprise.cep}`;
 
-        // Mensagem para o cliente
-        const clientMsg = `Olá, ${client.name}! 👋\n\nSeu agendamento em ${enterprise.name} foi confirmado!. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Empresa: ${enterprise.name}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\nCaso precise remarcar ou cancelar entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber} \n\nAgradecemos a preferência! 💚`;
-        await sendWhatsappMessage(client.phoneNumber, clientMsg);
+        const creationMessage = `Olá, ${client.name}!👋\n\nEsta é uma mensagem automática da iGenda de ${enterprise.name}\n\n✅ Seu agendamento foi criado em ${enterprise.name}.\n\nDados do agendamento:\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}\n• Endereço: ${fullAddress}\n\nSe precisar reagendar ou tirar dúvidas, entre em contato com ${enterprise.name} pelo número ${enterprise.phoneNumber}.`;
 
-        // Mensagem para a empresa
-        const enterpriseMsg = `Olá, ${enterprise.name}! 👋\n\nUm novo agendamento foi confirmado. ✅\n\nDados do agendamento:\n• Código do agendamento: #${identifier}\n• Cliente: ${client.name}\n• Telefone do cliente: ${client.phoneNumber}\n• Serviço: ${service.name}\n• Profissional: ${professional.name}\n• Data: ${formattedDate}\n• Horário: ${parsedInput.time}\n• Valor: ${formattedPrice}`;
-        await sendWhatsappMessage(enterprise.phoneNumber, enterpriseMsg);
+        await sendWhatsappMessage(client.phoneNumber, creationMessage);
 
         revalidatePath("/appointments");
         revalidatePath("/dashboard");
@@ -173,12 +155,10 @@ export const updateAppointment = actionClient
         if (!service) {
             throw new Error("Service not found");
         }
-        const appointmentStart = dayjs(parsedInput.date)
+        const appointmentDateTime = dayjs(parsedInput.date)
             .set("hour", parseInt(parsedInput.time.split(":")[0]))
             .set("minute", parseInt(parsedInput.time.split(":")[1]))
-            .set("second", 0)
-            .millisecond(0);
-        const appointmentEnd = appointmentStart.add(service.durationInMinutes, "minute");
+            .toDate();
         await db
             .update(appointmentsTable)
             .set({
@@ -186,9 +166,7 @@ export const updateAppointment = actionClient
                 serviceId: parsedInput.serviceId,
                 professionalId: parsedInput.professionalId,
                 time: parsedInput.time,
-                date: appointmentStart.toDate(),
-                startTime: appointmentStart.format("HH:mm:ss"),
-                endTime: appointmentEnd.format("HH:mm:ss"),
+                date: appointmentDateTime,
                 appointmentPriceInCents: service.servicePriceInCents,
             })
             .where(eq(appointmentsTable.id, parsedInput.id));
@@ -224,7 +202,7 @@ export const updateAppointment = actionClient
             return;
         }
 
-        const formattedDate = appointmentStart.format("DD/MM/YYYY");
+        const formattedDate = dayjs(appointmentDateTime).format("DD/MM/YYYY");
         const formattedPrice = formatCurrencyInCents(service.servicePriceInCents);
 
         const address = `${enterprise.address}, ${enterprise.number}`;

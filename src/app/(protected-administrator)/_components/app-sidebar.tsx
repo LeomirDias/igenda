@@ -1,32 +1,24 @@
 "use client";
 
 import {
+  AlertCircle,
   BookUser,
   BotMessageSquare,
   Box,
-  Calendar,
+  CalendarCheck,
   CircleHelp,
   LayoutDashboard,
   LinkIcon,
-  LogOutIcon,
-  Moon,
   PlaySquareIcon,
-  SettingsIcon,
+  Settings,
   Tag,
   Users,
 } from "lucide-react";
-import { Sun } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -42,16 +34,24 @@ import {
 import { authClient } from "@/lib/auth-client";
 
 // Menu items.
+const itemsAgenda = [
+  {
+    title: "Agendamentos",
+    url: "/appointments",
+    icon: CalendarCheck,
+  },
+  {
+    title: "Pendentes",
+    url: "/appointments/pending",
+    icon: AlertCircle,
+  },
+];
+
 const itemsEnterprise = [
   {
     title: "Relatórios",
     url: "/dashboard",
     icon: LayoutDashboard,
-  },
-  {
-    title: "Agenda",
-    url: "/appointments",
-    icon: Calendar,
   },
   {
     title: "Profissionais",
@@ -99,26 +99,36 @@ const othersItems = [
     url: "/support",
     icon: CircleHelp,
   },
+  {
+    title: "Configurações",
+    url: "/settings",
+    icon: Settings,
+  },
 ];
 
 export function AppSidebar() {
-  const { setTheme, resolvedTheme } = useTheme();
-
-  const router = useRouter();
-
   const session = authClient.useSession();
 
   const pathname = usePathname();
 
-  const handleSignOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/authentication");
-        },
-      },
-    });
-  };
+  const [hasUnreadPending, setHasUnreadPending] = useState<boolean>(false);
+  useEffect(() => {
+    let mounted = true;
+    const fetchPending = async () => {
+      try {
+        const res = await fetch("/api/appointments/pending-count", { cache: "no-store" });
+        const data = (await res.json()) as { notConfirmed: number; toConclude: number };
+        if (!mounted) return;
+        setHasUnreadPending((data?.notConfirmed || 0) > 0 || (data?.toConclude || 0) > 0);
+      } catch { }
+    };
+    fetchPending();
+    const id = setInterval(fetchPending, 30000);
+    return () => {
+      mounted = false;
+      clearInterval(id);
+    };
+  }, [pathname]);
 
   const enterpriseInitials = session.data?.user?.enterprise?.name
     .split(" ")
@@ -126,10 +136,39 @@ export function AppSidebar() {
     .join("");
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="bg-background flex items-center justify-center border-b p-4" />
+    <Sidebar
+      variant="floating"
+    >
+      <div>
 
-      <SidebarContent className="bg-background">
+      </div>
+      <SidebarHeader className="bg-background flex items-center justify-center p-4 rounded-t-lg shadow-lg border border-border border-b-0" />
+
+      <SidebarContent className="bg-background shadow-lg border border-border">
+        <SidebarGroup>
+          <SidebarGroupLabel>Minha agenda</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {itemsAgenda.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url}>
+                    <Link href={item.url}>
+                      <div className="relative">
+                        <item.icon className="h-5 w-5" />
+                        {item.url === "/appointments/pending" && hasUnreadPending && (
+                          <span className="absolute -right-0.5 -top-0.5 inline-flex h-2.5 w-2.5 items-center justify-center rounded-full bg-emerald-500" aria-hidden />
+                        )}
+                      </div>
+                      <span className="text-sm">{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+
         <SidebarGroup>
           <SidebarGroupLabel>Minha empresa</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -138,8 +177,8 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="h-5 w-5" />
+                      <span className="text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -156,8 +195,8 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="h-5 w-5" />
+                      <span className="text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -174,8 +213,8 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="h-5 w-5" />
+                      <span className="text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -183,62 +222,31 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+
       </SidebarContent>
 
-      <SidebarFooter className="bg-background border-t py-4">
+      <SidebarFooter className="bg-background rounded-b-lg shadow-lg border border-border border-t-0">
         <SidebarMenu>
           <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton size="lg">
-                  <Avatar className="h-12 w-12 rounded-full border-2 border-green-500 group-data-[state=collapsed]:h-8 group-data-[state=collapsed]:w-8">
-                    <AvatarImage
-                      src={session.data?.user?.enterprise?.avatarImageURL || ""}
-                    />
-                    {!session.data?.user?.enterprise?.avatarImageURL && (
-                      <AvatarFallback>{enterpriseInitials}</AvatarFallback>
-                    )}
-                  </Avatar>
-                  <div className="group-data-[state=collapsed]:hidden">
-                    <p className="text-sm">
-                      {session.data?.user?.enterprise?.name}
-                    </p>
-                    <p className="text-muted-foreground text-xs">
-                      {session.data?.user.email}
-                    </p>
-                  </div>
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  onClick={() =>
-                    setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                  }
-                  className="flex items-center gap-2"
-                >
-                  <span className="inline-block transition-transform duration-300 ease-in-out group-active:rotate-180">
-                    {resolvedTheme === "dark" ? (
-                      <Sun className="h-5 w-5" />
-                    ) : (
-                      <Moon className="h-5 w-5" />
-                    )}
-                  </span>
-                  <span>
-                    {resolvedTheme === "dark" ? "Tema claro" : "Tema escuro"}
-                  </span>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <SettingsIcon />
-                    Configurações
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOutIcon />
-                  Sair
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <SidebarMenuButton size="lg">
+              <Avatar className="h-12 w-12 rounded-full border-2 border-green-500 group-data-[state=collapsed]:h-8 group-data-[state=collapsed]:w-8">
+                <AvatarImage
+                  src={session.data?.user?.enterprise?.avatarImageURL || ""}
+                />
+                {!session.data?.user?.enterprise?.avatarImageURL && (
+                  <AvatarFallback>{enterpriseInitials}</AvatarFallback>
+                )}
+              </Avatar>
+              <div className="group-data-[state=collapsed]:hidden">
+                <p className="text-sm">
+                  {session.data?.user?.enterprise?.name}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  {session.data?.user.email}
+                </p>
+              </div>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
