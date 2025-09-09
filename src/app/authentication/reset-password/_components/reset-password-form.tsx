@@ -29,11 +29,18 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 
 const formSchema = z.object({
-  password: z.string().min(8),
-  confirmPassword: z.string().min(8),
+  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
+  confirmPassword: z.string().min(8, "A confirmação deve ter pelo menos 8 caracteres"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
 
-export function ResetPasswordForm({ }: React.ComponentProps<"div">) {
+interface ResetPasswordFormProps {
+  token: string;
+}
+
+function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -49,24 +56,24 @@ export function ResetPasswordForm({ }: React.ComponentProps<"div">) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    if (values.password !== values.confirmPassword) {
-      toast.error("As senhas não coincidem");
+    try {
+      const { error } = await authClient.resetPassword({
+        newPassword: values.password,
+        token: token,
+      });
+
+      if (error) {
+        toast.error(error.message || "Erro ao redefinir senha");
+      } else {
+        toast.success("Senha redefinida com sucesso");
+        router.push("/authentication");
+      }
+    } catch (error) {
+      console.error("Erro ao redefinir senha:", error);
+      toast.error("Erro inesperado ao redefinir senha");
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    const { error } = await authClient.resetPassword({
-      newPassword: values.password,
-    });
-
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Senha redefinida com sucesso");
-      router.push("/authentication");
-    }
-
-    setIsLoading(false);
   }
 
   return (

@@ -138,7 +138,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
                   fontSize: "14px",
                   lineHeight: 1.5
                 }}>
-                  Caso você não tenha solicitado esta redefinição ignore está mensagem.
+                  O link de redefinição de senha é válido por 1 hora.
                 </Text>
               </div>
 

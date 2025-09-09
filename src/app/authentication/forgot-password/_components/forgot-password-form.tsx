@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
+import { revokeSessionsByEmail } from "@/actions/revoke-sessions-by-email";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,15 +43,26 @@ export function ForgotPasswordForm({ }: React.ComponentProps<"div">) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
 
-    await authClient.forgetPassword({
-      email: values.email,
-      redirectTo: "/authentication/reset-password",
-    });
+      //  Primeiro, enviar o email de recuperação de senha
+      await authClient.forgetPassword({
+        email: values.email,
+        redirectTo: "/authentication/reset-password",
+      });
 
-    toast.success("Enviamos um link de redefinição de senha para o seu e-mail.");
-    router.push("/authentication");
+      // Depois, revogar todas as sessões do usuário
+      await revokeSessionsByEmail({
+        email: values.email,
+      });
 
+
+      toast.success("Enviamos um link de redefinição de senha para o seu e-mail. O link é válido por 1 hora.");
+      router.push("/authentication");
+    } catch (error) {
+      console.error("Erro ao processar solicitação:", error);
+      toast.error("Erro ao processar solicitação. Tente novamente.");
+    }
   }
 
   return (
