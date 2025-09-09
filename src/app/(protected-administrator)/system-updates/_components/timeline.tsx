@@ -17,6 +17,18 @@ type UpdateItem = {
 const updates: UpdateItem[] = [
     {
         title: "Melhorias e correções",
+        date: "2025-09-09",
+        summary:
+            "Melhorias e correções na plataforma.",
+        details: (
+            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                <li>Correção de erro ao tentar redefinir a senha da conta;</li>
+                <li>Correção de erro ao tentar clicar nos botões na tela de agendamentos pendentes.</li>
+            </ul>
+        ),
+    },
+    {
+        title: "Melhorias e correções",
         date: "2025-09-08",
         summary:
             "Melhorias e correções na plataforma.",
@@ -174,5 +186,4 @@ export default function Timeline() {
         </div>
     );
 }
-
 
