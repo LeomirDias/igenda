@@ -6,6 +6,8 @@ import { toast } from "sonner";
 
 import { cancelAppointment } from "@/actions/cancel-appointment";
 import { confirmAppointment } from "@/actions/confirm-appointment";
+import { markAppointmentCompleted } from "@/actions/mark-appointment-completed";
+import { markAppointmentNoShow } from "@/actions/mark-appointment-no-show";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -50,6 +52,20 @@ export function AppointmentRow({
         onError: () => toast.error("Falha ao cancelar agendamento."),
     });
 
+    const { execute: executeMarkCompleted, status: completedStatus } = useAction(markAppointmentCompleted, {
+        onSuccess: () => {
+            toast.success("Agendamento marcado como finalizado!");
+        },
+        onError: () => toast.error("Falha ao marcar agendamento como finalizado."),
+    });
+
+    const { execute: executeMarkNoShow, status: noShowStatus } = useAction(markAppointmentNoShow, {
+        onSuccess: () => {
+            toast.success("Agendamento marcado como falta!");
+        },
+        onError: () => toast.error("Falha ao marcar agendamento como falta."),
+    });
+
     const price = (priceInCents / 100).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
@@ -64,6 +80,14 @@ export function AppointmentRow({
             id: appointmentId,
             justification: justification.trim() || undefined
         });
+    };
+
+    const handleMarkCompleted = () => {
+        executeMarkCompleted({ id: appointmentId });
+    };
+
+    const handleMarkNoShow = () => {
+        executeMarkNoShow({ id: appointmentId });
     };
 
     return (
@@ -131,8 +155,19 @@ export function AppointmentRow({
                         </>
                     ) : (
                         <>
-                            <Button disabled={confirmStatus === "executing"}>Finalizado</Button>
-                            <Button variant="outline" disabled={confirmStatus === "executing"}>Falta</Button>
+                            <Button
+                                disabled={completedStatus === "executing"}
+                                onClick={handleMarkCompleted}
+                            >
+                                {completedStatus === "executing" ? "Finalizando..." : "Finalizado"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                disabled={noShowStatus === "executing"}
+                                onClick={handleMarkNoShow}
+                            >
+                                {noShowStatus === "executing" ? "Marcando..." : "Falta"}
+                            </Button>
                         </>
                     )}
                 </div>
